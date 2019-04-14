@@ -1,0 +1,30 @@
+拦截请求
+抓取数据
+转发请求
+
+
+http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=1546523890746&nonce=7150788195ff4a4fa0ae73d56a4245d0&trade_source=TMS&signature=D5CE85CD68327998A7C78EB0D48B806F&data={"redirectURL":"http://tms.ihxlife.com/tms/html/1_kqlr/sign.html","attach":"00000000000000105723"}
+
+http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=1546523890746&nonce=7150788195ff4a4fa0ae73d56a4245d0&trade_source=TMS&signature=D5CE85CD68327998A7C78EB0D48B806F&data=%7B%22redirectURL%22%3A%22http%3A%2F%2Ftms.ihxlife.com%2Ftms%2Fhtml%2F1_kqlr%2Fsign.html%22%2C%22attach%22%3A%2200000000000000105723%22%7D
+
+
+
+账号:   369340425          密码: zyf1995.
+蒋泽平: 17716131667        密码: fhs139807
+蒋亚:   17323249180        密码: fhs139807
+
+Step 1: 拦截请求
+http://tms.ihxlife.com/tms/html/1_kqlr/sign.html?attach=00000000000000105723&agentCode=510129760&userid=510129760&openid=o43yZt-ax60RdEq2tRID2cKW7Mt4&timestamp=1555227896140&nonce=c502b8ff-6f45-4044-b660-b6549cd56013&trade_source=HXQYH&signature=513F6DF8FB855544E9AD022FFE2625B2
+
+http://tms.ihxlife.com/tms/html/1_kqlr/sign.html?attach=00000000000000105723&agentCode=510129760&userid=510129760&openid=o43yZt-ax60RdEq2tRID2cKW7Mt4&timestamp=1555230703033&nonce=b422fca3-6745-45fb-942e-3277e4c2872f&trade_source=HXQYH&signature=C5B39A04405C819AB045BD54A3376D59
+
+
+Step 2: 构造请求，修改
+openid, userid, timestamp, nonce, signature //attach
+ qrcodeid,                     //attach
+ longitude,                    //baiduAPI
+ latitude,                     //baiduAPI
+ _,                           // new Date()
+ attentype,                   // signdata.
+http://kqapi.hxlife.com/tms/api/QRcodeSign?callbackparam=success_jsonpCallback&params= 
+{"openid":"o43yZt-ax60RdEq2tRID2cKW7Mt4","userid":"510129760","timestamp":"1555230703033","nonce":"b422fca3-6745-45fb-942e-3277e4c2872f","trade_source":"HXQYH","signature":"C5B39A04405C819AB045BD54A3376D59","qrcodeid":"00000000000000105723","attentype":"morning","longitude":104.07,"latitude":30.67,"cacheflag":"0"}&_=1555225095571
