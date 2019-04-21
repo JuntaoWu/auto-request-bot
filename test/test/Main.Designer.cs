@@ -1,6 +1,6 @@
 ﻿namespace test
 {
-    partial class Form1
+    partial class Main
     {
         /// <summary>
         /// Required designer variable.
@@ -33,6 +33,7 @@
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.listView = new System.Windows.Forms.ListView();
             this.SuspendLayout();
             // 
             // button1
@@ -48,10 +49,10 @@
             // textboxDisplay
             // 
             this.textboxDisplay.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.textboxDisplay.Location = new System.Drawing.Point(0, 69);
+            this.textboxDisplay.Location = new System.Drawing.Point(0, 405);
             this.textboxDisplay.Multiline = true;
             this.textboxDisplay.Name = "textboxDisplay";
-            this.textboxDisplay.Size = new System.Drawing.Size(1056, 453);
+            this.textboxDisplay.Size = new System.Drawing.Size(1056, 117);
             this.textboxDisplay.TabIndex = 1;
             // 
             // button2
@@ -84,18 +85,28 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // Form1
+            // listView
+            // 
+            this.listView.Location = new System.Drawing.Point(0, 68);
+            this.listView.Name = "listView";
+            this.listView.Size = new System.Drawing.Size(1056, 347);
+            this.listView.TabIndex = 5;
+            this.listView.UseCompatibleStateImageBehavior = false;
+            // 
+            // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1056, 522);
+            this.Controls.Add(this.listView);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.textboxDisplay);
             this.Controls.Add(this.button1);
-            this.Name = "Form1";
+            this.Name = "Main";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Main_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -108,6 +119,7 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ListView listView;
     }
 }
 
