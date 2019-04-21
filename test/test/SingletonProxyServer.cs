@@ -61,12 +61,12 @@ namespace test
             //locally trust root certificate used by this proxy 
             Instance.proxyServer.CertificateManager.TrustRootCertificate(true);
 
-            Instance.explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, 8000, true)
+            Instance.explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, 8765, true)
             {
             };
 
             Instance.proxyServer.AddEndPoint(Instance.explicitEndPoint);
-            var transparentEndPoint = new TransparentProxyEndPoint(IPAddress.Any, 8001, true)
+            var transparentEndPoint = new TransparentProxyEndPoint(IPAddress.Any, 8766, true)
             {
                 GenericCertificateName = "google.com"
             };
@@ -227,13 +227,14 @@ namespace test
         private void sendRequst(Dictionary<string, string> template, string longitude, string latitude)
         {
             string ur = $"{string.Format("0")}\"\",\"\"";
-            string openId = template["openid"];
-            string userId = template["userid"];
-            string timestamp = template["timestamp"];
-            string nonce = template["nonce"];
-            string trade_source = template["trade_source"];
-            string signature = template["signature"];
-            string qrcodeid = template["attach"];
+            string openId, userId, timestamp, nonce, trade_source, signature, qrcodeid;
+            template.TryGetValue("openid", out openId);
+            template.TryGetValue("userid", out userId);
+            template.TryGetValue("timestamp", out timestamp);
+            template.TryGetValue("nonce", out nonce);
+            template.TryGetValue("trade_source", out trade_source);
+            template.TryGetValue("signature", out signature);
+            template.TryGetValue("attach", out qrcodeid);
 
             string customParams = $"{{\"openid\":\"{openId}\",\"userid\":\"{userId}\",\"timestamp\":\"{timestamp}\",\"nonce\":\"{nonce}\",\"trade_source\":\"{trade_source}\",\"signature\":\"{signature}\",\"qrcodeid\":\"{qrcodeid}\",\"attentype\":\"morning\",\"longitude\":{longitude},\"latitude\":{latitude},\"cacheflag\":\"0\"}}";
             //"openid":"","userid":"510129760","timestamp":"1555230703033","nonce":"b422fca3-6745-45fb-942e-3277e4c2872f","trade_source":"HXQYH","signature":"C5B39A04405C819AB045BD54A3376D59","qrcodeid":"00000000000000105723","attentype":"morning","longitude":104.07,"latitude":30.67,"cacheflag":"0"
