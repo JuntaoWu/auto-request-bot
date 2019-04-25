@@ -34,6 +34,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.listView = new System.Windows.Forms.ListView();
+            this.add_user_btn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -93,11 +94,22 @@
             this.listView.TabIndex = 5;
             this.listView.UseCompatibleStateImageBehavior = false;
             // 
+            // add_user_btn
+            // 
+            this.add_user_btn.Location = new System.Drawing.Point(601, 11);
+            this.add_user_btn.Name = "add_user_btn";
+            this.add_user_btn.Size = new System.Drawing.Size(116, 23);
+            this.add_user_btn.TabIndex = 6;
+            this.add_user_btn.Text = "新增用户";
+            this.add_user_btn.UseVisualStyleBackColor = true;
+            this.add_user_btn.Click += new System.EventHandler(this.add_user_btn_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1056, 522);
+            this.Controls.Add(this.add_user_btn);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
@@ -120,6 +132,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ListView listView;
+        private System.Windows.Forms.Button add_user_btn;
     }
 }
 

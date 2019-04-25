@@ -16,7 +16,9 @@ namespace test
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Main());
+            Main mainform = new Main();
+            mainform.StartPosition = FormStartPosition.CenterScreen;
+            Application.Run(mainform);
         }
     }
 }

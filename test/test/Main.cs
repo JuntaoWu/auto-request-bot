@@ -66,7 +66,9 @@ namespace test
 
         private void Main_Load(object sender, EventArgs e)
         {
-            new Login().ShowDialog();
+            Login loginform = new Login();
+            loginform.StartPosition = FormStartPosition.CenterScreen;
+            loginform.ShowDialog();
             listView.View = View.Details;//设置视图  
 
             //添加列  
@@ -87,6 +89,14 @@ namespace test
             listView.Items.Add(item);
             listView.Items[listView.Items.Count - 1].EnsureVisible();//滚动到最后  
             listView.EndUpdate();
+        }
+
+        private void add_user_btn_Click(object sender, EventArgs e)
+        {
+            AddUser addUser = new AddUser();
+            addUser.StartPosition = FormStartPosition.CenterScreen;
+            addUser.ShowDialog();
+
         }
     }
 }

@@ -39,7 +39,8 @@ namespace test
         private void register_btn_click(object sender, EventArgs e)
         {
             var registerForm = new Register();
-            registerForm.Show();
+            registerForm.StartPosition = FormStartPosition.CenterScreen;
+            registerForm.ShowDialog();
         }
 
         private void Login_Closed(object sender, FormClosedEventArgs e)
