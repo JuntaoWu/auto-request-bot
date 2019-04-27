@@ -29,16 +29,18 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.button1 = new System.Windows.Forms.Button();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.textboxDisplay = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.register_btn = new System.Windows.Forms.Button();
-            this.add_user_btn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.wait_checkin_tabpage = new System.Windows.Forms.TabPage();
+            this.successs_checkin_tabpage = new System.Windows.Forms.TabPage();
+            this.error_checkin_page = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.active_label = new System.Windows.Forms.Label();
             this.openId_txt = new System.Windows.Forms.TextBox();
@@ -57,11 +59,19 @@
             this.weixin_number_label = new System.Windows.Forms.Label();
             this.weixin_username_label = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.member_list_grdaview = new System.Windows.Forms.DataGridView();
-            this.Titile_label = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.member_list_grdaview = new System.Windows.Forms.DataGridView();
             this.update = new System.Windows.Forms.DataGridViewButtonColumn();
             this.delete = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Titile_label = new System.Windows.Forms.Label();
+            this.wait_checkin_datagrid = new System.Windows.Forms.DataGridView();
+            this.avatarDataGridViewImageColumn1 = new System.Windows.Forms.DataGridViewImageColumn();
+            this.weixinuernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.usernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.telephoneDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.weixinnumberDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.statusDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.memberBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.avatarDataGridViewImageColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.weixinuernameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usernameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -70,59 +80,52 @@
             this.statusDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.registertiemDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.memberBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.tabControl2 = new System.Windows.Forms.TabControl();
-            this.wait_checkin_tabpage = new System.Windows.Forms.TabPage();
-            this.successs_checkin_tabpage = new System.Windows.Forms.TabPage();
-            this.error_checkin_page = new System.Windows.Forms.TabPage();
+            this.success_checkin_datagrid = new System.Windows.Forms.DataGridView();
+            this.memberBindingSource2 = new System.Windows.Forms.BindingSource(this.components);
+            this.avatarDataGridViewImageColumn2 = new System.Windows.Forms.DataGridViewImageColumn();
+            this.weixinuernameDataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.usernameDataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.telephoneDataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.weixinnumberDataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.checkintimeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.statusDataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.error_checkin_datagrid = new System.Windows.Forms.DataGridView();
+            this.memberBindingSource3 = new System.Windows.Forms.BindingSource(this.components);
+            this.avatarDataGridViewImageColumn3 = new System.Windows.Forms.DataGridViewImageColumn();
+            this.weixinuernameDataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.usernameDataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.telephoneDataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.weixinnumberDataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.checkintimeDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.statusDataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.wait_checkin_tabpage.SuspendLayout();
+            this.successs_checkin_tabpage.SuspendLayout();
+            this.error_checkin_page.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.image_picturebox)).BeginInit();
             this.tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.wait_checkin_datagrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource)).BeginInit();
-            this.tabControl2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.success_checkin_datagrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.error_checkin_datagrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).BeginInit();
             this.SuspendLayout();
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(35, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "start";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // textboxDisplay
             // 
             this.textboxDisplay.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.textboxDisplay.Location = new System.Drawing.Point(0, 634);
+            this.textboxDisplay.Location = new System.Drawing.Point(0, 678);
             this.textboxDisplay.Multiline = true;
             this.textboxDisplay.Name = "textboxDisplay";
-            this.textboxDisplay.Size = new System.Drawing.Size(1056, 75);
+            this.textboxDisplay.Size = new System.Drawing.Size(1582, 75);
             this.textboxDisplay.TabIndex = 1;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(188, 12);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "stop";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(326, 12);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "Clear";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // register_btn
             // 
@@ -133,16 +136,6 @@
             this.register_btn.Text = "激活";
             this.register_btn.UseVisualStyleBackColor = true;
             this.register_btn.Click += new System.EventHandler(this.register_btn_Click);
-            // 
-            // add_user_btn
-            // 
-            this.add_user_btn.Location = new System.Drawing.Point(601, 11);
-            this.add_user_btn.Name = "add_user_btn";
-            this.add_user_btn.Size = new System.Drawing.Size(116, 23);
-            this.add_user_btn.TabIndex = 6;
-            this.add_user_btn.Text = "新增用户";
-            this.add_user_btn.UseVisualStyleBackColor = true;
-            this.add_user_btn.Click += new System.EventHandler(this.add_user_btn_Click);
             // 
             // tabControl1
             // 
@@ -157,7 +150,7 @@
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1056, 634);
+            this.tabControl1.Size = new System.Drawing.Size(1582, 678);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl1.TabIndex = 7;
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControl1_DrawItem_1);
@@ -169,10 +162,58 @@
             this.tabPage1.Location = new System.Drawing.Point(124, 4);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(928, 626);
+            this.tabPage1.Size = new System.Drawing.Size(1454, 670);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "会员管理";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabControl2
+            // 
+            this.tabControl2.Controls.Add(this.wait_checkin_tabpage);
+            this.tabControl2.Controls.Add(this.successs_checkin_tabpage);
+            this.tabControl2.Controls.Add(this.error_checkin_page);
+            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl2.Location = new System.Drawing.Point(3, 3);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(1448, 664);
+            this.tabControl2.TabIndex = 0;
+            // 
+            // wait_checkin_tabpage
+            // 
+            this.wait_checkin_tabpage.Controls.Add(this.wait_checkin_datagrid);
+            this.wait_checkin_tabpage.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.wait_checkin_tabpage.Location = new System.Drawing.Point(4, 25);
+            this.wait_checkin_tabpage.Name = "wait_checkin_tabpage";
+            this.wait_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3);
+            this.wait_checkin_tabpage.Size = new System.Drawing.Size(1440, 635);
+            this.wait_checkin_tabpage.TabIndex = 0;
+            this.wait_checkin_tabpage.Text = "等待打卡";
+            this.wait_checkin_tabpage.UseVisualStyleBackColor = true;
+            // 
+            // successs_checkin_tabpage
+            // 
+            this.successs_checkin_tabpage.Controls.Add(this.success_checkin_datagrid);
+            this.successs_checkin_tabpage.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Italic);
+            this.successs_checkin_tabpage.Location = new System.Drawing.Point(4, 25);
+            this.successs_checkin_tabpage.Name = "successs_checkin_tabpage";
+            this.successs_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3);
+            this.successs_checkin_tabpage.Size = new System.Drawing.Size(1440, 635);
+            this.successs_checkin_tabpage.TabIndex = 1;
+            this.successs_checkin_tabpage.Text = "已打卡";
+            this.successs_checkin_tabpage.UseVisualStyleBackColor = true;
+            // 
+            // error_checkin_page
+            // 
+            this.error_checkin_page.Controls.Add(this.error_checkin_datagrid);
+            this.error_checkin_page.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Italic);
+            this.error_checkin_page.Location = new System.Drawing.Point(4, 25);
+            this.error_checkin_page.Name = "error_checkin_page";
+            this.error_checkin_page.Padding = new System.Windows.Forms.Padding(3);
+            this.error_checkin_page.Size = new System.Drawing.Size(1440, 635);
+            this.error_checkin_page.TabIndex = 2;
+            this.error_checkin_page.Text = "异常打卡";
+            this.error_checkin_page.UseVisualStyleBackColor = true;
             // 
             // tabPage2
             // 
@@ -196,7 +237,7 @@
             this.tabPage2.Location = new System.Drawing.Point(124, 4);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(928, 626);
+            this.tabPage2.Size = new System.Drawing.Size(1454, 670);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "会员注册";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -349,45 +390,10 @@
             this.tabPage3.Controls.Add(this.tableLayoutPanel1);
             this.tabPage3.Location = new System.Drawing.Point(124, 4);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(928, 626);
+            this.tabPage3.Size = new System.Drawing.Size(1454, 670);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "会员列表";
             this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // member_list_grdaview
-            // 
-            this.member_list_grdaview.AllowUserToAddRows = false;
-            this.member_list_grdaview.AutoGenerateColumns = false;
-            this.member_list_grdaview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.member_list_grdaview.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.avatarDataGridViewImageColumn,
-            this.weixinuernameDataGridViewTextBoxColumn,
-            this.usernameDataGridViewTextBoxColumn,
-            this.telephoneDataGridViewTextBoxColumn,
-            this.weixinnumberDataGridViewTextBoxColumn,
-            this.statusDataGridViewTextBoxColumn,
-            this.registertiemDataGridViewTextBoxColumn,
-            this.update,
-            this.delete});
-            this.member_list_grdaview.DataSource = this.memberBindingSource;
-            this.member_list_grdaview.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.member_list_grdaview.Location = new System.Drawing.Point(3, 36);
-            this.member_list_grdaview.Name = "member_list_grdaview";
-            this.member_list_grdaview.RowTemplate.Height = 27;
-            this.member_list_grdaview.Size = new System.Drawing.Size(922, 587);
-            this.member_list_grdaview.TabIndex = 1;
-            this.member_list_grdaview.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.member_list_grdaview_CellClick);
-            // 
-            // Titile_label
-            // 
-            this.Titile_label.AutoSize = true;
-            this.Titile_label.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Titile_label.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Titile_label.Location = new System.Drawing.Point(3, 14);
-            this.Titile_label.Name = "Titile_label";
-            this.Titile_label.Size = new System.Drawing.Size(922, 19);
-            this.Titile_label.TabIndex = 0;
-            this.Titile_label.Text = "会员列表";
             // 
             // tableLayoutPanel1
             // 
@@ -401,14 +407,39 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 5.43131F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 94.56869F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(928, 626);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1454, 670);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // member_list_grdaview
+            // 
+            this.member_list_grdaview.AllowUserToAddRows = false;
+            this.member_list_grdaview.AutoGenerateColumns = false;
+            this.member_list_grdaview.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.member_list_grdaview.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.member_list_grdaview.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.avatarDataGridViewImageColumn,
+            this.weixinuernameDataGridViewTextBoxColumn,
+            this.usernameDataGridViewTextBoxColumn,
+            this.telephoneDataGridViewTextBoxColumn,
+            this.weixinnumberDataGridViewTextBoxColumn,
+            this.statusDataGridViewTextBoxColumn,
+            this.registertiemDataGridViewTextBoxColumn,
+            this.update,
+            this.delete});
+            this.member_list_grdaview.DataSource = this.memberBindingSource;
+            this.member_list_grdaview.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.member_list_grdaview.Location = new System.Drawing.Point(3, 39);
+            this.member_list_grdaview.Name = "member_list_grdaview";
+            this.member_list_grdaview.RowTemplate.Height = 27;
+            this.member_list_grdaview.Size = new System.Drawing.Size(1448, 628);
+            this.member_list_grdaview.TabIndex = 1;
+            this.member_list_grdaview.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.member_list_grdaview_CellClick);
             // 
             // update
             // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.Aqua;
-            this.update.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.Aqua;
+            this.update.DefaultCellStyle = dataGridViewCellStyle7;
             this.update.HeaderText = "";
             this.update.Name = "update";
             this.update.Text = "编辑";
@@ -416,13 +447,90 @@
             // 
             // delete
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.Red;
-            this.delete.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.Color.Red;
+            this.delete.DefaultCellStyle = dataGridViewCellStyle8;
             this.delete.HeaderText = "";
             this.delete.Name = "delete";
             this.delete.Text = "删除";
             this.delete.UseColumnTextForButtonValue = true;
+            // 
+            // Titile_label
+            // 
+            this.Titile_label.AutoSize = true;
+            this.Titile_label.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.Titile_label.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Titile_label.Location = new System.Drawing.Point(3, 17);
+            this.Titile_label.Name = "Titile_label";
+            this.Titile_label.Size = new System.Drawing.Size(1448, 19);
+            this.Titile_label.TabIndex = 0;
+            this.Titile_label.Text = "会员列表";
+            // 
+            // wait_checkin_datagrid
+            // 
+            this.wait_checkin_datagrid.AllowUserToAddRows = false;
+            this.wait_checkin_datagrid.AutoGenerateColumns = false;
+            this.wait_checkin_datagrid.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.wait_checkin_datagrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.wait_checkin_datagrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.avatarDataGridViewImageColumn1,
+            this.weixinuernameDataGridViewTextBoxColumn1,
+            this.usernameDataGridViewTextBoxColumn1,
+            this.telephoneDataGridViewTextBoxColumn1,
+            this.weixinnumberDataGridViewTextBoxColumn1,
+            this.statusDataGridViewTextBoxColumn1});
+            this.wait_checkin_datagrid.DataSource = this.memberBindingSource1;
+            this.wait_checkin_datagrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wait_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
+            this.wait_checkin_datagrid.Name = "wait_checkin_datagrid";
+            this.wait_checkin_datagrid.RowTemplate.Height = 27;
+            this.wait_checkin_datagrid.Size = new System.Drawing.Size(1434, 629);
+            this.wait_checkin_datagrid.TabIndex = 0;
+            // 
+            // avatarDataGridViewImageColumn1
+            // 
+            this.avatarDataGridViewImageColumn1.DataPropertyName = "avatar";
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("KaiTi", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle9.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle9.NullValue")));
+            this.avatarDataGridViewImageColumn1.DefaultCellStyle = dataGridViewCellStyle9;
+            this.avatarDataGridViewImageColumn1.HeaderText = "头像";
+            this.avatarDataGridViewImageColumn1.Name = "avatarDataGridViewImageColumn1";
+            // 
+            // weixinuernameDataGridViewTextBoxColumn1
+            // 
+            this.weixinuernameDataGridViewTextBoxColumn1.DataPropertyName = "weixin_uername";
+            this.weixinuernameDataGridViewTextBoxColumn1.HeaderText = "微信用户名";
+            this.weixinuernameDataGridViewTextBoxColumn1.Name = "weixinuernameDataGridViewTextBoxColumn1";
+            this.weixinuernameDataGridViewTextBoxColumn1.Width = 150;
+            // 
+            // usernameDataGridViewTextBoxColumn1
+            // 
+            this.usernameDataGridViewTextBoxColumn1.DataPropertyName = "username";
+            this.usernameDataGridViewTextBoxColumn1.HeaderText = "姓名";
+            this.usernameDataGridViewTextBoxColumn1.Name = "usernameDataGridViewTextBoxColumn1";
+            // 
+            // telephoneDataGridViewTextBoxColumn1
+            // 
+            this.telephoneDataGridViewTextBoxColumn1.DataPropertyName = "telephone";
+            this.telephoneDataGridViewTextBoxColumn1.HeaderText = "电话";
+            this.telephoneDataGridViewTextBoxColumn1.Name = "telephoneDataGridViewTextBoxColumn1";
+            // 
+            // weixinnumberDataGridViewTextBoxColumn1
+            // 
+            this.weixinnumberDataGridViewTextBoxColumn1.DataPropertyName = "weixin_number";
+            this.weixinnumberDataGridViewTextBoxColumn1.HeaderText = "微信号";
+            this.weixinnumberDataGridViewTextBoxColumn1.Name = "weixinnumberDataGridViewTextBoxColumn1";
+            // 
+            // statusDataGridViewTextBoxColumn1
+            // 
+            this.statusDataGridViewTextBoxColumn1.DataPropertyName = "status";
+            this.statusDataGridViewTextBoxColumn1.HeaderText = "状态";
+            this.statusDataGridViewTextBoxColumn1.Name = "statusDataGridViewTextBoxColumn1";
+            // 
+            // memberBindingSource1
+            // 
+            this.memberBindingSource1.DataSource = typeof(test.DAL.Member);
             // 
             // avatarDataGridViewImageColumn
             // 
@@ -462,7 +570,7 @@
             // 
             // registertiemDataGridViewTextBoxColumn
             // 
-            this.registertiemDataGridViewTextBoxColumn.DataPropertyName = "registertiem";
+            this.registertiemDataGridViewTextBoxColumn.DataPropertyName = "registertime";
             this.registertiemDataGridViewTextBoxColumn.HeaderText = "注册时间";
             this.registertiemDataGridViewTextBoxColumn.Name = "registertiemDataGridViewTextBoxColumn";
             // 
@@ -470,89 +578,184 @@
             // 
             this.memberBindingSource.DataSource = typeof(test.DAL.Member);
             // 
-            // tabControl2
+            // success_checkin_datagrid
             // 
-            this.tabControl2.Controls.Add(this.wait_checkin_tabpage);
-            this.tabControl2.Controls.Add(this.successs_checkin_tabpage);
-            this.tabControl2.Controls.Add(this.error_checkin_page);
-            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl2.Location = new System.Drawing.Point(3, 3);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(922, 620);
-            this.tabControl2.TabIndex = 0;
+            this.success_checkin_datagrid.AllowUserToAddRows = false;
+            this.success_checkin_datagrid.AutoGenerateColumns = false;
+            this.success_checkin_datagrid.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.success_checkin_datagrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.success_checkin_datagrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.avatarDataGridViewImageColumn2,
+            this.weixinuernameDataGridViewTextBoxColumn2,
+            this.usernameDataGridViewTextBoxColumn2,
+            this.telephoneDataGridViewTextBoxColumn2,
+            this.weixinnumberDataGridViewTextBoxColumn2,
+            this.checkintimeDataGridViewTextBoxColumn,
+            this.statusDataGridViewTextBoxColumn2});
+            this.success_checkin_datagrid.DataSource = this.memberBindingSource2;
+            this.success_checkin_datagrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.success_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
+            this.success_checkin_datagrid.Name = "success_checkin_datagrid";
+            this.success_checkin_datagrid.RowTemplate.Height = 27;
+            this.success_checkin_datagrid.Size = new System.Drawing.Size(1434, 629);
+            this.success_checkin_datagrid.TabIndex = 0;
             // 
-            // wait_checkin_tabpage
+            // memberBindingSource2
             // 
-            this.wait_checkin_tabpage.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.wait_checkin_tabpage.Location = new System.Drawing.Point(4, 25);
-            this.wait_checkin_tabpage.Name = "wait_checkin_tabpage";
-            this.wait_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3);
-            this.wait_checkin_tabpage.Size = new System.Drawing.Size(914, 591);
-            this.wait_checkin_tabpage.TabIndex = 0;
-            this.wait_checkin_tabpage.Text = "等待打卡";
-            this.wait_checkin_tabpage.UseVisualStyleBackColor = true;
+            this.memberBindingSource2.DataSource = typeof(test.DAL.Member);
             // 
-            // successs_checkin_tabpage
+            // avatarDataGridViewImageColumn2
             // 
-            this.successs_checkin_tabpage.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Italic);
-            this.successs_checkin_tabpage.Location = new System.Drawing.Point(4, 25);
-            this.successs_checkin_tabpage.Name = "successs_checkin_tabpage";
-            this.successs_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3);
-            this.successs_checkin_tabpage.Size = new System.Drawing.Size(914, 591);
-            this.successs_checkin_tabpage.TabIndex = 1;
-            this.successs_checkin_tabpage.Text = "已打卡";
-            this.successs_checkin_tabpage.UseVisualStyleBackColor = true;
+            this.avatarDataGridViewImageColumn2.DataPropertyName = "avatar";
+            this.avatarDataGridViewImageColumn2.HeaderText = "头像";
+            this.avatarDataGridViewImageColumn2.Name = "avatarDataGridViewImageColumn2";
             // 
-            // error_checkin_page
+            // weixinuernameDataGridViewTextBoxColumn2
             // 
-            this.error_checkin_page.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Italic);
-            this.error_checkin_page.Location = new System.Drawing.Point(4, 25);
-            this.error_checkin_page.Name = "error_checkin_page";
-            this.error_checkin_page.Padding = new System.Windows.Forms.Padding(3);
-            this.error_checkin_page.Size = new System.Drawing.Size(914, 591);
-            this.error_checkin_page.TabIndex = 2;
-            this.error_checkin_page.Text = "异常打卡";
-            this.error_checkin_page.UseVisualStyleBackColor = true;
+            this.weixinuernameDataGridViewTextBoxColumn2.DataPropertyName = "weixin_uername";
+            this.weixinuernameDataGridViewTextBoxColumn2.HeaderText = "微信用户名";
+            this.weixinuernameDataGridViewTextBoxColumn2.Name = "weixinuernameDataGridViewTextBoxColumn2";
+            this.weixinuernameDataGridViewTextBoxColumn2.Width = 150;
+            // 
+            // usernameDataGridViewTextBoxColumn2
+            // 
+            this.usernameDataGridViewTextBoxColumn2.DataPropertyName = "username";
+            this.usernameDataGridViewTextBoxColumn2.HeaderText = "姓名";
+            this.usernameDataGridViewTextBoxColumn2.Name = "usernameDataGridViewTextBoxColumn2";
+            // 
+            // telephoneDataGridViewTextBoxColumn2
+            // 
+            this.telephoneDataGridViewTextBoxColumn2.DataPropertyName = "telephone";
+            this.telephoneDataGridViewTextBoxColumn2.HeaderText = "电话";
+            this.telephoneDataGridViewTextBoxColumn2.Name = "telephoneDataGridViewTextBoxColumn2";
+            // 
+            // weixinnumberDataGridViewTextBoxColumn2
+            // 
+            this.weixinnumberDataGridViewTextBoxColumn2.DataPropertyName = "weixin_number";
+            this.weixinnumberDataGridViewTextBoxColumn2.HeaderText = "微信号";
+            this.weixinnumberDataGridViewTextBoxColumn2.Name = "weixinnumberDataGridViewTextBoxColumn2";
+            // 
+            // checkintimeDataGridViewTextBoxColumn
+            // 
+            this.checkintimeDataGridViewTextBoxColumn.DataPropertyName = "checkintime";
+            this.checkintimeDataGridViewTextBoxColumn.HeaderText = "打开时间";
+            this.checkintimeDataGridViewTextBoxColumn.Name = "checkintimeDataGridViewTextBoxColumn";
+            this.checkintimeDataGridViewTextBoxColumn.Width = 150;
+            // 
+            // statusDataGridViewTextBoxColumn2
+            // 
+            this.statusDataGridViewTextBoxColumn2.DataPropertyName = "status";
+            this.statusDataGridViewTextBoxColumn2.HeaderText = "状态";
+            this.statusDataGridViewTextBoxColumn2.Name = "statusDataGridViewTextBoxColumn2";
+            // 
+            // error_checkin_datagrid
+            // 
+            this.error_checkin_datagrid.AllowUserToAddRows = false;
+            this.error_checkin_datagrid.AutoGenerateColumns = false;
+            this.error_checkin_datagrid.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.error_checkin_datagrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.error_checkin_datagrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.avatarDataGridViewImageColumn3,
+            this.weixinuernameDataGridViewTextBoxColumn3,
+            this.usernameDataGridViewTextBoxColumn3,
+            this.telephoneDataGridViewTextBoxColumn3,
+            this.weixinnumberDataGridViewTextBoxColumn3,
+            this.checkintimeDataGridViewTextBoxColumn1,
+            this.statusDataGridViewTextBoxColumn3});
+            this.error_checkin_datagrid.DataSource = this.memberBindingSource3;
+            this.error_checkin_datagrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.error_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
+            this.error_checkin_datagrid.Name = "error_checkin_datagrid";
+            this.error_checkin_datagrid.RowTemplate.Height = 27;
+            this.error_checkin_datagrid.Size = new System.Drawing.Size(1434, 629);
+            this.error_checkin_datagrid.TabIndex = 0;
+            // 
+            // memberBindingSource3
+            // 
+            this.memberBindingSource3.DataSource = typeof(test.DAL.Member);
+            // 
+            // avatarDataGridViewImageColumn3
+            // 
+            this.avatarDataGridViewImageColumn3.DataPropertyName = "avatar";
+            this.avatarDataGridViewImageColumn3.HeaderText = "头像";
+            this.avatarDataGridViewImageColumn3.Name = "avatarDataGridViewImageColumn3";
+            // 
+            // weixinuernameDataGridViewTextBoxColumn3
+            // 
+            this.weixinuernameDataGridViewTextBoxColumn3.DataPropertyName = "weixin_uername";
+            this.weixinuernameDataGridViewTextBoxColumn3.HeaderText = "微信用户名";
+            this.weixinuernameDataGridViewTextBoxColumn3.Name = "weixinuernameDataGridViewTextBoxColumn3";
+            this.weixinuernameDataGridViewTextBoxColumn3.Width = 150;
+            // 
+            // usernameDataGridViewTextBoxColumn3
+            // 
+            this.usernameDataGridViewTextBoxColumn3.DataPropertyName = "username";
+            this.usernameDataGridViewTextBoxColumn3.HeaderText = "姓名";
+            this.usernameDataGridViewTextBoxColumn3.Name = "usernameDataGridViewTextBoxColumn3";
+            // 
+            // telephoneDataGridViewTextBoxColumn3
+            // 
+            this.telephoneDataGridViewTextBoxColumn3.DataPropertyName = "telephone";
+            this.telephoneDataGridViewTextBoxColumn3.HeaderText = "电话";
+            this.telephoneDataGridViewTextBoxColumn3.Name = "telephoneDataGridViewTextBoxColumn3";
+            // 
+            // weixinnumberDataGridViewTextBoxColumn3
+            // 
+            this.weixinnumberDataGridViewTextBoxColumn3.DataPropertyName = "weixin_number";
+            this.weixinnumberDataGridViewTextBoxColumn3.HeaderText = "微信号";
+            this.weixinnumberDataGridViewTextBoxColumn3.Name = "weixinnumberDataGridViewTextBoxColumn3";
+            // 
+            // checkintimeDataGridViewTextBoxColumn1
+            // 
+            this.checkintimeDataGridViewTextBoxColumn1.DataPropertyName = "checkintime";
+            this.checkintimeDataGridViewTextBoxColumn1.HeaderText = "打开时间";
+            this.checkintimeDataGridViewTextBoxColumn1.Name = "checkintimeDataGridViewTextBoxColumn1";
+            this.checkintimeDataGridViewTextBoxColumn1.Width = 150;
+            // 
+            // statusDataGridViewTextBoxColumn3
+            // 
+            this.statusDataGridViewTextBoxColumn3.DataPropertyName = "status";
+            this.statusDataGridViewTextBoxColumn3.HeaderText = "状态";
+            this.statusDataGridViewTextBoxColumn3.Name = "statusDataGridViewTextBoxColumn3";
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1056, 709);
+            this.ClientSize = new System.Drawing.Size(1582, 753);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.add_user_btn);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
             this.Controls.Add(this.textboxDisplay);
-            this.Controls.Add(this.button1);
             this.Name = "Main";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Main_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabControl2.ResumeLayout(false);
+            this.wait_checkin_tabpage.ResumeLayout(false);
+            this.successs_checkin_tabpage.ResumeLayout(false);
+            this.error_checkin_page.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.image_picturebox)).EndInit();
             this.tabPage3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.wait_checkin_datagrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource)).EndInit();
-            this.tabControl2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.success_checkin_datagrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.error_checkin_datagrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textboxDisplay;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button register_btn;
-        private System.Windows.Forms.Button add_user_btn;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
@@ -576,8 +779,11 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.DataGridView member_list_grdaview;
         private System.Windows.Forms.Label Titile_label;
-        private System.Windows.Forms.DataGridViewButtonColumn update;
-        private System.Windows.Forms.DataGridViewButtonColumn delete;
+        private System.Windows.Forms.BindingSource memberBindingSource;
+        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabPage wait_checkin_tabpage;
+        private System.Windows.Forms.TabPage successs_checkin_tabpage;
+        private System.Windows.Forms.TabPage error_checkin_page;
         private System.Windows.Forms.DataGridViewImageColumn avatarDataGridViewImageColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn weixinuernameDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn usernameDataGridViewTextBoxColumn;
@@ -585,11 +791,34 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn weixinnumberDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn registertiemDataGridViewTextBoxColumn;
-        private System.Windows.Forms.BindingSource memberBindingSource;
-        private System.Windows.Forms.TabControl tabControl2;
-        private System.Windows.Forms.TabPage wait_checkin_tabpage;
-        private System.Windows.Forms.TabPage successs_checkin_tabpage;
-        private System.Windows.Forms.TabPage error_checkin_page;
+        private System.Windows.Forms.DataGridViewButtonColumn update;
+        private System.Windows.Forms.DataGridViewButtonColumn delete;
+        private System.Windows.Forms.DataGridView wait_checkin_datagrid;
+        private System.Windows.Forms.BindingSource memberBindingSource1;
+        private System.Windows.Forms.DataGridViewImageColumn avatarDataGridViewImageColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn weixinuernameDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn usernameDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn telephoneDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn weixinnumberDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridView success_checkin_datagrid;
+        private System.Windows.Forms.DataGridViewImageColumn avatarDataGridViewImageColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn weixinuernameDataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn usernameDataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn telephoneDataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn weixinnumberDataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn checkintimeDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn2;
+        private System.Windows.Forms.BindingSource memberBindingSource2;
+        private System.Windows.Forms.DataGridView error_checkin_datagrid;
+        private System.Windows.Forms.DataGridViewImageColumn avatarDataGridViewImageColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn weixinuernameDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn usernameDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn telephoneDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn weixinnumberDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn checkintimeDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.BindingSource memberBindingSource3;
     }
 }
 

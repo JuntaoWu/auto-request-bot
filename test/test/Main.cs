@@ -24,7 +24,6 @@ namespace test
     {
 
         private AddUserDAL user;
-        public string imagepath;
         public string base64Str;
         SynchronizationContext m_SyncContext = null;
 
@@ -33,22 +32,35 @@ namespace test
             InitializeComponent();
             m_SyncContext = SynchronizationContext.Current;
             user = new AddUserDAL();
-            this.checkin_address_combox.DataSource = user.getCheckInAddressList();
-            this.checkin_address_combox.DisplayMember = "Name";
-            this.checkin_address_combox.ValueMember = "Address";
-
+            //开始启动监听服务，并注册事件响应函数
             SingletonProxyServer.OperationType = OperationType.Stopped;
             SingletonProxyServer.ServerStart();
             SingletonProxyServer.Instance.OnReceiveResponse += Instance_OnReceiveResponse;
+
+            MemberCheckInSingletonService.Instance.OnReceiveCheckInResponse += Instance_OnReceiveCheckInResponse;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        //窗体加载事件
+        private void Main_Load(object sender, EventArgs e)
         {
-            //SingletonProxyServer.ServerStart();
-            //SingletonProxyServer.Instance.OnReceiveResponse += Instance_OnReceiveResponse;
-
+            Login loginform = new Login();
+            loginform.StartPosition = FormStartPosition.CenterScreen;
+            loginform.ShowDialog();
+            MemberCheckInSingletonService.getAllMemberCheckInOnToday();
         }
 
+
+        //监听打开信息更新事件
+        private void Instance_OnReceiveCheckInResponse(object sender, EventArgs e)
+        {
+            if (e is CustomCheckInEventArge)
+            {
+                var CustomCheckIn = (e as CustomCheckInEventArge);
+                m_SyncContext.Post(UpdateCheckInDataGrid, CustomCheckIn.currentdata);
+            }
+        }
+
+        //监听服务事件响应函数
         private void Instance_OnReceiveResponse(object sender, EventArgs e)
         {
             if (e is MyCustomEventArge)
@@ -66,19 +78,14 @@ namespace test
 
         }
 
-
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            SingletonProxyServer.ServerStop();
-        }
-
+        //设置打开是否成功消息
         private void SetTextSafePost(object text)
         {
             this.textboxDisplay.Text += text.ToString() + '\n';
 
         }
 
+        //设置激活和获取OpenId
         private void SetReigsterAndOpenid(object text)
         {
             this.openId_txt.Text = text.ToString();
@@ -87,63 +94,7 @@ namespace test
             this.active_label.Text = "激活成功,可以提交";
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            this.textboxDisplay.Text = "";
-        }
-
-        private void register_btn_Click(object sender, EventArgs e)
-        {
-            SingletonProxyServer.OperationType = OperationType.Register;
-        }
-
-        private void Main_Load(object sender, EventArgs e)
-        {
-            Login loginform = new Login();
-            loginform.StartPosition = FormStartPosition.CenterScreen;
-            loginform.ShowDialog();
-
-        }
-
-        private void add_user_btn_Click(object sender, EventArgs e)
-        {
-            /*AddUser addUser = new AddUser();
-            addUser.StartPosition = FormStartPosition.CenterScreen;
-            addUser.ShowDialog();
-            if (addUser.DialogResult == DialogResult.OK) {
-            }*/
-        }
-
-        private void tabControl1_DrawItem_1(object sender, DrawItemEventArgs e)
-        {
-            SolidBrush _Brush = new SolidBrush(Color.Black);//单色画刷
-            RectangleF _TabTextArea = (RectangleF)tabControl1.GetTabRect(e.Index);//绘制区域
-            StringFormat _sf = new StringFormat();//封装文本布局格式信息
-            _sf.LineAlignment = StringAlignment.Center;
-            _sf.Alignment = StringAlignment.Center;
-            e.Graphics.DrawString(tabControl1.Controls[e.Index].Text, SystemInformation.MenuFont, _Brush, _TabTextArea, _sf);
-        }
-
-        private void confirm_btn_Click(object sender, EventArgs e)
-        {
-            string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
-            Location userlocation = getAddressLocation(selecteaddress);
-            bool result = user.AddUser(userlocation, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.base64Str);
-            if (result)
-            {
-                this.weixin_username_txt.Text = String.Empty;
-                this.weixin_number_txt.Text = String.Empty;
-                this.contact_name_txt.Text = String.Empty;
-                this.contact_telephone_txt.Text = String.Empty;
-                this.checkin_address_combox.SelectedValue = String.Empty;
-                this.openId_txt.Text = String.Empty;
-                this.register_btn.Enabled = true;
-                this.confirm_btn.Enabled = false;
-                this.active_label.Text = "未激活";
-                this.image_picturebox.Image = null;
-            }
-        }
-
+        //根据用户地址获取经纬度
         private Location getAddressLocation(string address)
         {
             Location currentLocation = new Location();
@@ -174,6 +125,7 @@ namespace test
             return currentLocation;
         }
 
+        //图片上传
         private void upload_image_btn_Click(object sender, EventArgs e)
         {
             OpenFileDialog file = new OpenFileDialog();
@@ -185,9 +137,9 @@ namespace test
                 {
                     try
                     {
-                        this.imagepath = file.FileName;   //获得文件的绝对路径
+                        string imagepath = file.FileName;   //获得文件的绝对路径
                         string fileExtension = Path.GetExtension(file.FileName).Substring(1);
-                        using (FileStream filestream = new FileStream(this.imagepath, FileMode.Open))
+                        using (FileStream filestream = new FileStream(imagepath, FileMode.Open))
                         {
                             byte[] bt = new byte[filestream.Length];
                             //调用read读取方法
@@ -206,26 +158,86 @@ namespace test
             }
         }
 
-        /// <summary>
-        /// 绑定数据
-        /// </summary>
-        private void BindData()
+        //设置监听状态为Register
+        private void register_btn_Click(object sender, EventArgs e)
         {
-            List<Member> memberlist = new List<Member>();
-            memberlist.Add(new Member
+            SingletonProxyServer.OperationType = OperationType.Register;
+        }
+
+        //提交用户信息
+        private void confirm_btn_Click(object sender, EventArgs e)
+        {
+            string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
+            Location userlocation = getAddressLocation(selecteaddress);
+            bool result = user.AddUser(userlocation, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.base64Str);
+            if (result)
             {
-                ID = "000001",
-                avatar = LoadImage("https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png"),
-                weixin_uername = "stefnjiang",
-                username = "jiangshangfeng",
-                telephone = "12234234234",
-                weixin_number = "23e234",
-                status = "激活成功",
-                registertiem = "2019-4-27"
-            });
+                this.weixin_username_txt.Text = String.Empty;
+                this.weixin_number_txt.Text = String.Empty;
+                this.contact_name_txt.Text = String.Empty;
+                this.contact_telephone_txt.Text = String.Empty;
+                this.checkin_address_combox.SelectedValue = String.Empty;
+                this.openId_txt.Text = String.Empty;
+                this.register_btn.Enabled = true;
+                this.confirm_btn.Enabled = false;
+                this.active_label.Text = "未激活";
+                this.image_picturebox.Image = null;
+            }
+        }
+
+        //左导航栏样式更改
+        private void tabControl1_DrawItem_1(object sender, DrawItemEventArgs e)
+        {
+            SolidBrush _Brush = new SolidBrush(Color.Black);//单色画刷
+            RectangleF _TabTextArea = (RectangleF)tabControl1.GetTabRect(e.Index);//绘制区域
+            StringFormat _sf = new StringFormat();//封装文本布局格式信息
+            _sf.LineAlignment = StringAlignment.Center;
+            _sf.Alignment = StringAlignment.Center;
+            e.Graphics.DrawString(tabControl1.Controls[e.Index].Text, SystemInformation.MenuFont, _Brush, _TabTextArea, _sf);
+        }
+
+        //左导航栏选择
+        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            if (e.TabPage.Text == "会员列表")
+            {
+                this.BindDataMemberList();
+            }
+            else if (e.TabPage.Text == "会员注册")
+            {
+                this.checkin_address_combox.DataSource = user.getCheckInAddressList();
+                this.checkin_address_combox.DisplayMember = "Name";
+                this.checkin_address_combox.ValueMember = "Address";
+            }
+        }
+
+        /// <summary>
+        /// 绑定会员列表数据数据
+        /// </summary>
+        private void BindDataMemberList()
+        {
+            List<Member> memberlist = user.getAllMemberList().Select((m) =>
+            {
+                return new Member
+                {
+                    ID = m.ID,
+                    avatar = LoadImage(m.avatarurl),
+                    weixin_uername = m.weixin_uername,
+                    username = m.username,
+                    telephone = m.telephone,
+                    weixin_number = m.weixin_number,
+                    status = MappingStatus(m.status),
+                    registertime = m.registertime
+                };
+            }).ToList();
             this.member_list_grdaview.DataSource = memberlist;
         }
 
+        /// <summary>
+        /// 根据URL生成Image对象
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
         private Image LoadImage(string url)
         {
             System.Net.WebRequest request = System.Net.WebRequest.Create(url);
@@ -242,19 +254,87 @@ namespace test
 
         private void member_list_grdaview_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (this.member_list_grdaview.Columns[e.ColumnIndex].Name == "update")
+            if (e.ColumnIndex != -1)
             {
-                Member currentmember = this.member_list_grdaview.Rows[e.RowIndex].DataBoundItem as Member;
-            }
-            else if (this.member_list_grdaview.Columns[e.ColumnIndex].Name == "delete") {
-                Member currentmember = this.member_list_grdaview.Rows[e.RowIndex].DataBoundItem as Member;
+                if (this.member_list_grdaview.Columns[e.ColumnIndex].Name == "update")
+                {
+                    Member currentmember = this.member_list_grdaview.Rows[e.RowIndex].DataBoundItem as Member;
+                }
+                else if (this.member_list_grdaview.Columns[e.ColumnIndex].Name == "delete")
+                {
+                    Member currentmember = this.member_list_grdaview.Rows[e.RowIndex].DataBoundItem as Member;
+                }
             }
         }
 
-        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        private void UpdateCheckInDataGrid(object data)
         {
-            if (e.TabPage.Text == "会员列表") {
-                this.BindData();
+            List<MemberCheckIn> list = data as List<MemberCheckIn>;
+           this.wait_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Waiting; }).ToList().Select((m)=> {
+                return new Member
+                {
+                    ID = m.ID,
+                    avatar = LoadImage(m.avatarurl),
+                    weixin_uername = m.weixin_uername,
+                    username = m.username,
+                    telephone = m.telephone,
+                    weixin_number = m.weixin_number,
+                    status = MappingStatus(m.status),
+                    registertime = m.registertime
+                };
+            }).ToList();
+
+            this.success_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Success; }).ToList().Select((m) => {
+                return new Member
+                {
+                    ID = m.ID,
+                    avatar = LoadImage(m.avatarurl),
+                    weixin_uername = m.weixin_uername,
+                    username = m.username,
+                    telephone = m.telephone,
+                    weixin_number = m.weixin_number,
+                    status = MappingStatus(m.status),
+                    registertime = m.registertime
+                };
+            }).ToList();
+
+            this.error_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Error; }).ToList().Select((m) => {
+                return new Member
+                {
+                    ID = m.ID,
+                    avatar = LoadImage(m.avatarurl),
+                    weixin_uername = m.weixin_uername,
+                    username = m.username,
+                    telephone = m.telephone,
+                    weixin_number = m.weixin_number,
+                    status = MappingStatus(m.status),
+                    registertime = m.registertime
+                };
+            }).ToList();
+        }
+
+        private string MappingStatus(CheckInStatus status)
+        {
+            switch (status)
+            {
+                case CheckInStatus.Waiting:
+                    return "等待打卡";
+                    break;
+                case CheckInStatus.Success:
+                    return "已完成";
+                    break;
+                case CheckInStatus.Error:
+                    return "未完成";
+                    break;
+                case CheckInStatus.UnActive:
+                    return "未激活";
+                    break;
+                case CheckInStatus.Actived:
+                    return "已激活";
+                    break;
+                default:
+                    return string.Empty;
+                    break;
             }
         }
     }
