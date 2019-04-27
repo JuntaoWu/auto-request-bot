@@ -209,6 +209,9 @@ namespace test
                 this.checkin_address_combox.DisplayMember = "Name";
                 this.checkin_address_combox.ValueMember = "Address";
             }
+            else if (e.TabPage.Text == "会员管理") {
+                MemberCheckInSingletonService.getAllMemberCheckInOnToday();
+            }
         }
 
         /// <summary>

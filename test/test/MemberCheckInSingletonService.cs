@@ -50,6 +50,7 @@ namespace test
         }
 
         public static void getAllMemberCheckInOnToday() {
+            Instance.membercheckinlist.Clear();
             Instance.membercheckinlist.Add(new MemberCheckIn
             {
                 ID = "000001",
