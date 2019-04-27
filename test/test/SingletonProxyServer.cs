@@ -15,12 +15,15 @@ namespace test
 {
     public enum OperationType
     {
+        Stopped,
         Register,
         Checkin
+        
     }
 
     public class MyCustomEventArge : EventArgs {
         public string text { get; set; }
+        public OperationType type { get; set; }
     }
 
     public class SingletonProxyServer
@@ -124,7 +127,8 @@ namespace test
             //Console.WriteLine(e.HttpClient.Request.Url);
             if (e.HttpClient.Request.Url.StartsWith("http://tms.ihxlife.com/tms/html/1_kqlr/sign.html"))
             {
-                if (OperationType == OperationType.Checkin) {
+                if (OperationType == OperationType.Checkin)
+                {
                     Dictionary<string, string> my_dictionay = new Dictionary<string, string>();
                     var requsturl = new System.Uri(e.HttpClient.Request.Url);
                     var requestquery = requsturl.Query;
@@ -135,6 +139,19 @@ namespace test
                     });
 
                     Instance.sendRequst(my_dictionay, "104.07", "30.67");
+                }
+                else if(OperationType == OperationType.Register) {
+                    Dictionary<string, string> my_dictionay = new Dictionary<string, string>();
+                    var requsturl = new System.Uri(e.HttpClient.Request.Url);
+                    var requestquery = requsturl.Query;
+                    List<String> res = requestquery.Substring(1).Split('&').ToList();
+                    res.ForEach((item) =>
+                    {
+                        my_dictionay[item.Split('=')[0]] = item.Split('=')[1];
+                    });
+                    string openId;
+                    my_dictionay.TryGetValue("openid", out openId);
+                    Instance.OnReceiveResponse(Instance, new MyCustomEventArge { text = openId, type = OperationType.Register });
                 }
                
             }
@@ -250,7 +267,7 @@ namespace test
             string retString = myStreamReader.ReadToEnd();
             myStreamReader.Close();
             myResponseStream.Close();
-            OnReceiveResponse(this, new MyCustomEventArge { text = retString });
+            OnReceiveResponse(this, new MyCustomEventArge { text = retString,type = OperationType.Checkin });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using test.DAL;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Http;
@@ -19,29 +21,49 @@ namespace test
 {
     public partial class Main : Form
     {
-   
+
+        private AddUserDAL user;
+        public string imagepath;
+        public string base64Str;
         SynchronizationContext m_SyncContext = null;
     
         public Main()
         {
             InitializeComponent();
             m_SyncContext = SynchronizationContext.Current;
+            user = new AddUserDAL();
+            this.checkin_address_combox.DataSource = user.getCheckInAddressList();
+            this.checkin_address_combox.DisplayMember = "Name";
+            this.checkin_address_combox.ValueMember = "Address";
+
+            SingletonProxyServer.OperationType = OperationType.Stopped;
+            SingletonProxyServer.ServerStart();
+            SingletonProxyServer.Instance.OnReceiveResponse += Instance_OnReceiveResponse;
         }   
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SingletonProxyServer.ServerStart();
-            SingletonProxyServer.Instance.OnReceiveResponse += Instance_OnReceiveResponse;
+            //SingletonProxyServer.ServerStart();
+            //SingletonProxyServer.Instance.OnReceiveResponse += Instance_OnReceiveResponse;
 
         }
 
         private void Instance_OnReceiveResponse(object sender, EventArgs e)
         {
             if (e is MyCustomEventArge) {
-                m_SyncContext.Post(SetTextSafePost, (e as MyCustomEventArge).text);
+                var myevent = (e as MyCustomEventArge);
+                if (myevent.type == OperationType.Checkin)
+                {
+                    m_SyncContext.Post(SetTextSafePost, (e as MyCustomEventArge).text);
+                }
+                else if (myevent.type == OperationType.Register) {
+                    m_SyncContext.Post(SetReigsterAndOpenid, myevent.text);
+                }
             }
             
         }
+
+        
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -54,12 +76,20 @@ namespace test
 
         }
 
+        private void SetReigsterAndOpenid(object text)
+        {
+            this.openId_txt.Text = text.ToString();
+            this.register_btn.Enabled = false;
+            this.confirm_btn.Enabled = true;
+            this.active_label.Text = "激活成功,可以提交";
+        }
+
         private void button3_Click(object sender, EventArgs e)
         {
             this.textboxDisplay.Text = "";
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void register_btn_Click(object sender, EventArgs e)
         {
             SingletonProxyServer.OperationType = OperationType.Register;
         }
@@ -69,34 +99,107 @@ namespace test
             Login loginform = new Login();
             loginform.StartPosition = FormStartPosition.CenterScreen;
             loginform.ShowDialog();
-            listView.View = View.Details;//设置视图  
-
-            //添加列  
-            listView.Columns.Add("本地路径", 150, HorizontalAlignment.Left);
-            listView.Columns.Add("远程路径", 150, HorizontalAlignment.Left);
-            listView.Columns.Add("上传状态", 80, HorizontalAlignment.Left);
-            listView.Columns.Add("耗时", 80, HorizontalAlignment.Left);
-
-            //添加行  
-            var item = new ListViewItem();
-            item.ImageIndex = 1;
-            item.Text = "jiangshangfeng"; //本地路径  
-            item.SubItems.Add("stefanjiang"); //远程路径  
-            item.SubItems.Add("ok"); //执行状态  
-            item.SubItems.Add("0.5"); //耗时统计  
-
-            listView.BeginUpdate();
-            listView.Items.Add(item);
-            listView.Items[listView.Items.Count - 1].EnsureVisible();//滚动到最后  
-            listView.EndUpdate();
+            
         }
 
         private void add_user_btn_Click(object sender, EventArgs e)
         {
-            AddUser addUser = new AddUser();
+            /*AddUser addUser = new AddUser();
             addUser.StartPosition = FormStartPosition.CenterScreen;
             addUser.ShowDialog();
+            if (addUser.DialogResult == DialogResult.OK) {
+            }*/
+        }
 
+        private void tabControl1_DrawItem_1(object sender, DrawItemEventArgs e)
+        {
+            SolidBrush _Brush = new SolidBrush(Color.Black);//单色画刷
+            RectangleF _TabTextArea = (RectangleF)tabControl1.GetTabRect(e.Index);//绘制区域
+            StringFormat _sf = new StringFormat();//封装文本布局格式信息
+            _sf.LineAlignment = StringAlignment.Center;
+            _sf.Alignment = StringAlignment.Center;
+            e.Graphics.DrawString(tabControl1.Controls[e.Index].Text, SystemInformation.MenuFont, _Brush, _TabTextArea, _sf);
+        }
+
+        private void confirm_btn_Click(object sender, EventArgs e)
+        {
+            string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
+            Location userlocation = getAddressLocation(selecteaddress);
+            bool result = user.AddUser(userlocation, this.weixin_username_txt.Text,this.weixin_number_txt.Text,this.contact_name_txt.Text,this.contact_telephone_txt.Text, this.base64Str);
+            if (result) {
+                this.weixin_username_txt.Text = String.Empty;
+                this.weixin_number_txt.Text = String.Empty;
+                this.contact_name_txt.Text = String.Empty;
+                this.contact_telephone_txt.Text = String.Empty;
+                this.checkin_address_combox.SelectedValue = String.Empty;
+                this.openId_txt.Text = String.Empty;
+                this.register_btn.Enabled = true;
+                this.confirm_btn.Enabled = false;
+                this.active_label.Text = "未激活";
+                this.image_picturebox.Image = null;
+            }
+        }
+
+        private Location getAddressLocation(string address)
+        {
+            Location currentLocation = new Location();
+            string url = $"http://api.map.baidu.com/geocoder/v2/?address={address}&output=json&ak=oLrWGIzoPEusmDqQrmG37OuUC7UE60uo";
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.Method = "GET";
+            request.ContentType = "text/html;charset=UTF-8";
+
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            Stream myResponseStream = response.GetResponseStream();
+            StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
+            string retString = myStreamReader.ReadToEnd();
+            AddressUnity addressUnity = JsonConvert.DeserializeObject<AddressUnity>(retString);
+            if (addressUnity.status == 0)
+            {
+                //string lng = float.Parse(jo.result.location.lng.ToString()).ToString("F2");
+                //string lat = float.Parse(jo.result.location.lat.ToString()).ToString("F2");
+                currentLocation.lng = addressUnity.result.location.lng;
+                currentLocation.lat = addressUnity.result.location.lat;
+            }
+            else
+            {
+                currentLocation.lng = 0;
+                currentLocation.lat = 0;
+            }
+            myStreamReader.Close();
+            myResponseStream.Close();
+            return currentLocation;
+        }
+
+        private void upload_image_btn_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog file = new OpenFileDialog();
+            file.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
+            file.FilterIndex = 1;
+            if (file.ShowDialog() == DialogResult.OK)
+            {
+                if (file.FileName != string.Empty)
+                {
+                    try
+                    {
+                        this.imagepath = file.FileName;   //获得文件的绝对路径
+                        string fileExtension = Path.GetExtension(file.FileName).Substring(1);
+                        using(FileStream filestream = new FileStream(this.imagepath, FileMode.Open))
+                        {
+                            byte[] bt = new byte[filestream.Length];
+                            //调用read读取方法
+                            filestream.Read(bt, 0, bt.Length);
+                            this.base64Str = "data:image/" + fileExtension + ";base64," + Convert.ToBase64String(bt);
+                            this.image_picturebox.Image = new Bitmap(filestream);
+                            filestream.Close();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+
+            }
         }
     }
 }

@@ -32,12 +32,12 @@ namespace test
         {
             string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
             Location userlocation = getAddressLocation(selecteaddress);
-            bool result = user.AddUser(userlocation, this.user_name_txt.Text, this.telephone_txt.Text, this.base64Str);
+            /*bool result = user.AddUser(userlocation, this.user_name_txt.Text, this.telephone_txt.Text, this.base64Str);
             if (result)
             {
                 
                 this.Close();
-            }
+            }*/
         }
 
         private void upload_image_btn_Click(object sender, EventArgs e)

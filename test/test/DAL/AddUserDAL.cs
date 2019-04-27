@@ -10,12 +10,13 @@ namespace test.DAL
     {
         public List<CheckInAddress> getCheckInAddressList() {
             List<CheckInAddress> result = new List<CheckInAddress>();
+            result.Add(new CheckInAddress("", ""));
             result.Add(new CheckInAddress("四川省成都市青羊区草市街街道泰丰国际广场", "四川省成都市青羊区草市街街道泰丰国际广场"));
             result.Add(new CheckInAddress("四川省成都市高新区老成仁6号", "四川省成都市高新区老成仁6号"));
             return result;
         }
 
-        public bool AddUser(Location userlocation,string weixinname,string telephone,string imagedata)
+        public bool AddUser(Location userlocation,string weixin_uername,string weixin_number,string contact_name,string contact_telephone,string imagedata)
         {
             return true;
         }
