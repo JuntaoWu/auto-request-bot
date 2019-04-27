@@ -74,6 +74,7 @@
       <DependentUpon>AddUser.cs</DependentUpon>
     </Compile>
     <Compile Include="DAL\AddUserDAL.cs" />
+    <Compile Include="DAL\Member.cs" />
     <Compile Include="DAL\RegisterDAL.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
@@ -120,6 +121,7 @@
       <DependentUpon>Register.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\test.DAL.Member.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

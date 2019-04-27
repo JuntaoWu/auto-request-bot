@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -26,7 +27,7 @@ namespace test
         public string imagepath;
         public string base64Str;
         SynchronizationContext m_SyncContext = null;
-    
+
         public Main()
         {
             InitializeComponent();
@@ -39,7 +40,7 @@ namespace test
             SingletonProxyServer.OperationType = OperationType.Stopped;
             SingletonProxyServer.ServerStart();
             SingletonProxyServer.Instance.OnReceiveResponse += Instance_OnReceiveResponse;
-        }   
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -50,20 +51,22 @@ namespace test
 
         private void Instance_OnReceiveResponse(object sender, EventArgs e)
         {
-            if (e is MyCustomEventArge) {
+            if (e is MyCustomEventArge)
+            {
                 var myevent = (e as MyCustomEventArge);
                 if (myevent.type == OperationType.Checkin)
                 {
                     m_SyncContext.Post(SetTextSafePost, (e as MyCustomEventArge).text);
                 }
-                else if (myevent.type == OperationType.Register) {
+                else if (myevent.type == OperationType.Register)
+                {
                     m_SyncContext.Post(SetReigsterAndOpenid, myevent.text);
                 }
             }
-            
+
         }
 
-        
+
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -99,7 +102,7 @@ namespace test
             Login loginform = new Login();
             loginform.StartPosition = FormStartPosition.CenterScreen;
             loginform.ShowDialog();
-            
+
         }
 
         private void add_user_btn_Click(object sender, EventArgs e)
@@ -125,8 +128,9 @@ namespace test
         {
             string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
             Location userlocation = getAddressLocation(selecteaddress);
-            bool result = user.AddUser(userlocation, this.weixin_username_txt.Text,this.weixin_number_txt.Text,this.contact_name_txt.Text,this.contact_telephone_txt.Text, this.base64Str);
-            if (result) {
+            bool result = user.AddUser(userlocation, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.base64Str);
+            if (result)
+            {
                 this.weixin_username_txt.Text = String.Empty;
                 this.weixin_number_txt.Text = String.Empty;
                 this.contact_name_txt.Text = String.Empty;
@@ -183,7 +187,7 @@ namespace test
                     {
                         this.imagepath = file.FileName;   //获得文件的绝对路径
                         string fileExtension = Path.GetExtension(file.FileName).Substring(1);
-                        using(FileStream filestream = new FileStream(this.imagepath, FileMode.Open))
+                        using (FileStream filestream = new FileStream(this.imagepath, FileMode.Open))
                         {
                             byte[] bt = new byte[filestream.Length];
                             //调用read读取方法
@@ -199,6 +203,58 @@ namespace test
                     }
                 }
 
+            }
+        }
+
+        /// <summary>
+        /// 绑定数据
+        /// </summary>
+        private void BindData()
+        {
+            List<Member> memberlist = new List<Member>();
+            memberlist.Add(new Member
+            {
+                ID = "000001",
+                avatar = LoadImage("https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png"),
+                weixin_uername = "stefnjiang",
+                username = "jiangshangfeng",
+                telephone = "12234234234",
+                weixin_number = "23e234",
+                status = "激活成功",
+                registertiem = "2019-4-27"
+            });
+            this.member_list_grdaview.DataSource = memberlist;
+        }
+
+        private Image LoadImage(string url)
+        {
+            System.Net.WebRequest request = System.Net.WebRequest.Create(url);
+            System.Net.WebResponse response = request.GetResponse();
+            System.IO.Stream responseStream = response.GetResponseStream();
+            Bitmap bmp = new Bitmap(responseStream);
+            System.IO.MemoryStream ms = new MemoryStream();
+            bmp.Save(ms, ImageFormat.Jpeg);
+            byte[] byteImage = ms.ToArray();
+            var SigBase64 = Convert.ToBase64String(byteImage); // Get Base64
+            responseStream.Dispose();
+            return bmp;
+        }
+
+        private void member_list_grdaview_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (this.member_list_grdaview.Columns[e.ColumnIndex].Name == "update")
+            {
+                Member currentmember = this.member_list_grdaview.Rows[e.RowIndex].DataBoundItem as Member;
+            }
+            else if (this.member_list_grdaview.Columns[e.ColumnIndex].Name == "delete") {
+                Member currentmember = this.member_list_grdaview.Rows[e.RowIndex].DataBoundItem as Member;
+            }
+        }
+
+        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        {
+            if (e.TabPage.Text == "会员列表") {
+                this.BindData();
             }
         }
     }
