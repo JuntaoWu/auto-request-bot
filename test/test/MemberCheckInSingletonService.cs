@@ -25,7 +25,7 @@ namespace test
     public class MemberCheckInSingletonService
     {
         private static MemberCheckInSingletonService instance;
-        private static List<MemberCheckIn> membercheckinlist;
+        private List<MemberCheckIn> membercheckinlist;
         public event EventHandler OnReceiveCheckInResponse;
 
         // Constructor
@@ -42,6 +42,7 @@ namespace test
                 if (instance == null)
                 {
                     instance = new MemberCheckInSingletonService();
+                    Instance.membercheckinlist = new List<MemberCheckIn>();
                 }
 
                 return instance;
@@ -49,12 +50,10 @@ namespace test
         }
 
         public static void getAllMemberCheckInOnToday() {
-
-            List<MemberCheckIn> result = new List<MemberCheckIn>();
-
-            result.Add(new MemberCheckIn
+            Instance.membercheckinlist.Add(new MemberCheckIn
             {
                 ID = "000001",
+                openId = "0000001",
                 avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
                 weixin_uername = "stefnjiang",
                 username = "jiangshangfeng",
@@ -63,9 +62,10 @@ namespace test
                 status = CheckInStatus.Waiting,
                 registertime = "2019-4-27"
             });
-            result.Add(new MemberCheckIn
+            Instance.membercheckinlist.Add(new MemberCheckIn
             {
                 ID = "000002",
+                openId = "0000002",
                 avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
                 weixin_uername = "lihan",
                 username = "lihan",
@@ -74,9 +74,10 @@ namespace test
                 status = CheckInStatus.Waiting,
                 registertime = "2019-4-27"
             });
-            result.Add(new MemberCheckIn
+            Instance.membercheckinlist.Add(new MemberCheckIn
             {
                 ID = "000003",
+                openId = "0000003",
                 avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
                 weixin_uername = "wujuntao",
                 username = "wujuntao",
@@ -85,9 +86,10 @@ namespace test
                 status = CheckInStatus.Success,
                 registertime = "2019-4-27"
             });
-            result.Add(new MemberCheckIn
+            Instance.membercheckinlist.Add(new MemberCheckIn
             {
                 ID = "000004",
+                openId = "0000004",
                 avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
                 weixin_uername = "zhangxiaolan",
                 username = "zhangxiaolan",
@@ -97,7 +99,11 @@ namespace test
                 registertime = "2019-4-27"
             });
 
-            Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = result });
+            Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
+        }
+
+        public static void updateMemberCheckInInformation(string openId,CheckInStatus status) {
+            Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
         }
     }
 }

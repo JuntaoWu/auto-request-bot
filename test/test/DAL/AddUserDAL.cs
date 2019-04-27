@@ -28,6 +28,7 @@ namespace test.DAL
             result.Add(new MemberCheckIn
             {
                 ID = "000001",
+                openId = "0000001",
                 avatarurl ="https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
                 weixin_uername = "stefnjiang",
                 username = "jiangshangfeng",
@@ -39,6 +40,7 @@ namespace test.DAL
             result.Add(new MemberCheckIn
             {
                 ID = "000002",
+                openId = "0000002",
                 avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
                 weixin_uername = "lihan",
                 username = "lihan",
@@ -50,6 +52,7 @@ namespace test.DAL
             result.Add(new MemberCheckIn
             {
                 ID = "000003",
+                openId = "0000003",
                 avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
                 weixin_uername = "wujuntao",
                 username = "wujuntao",
@@ -61,6 +64,7 @@ namespace test.DAL
             result.Add(new MemberCheckIn
             {
                 ID = "000004",
+                openId = "0000004",
                 avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
                 weixin_uername = "zhangxiaolan",
                 username = "zhangxiaolan",

@@ -9,6 +9,7 @@ namespace test.DAL
     public class MemberCheckIn
     {
         public string ID { get; set; }
+        public string openId { get; set; }
         public string avatarurl { get; set; }
         public string weixin_uername { get; set; }
         public string username { get; set; }
