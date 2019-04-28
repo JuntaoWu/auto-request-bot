@@ -84,7 +84,7 @@ namespace test
                 username = "wujuntao",
                 telephone = "33333333",
                 weixin_number = "3333333",
-                status = CheckInStatus.Success,
+                status = CheckInStatus.Waiting,
                 registertime = "2019-4-27"
             });
             Instance.membercheckinlist.Add(new MemberCheckIn
@@ -96,7 +96,7 @@ namespace test
                 username = "zhangxiaolan",
                 telephone = "44444444",
                 weixin_number = "444444",
-                status = CheckInStatus.Error,
+                status = CheckInStatus.Waiting,
                 registertime = "2019-4-27"
             });
 
@@ -104,6 +104,9 @@ namespace test
         }
 
         public static void updateMemberCheckInInformation(string openId,CheckInStatus status) {
+            Instance.membercheckinlist[0].status = CheckInStatus.Success;
+            Instance.membercheckinlist[1].status = CheckInStatus.Success;
+            Instance.membercheckinlist[2].status = CheckInStatus.Error;
             Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
         }
     }

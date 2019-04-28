@@ -267,7 +267,8 @@ namespace test
             string retString = myStreamReader.ReadToEnd();
             myStreamReader.Close();
             myResponseStream.Close();
-            OnReceiveResponse(this, new MyCustomEventArge { text = retString,type = OperationType.Checkin });
+            //OnReceiveResponse(this, new MyCustomEventArge { text = retString,type = OperationType.Checkin });
+            MemberCheckInSingletonService.updateMemberCheckInInformation(openId, CheckInStatus.Success);
         }
     }
 }
