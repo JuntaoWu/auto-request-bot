@@ -256,6 +256,11 @@ namespace test
             return bmp;
         }
 
+        /// <summary>
+        /// 会员列表编辑和删除
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void member_list_grdaview_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex != -1)
@@ -284,6 +289,10 @@ namespace test
             }
         }
 
+        /// <summary>
+        /// 当CheckIn完成之后更新会员管理全部打卡列表
+        /// </summary>
+        /// <param name="data"></param>
         private void UpdateCheckInDataGrid(object data)
         {
             List<MemberCheckIn> list = data as List<MemberCheckIn>;
@@ -356,6 +365,30 @@ namespace test
                     return string.Empty;
                     break;
             }
+        }
+
+        /// <summary>
+        /// 启动打卡程序
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void start_chekcin_btn_Click(object sender, EventArgs e)
+        {
+            SingletonProxyServer.OperationType = OperationType.Checkin;
+            this.start_chekcin_btn.Enabled = false;
+            this.stop_checkin_btn.Enabled = true;
+        }
+
+        /// <summary>
+        /// 停止打卡程序
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void stop_checkin_btn_Click(object sender, EventArgs e)
+        {
+            SingletonProxyServer.OperationType = OperationType.Stopped;
+            this.start_chekcin_btn.Enabled = true;
+            this.stop_checkin_btn.Enabled = false;
         }
     }
 }

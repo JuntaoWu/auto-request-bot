@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.register_btn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -66,6 +66,10 @@
             this.update = new System.Windows.Forms.DataGridViewButtonColumn();
             this.delete = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Titile_label = new System.Windows.Forms.Label();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.start_chekcin_btn = new System.Windows.Forms.Button();
+            this.stop_checkin_btn = new System.Windows.Forms.Button();
             this.avatarDataGridViewImageColumn1 = new System.Windows.Forms.DataGridViewImageColumn();
             this.weixinuernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -111,6 +115,8 @@
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).BeginInit();
+            this.tabPage4.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).BeginInit();
@@ -133,6 +139,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabControl1.ItemSize = new System.Drawing.Size(60, 120);
@@ -209,7 +216,7 @@
             this.successs_checkin_tabpage.Location = new System.Drawing.Point(4, 25);
             this.successs_checkin_tabpage.Name = "successs_checkin_tabpage";
             this.successs_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3);
-            this.successs_checkin_tabpage.Size = new System.Drawing.Size(1440, 635);
+            this.successs_checkin_tabpage.Size = new System.Drawing.Size(1440, 710);
             this.successs_checkin_tabpage.TabIndex = 1;
             this.successs_checkin_tabpage.Text = "已打卡";
             this.successs_checkin_tabpage.UseVisualStyleBackColor = true;
@@ -233,7 +240,7 @@
             this.success_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
             this.success_checkin_datagrid.Name = "success_checkin_datagrid";
             this.success_checkin_datagrid.RowTemplate.Height = 27;
-            this.success_checkin_datagrid.Size = new System.Drawing.Size(1434, 629);
+            this.success_checkin_datagrid.Size = new System.Drawing.Size(1434, 704);
             this.success_checkin_datagrid.TabIndex = 0;
             // 
             // error_checkin_page
@@ -243,7 +250,7 @@
             this.error_checkin_page.Location = new System.Drawing.Point(4, 25);
             this.error_checkin_page.Name = "error_checkin_page";
             this.error_checkin_page.Padding = new System.Windows.Forms.Padding(3);
-            this.error_checkin_page.Size = new System.Drawing.Size(1440, 635);
+            this.error_checkin_page.Size = new System.Drawing.Size(1440, 710);
             this.error_checkin_page.TabIndex = 2;
             this.error_checkin_page.Text = "异常打卡";
             this.error_checkin_page.UseVisualStyleBackColor = true;
@@ -267,7 +274,7 @@
             this.error_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
             this.error_checkin_datagrid.Name = "error_checkin_datagrid";
             this.error_checkin_datagrid.RowTemplate.Height = 27;
-            this.error_checkin_datagrid.Size = new System.Drawing.Size(1434, 629);
+            this.error_checkin_datagrid.Size = new System.Drawing.Size(1434, 704);
             this.error_checkin_datagrid.TabIndex = 0;
             // 
             // tabPage2
@@ -292,7 +299,7 @@
             this.tabPage2.Location = new System.Drawing.Point(124, 4);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1454, 670);
+            this.tabPage2.Size = new System.Drawing.Size(1454, 745);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "会员注册";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -445,7 +452,7 @@
             this.tabPage3.Controls.Add(this.tableLayoutPanel1);
             this.tabPage3.Location = new System.Drawing.Point(124, 4);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(1454, 670);
+            this.tabPage3.Size = new System.Drawing.Size(1454, 745);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "会员列表";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -462,7 +469,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 5.43131F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 94.56869F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1454, 670);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1454, 745);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // member_list_grdaview
@@ -483,18 +490,18 @@
             this.delete});
             this.member_list_grdaview.DataSource = this.memberBindingSource;
             this.member_list_grdaview.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.member_list_grdaview.Location = new System.Drawing.Point(3, 39);
+            this.member_list_grdaview.Location = new System.Drawing.Point(3, 43);
             this.member_list_grdaview.Name = "member_list_grdaview";
             this.member_list_grdaview.RowTemplate.Height = 27;
-            this.member_list_grdaview.Size = new System.Drawing.Size(1448, 628);
+            this.member_list_grdaview.Size = new System.Drawing.Size(1448, 699);
             this.member_list_grdaview.TabIndex = 1;
             this.member_list_grdaview.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.member_list_grdaview_CellClick);
             // 
             // update
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.Aqua;
-            this.update.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.Aqua;
+            this.update.DefaultCellStyle = dataGridViewCellStyle4;
             this.update.HeaderText = "";
             this.update.Name = "update";
             this.update.Text = "编辑";
@@ -502,9 +509,9 @@
             // 
             // delete
             // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.Red;
-            this.delete.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.Red;
+            this.delete.DefaultCellStyle = dataGridViewCellStyle5;
             this.delete.HeaderText = "";
             this.delete.Name = "delete";
             this.delete.Text = "删除";
@@ -515,19 +522,73 @@
             this.Titile_label.AutoSize = true;
             this.Titile_label.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.Titile_label.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Titile_label.Location = new System.Drawing.Point(3, 17);
+            this.Titile_label.Location = new System.Drawing.Point(3, 21);
             this.Titile_label.Name = "Titile_label";
             this.Titile_label.Size = new System.Drawing.Size(1448, 19);
             this.Titile_label.TabIndex = 0;
             this.Titile_label.Text = "会员列表";
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.tableLayoutPanel2);
+            this.tabPage4.Location = new System.Drawing.Point(124, 4);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(1454, 745);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "打卡";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.start_chekcin_btn, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.stop_checkin_btn, 1, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(358, 49);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // start_chekcin_btn
+            // 
+            this.start_chekcin_btn.BackColor = System.Drawing.Color.White;
+            this.start_chekcin_btn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.start_chekcin_btn.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.start_chekcin_btn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.start_chekcin_btn.Location = new System.Drawing.Point(3, 3);
+            this.start_chekcin_btn.Name = "start_chekcin_btn";
+            this.start_chekcin_btn.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.start_chekcin_btn.Size = new System.Drawing.Size(173, 43);
+            this.start_chekcin_btn.TabIndex = 1;
+            this.start_chekcin_btn.Text = "启动打卡";
+            this.start_chekcin_btn.UseVisualStyleBackColor = false;
+            this.start_chekcin_btn.Click += new System.EventHandler(this.start_chekcin_btn_Click);
+            // 
+            // stop_checkin_btn
+            // 
+            this.stop_checkin_btn.BackColor = System.Drawing.Color.White;
+            this.stop_checkin_btn.Enabled = false;
+            this.stop_checkin_btn.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.stop_checkin_btn.ForeColor = System.Drawing.Color.Red;
+            this.stop_checkin_btn.Location = new System.Drawing.Point(182, 3);
+            this.stop_checkin_btn.Name = "stop_checkin_btn";
+            this.stop_checkin_btn.Size = new System.Drawing.Size(173, 43);
+            this.stop_checkin_btn.TabIndex = 2;
+            this.stop_checkin_btn.Text = "停止打卡";
+            this.stop_checkin_btn.UseVisualStyleBackColor = false;
+            this.stop_checkin_btn.Click += new System.EventHandler(this.stop_checkin_btn_Click);
+            // 
             // avatarDataGridViewImageColumn1
             // 
             this.avatarDataGridViewImageColumn1.DataPropertyName = "avatar";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("KaiTi", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle1.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle1.NullValue")));
-            this.avatarDataGridViewImageColumn1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("KaiTi", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle6.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle6.NullValue")));
+            this.avatarDataGridViewImageColumn1.DefaultCellStyle = dataGridViewCellStyle6;
             this.avatarDataGridViewImageColumn1.HeaderText = "头像";
             this.avatarDataGridViewImageColumn1.Name = "avatarDataGridViewImageColumn1";
             // 
@@ -733,6 +794,8 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).EndInit();
+            this.tabPage4.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).EndInit();
@@ -806,6 +869,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn checkintimeDataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn3;
         private System.Windows.Forms.BindingSource memberBindingSource3;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Button start_chekcin_btn;
+        private System.Windows.Forms.Button stop_checkin_btn;
     }
 }
 
