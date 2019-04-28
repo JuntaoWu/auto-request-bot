@@ -23,6 +23,14 @@ namespace test.DAL
             return true;
         }
 
+        public bool UpdateUser(string ID, string weixin_uername, string weixin_number, string contact_name, string contact_telephone, string locationId, string imagedata) {
+            return true;
+        }
+
+        public bool DeleteUser(string ID) {
+            return true;
+        }
+
         public List<MemberCheckIn> getAllMemberList() {
             List<MemberCheckIn> result = new List<MemberCheckIn>();
             result.Add(new MemberCheckIn
@@ -35,7 +43,8 @@ namespace test.DAL
                 telephone = "11111111",
                 weixin_number = "111111",
                 status = CheckInStatus.Actived,
-                registertime = "2019-4-27"
+                registertime = "2019-4-27",
+                checkin_addressId= "四川省成都市青羊区草市街街道泰丰国际广场"
             });
             result.Add(new MemberCheckIn
             {
@@ -47,7 +56,8 @@ namespace test.DAL
                 telephone = "22222222",
                 weixin_number = "222222",
                 status = CheckInStatus.Actived,
-                registertime = "2019-4-27"
+                registertime = "2019-4-27",
+                checkin_addressId = "四川省成都市高新区老成仁6号"
             });
             result.Add(new MemberCheckIn
             {
@@ -59,7 +69,8 @@ namespace test.DAL
                 telephone = "33333333",
                 weixin_number = "3333333",
                 status = CheckInStatus.Actived,
-                registertime = "2019-4-27"
+                registertime = "2019-4-27",
+                checkin_addressId = "四川省成都市青羊区草市街街道泰丰国际广场"
             });
             result.Add(new MemberCheckIn
             {
@@ -71,10 +82,17 @@ namespace test.DAL
                 telephone = "44444444",
                 weixin_number = "444444",
                 status = CheckInStatus.Actived,
-                registertime = "2019-4-27"
+                registertime = "2019-4-27",
+                checkin_addressId = "四川省成都市高新区老成仁6号"
             });
             return result;
         }
+
+        public MemberCheckIn getOneMemberById(string ID) {
+            MemberCheckIn result = getAllMemberList().FirstOrDefault(m => m.ID == ID);
+            return result;
+        } 
+
     }
 
     public class CheckInAddress

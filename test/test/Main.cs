@@ -81,7 +81,7 @@ namespace test
         //设置打开是否成功消息
         private void SetTextSafePost(object text)
         {
-            this.textboxDisplay.Text += text.ToString() + '\n';
+            //this.textboxDisplay.Text += text.ToString() + '\n';
 
         }
 
@@ -209,7 +209,8 @@ namespace test
                 this.checkin_address_combox.DisplayMember = "Name";
                 this.checkin_address_combox.ValueMember = "Address";
             }
-            else if (e.TabPage.Text == "会员管理") {
+            else if (e.TabPage.Text == "会员管理")
+            {
                 MemberCheckInSingletonService.getAllMemberCheckInOnToday();
             }
         }
@@ -262,10 +263,23 @@ namespace test
                 if (this.member_list_grdaview.Columns[e.ColumnIndex].Name == "update")
                 {
                     Member currentmember = this.member_list_grdaview.Rows[e.RowIndex].DataBoundItem as Member;
+                    AddUser updateform = new AddUser(currentmember.ID);
+                    updateform.StartPosition = FormStartPosition.CenterScreen;
+                    updateform.ShowDialog();
+                    if (updateform.DialogResult == DialogResult.OK)
+                    {
+                        this.BindDataMemberList();
+                    }
                 }
                 else if (this.member_list_grdaview.Columns[e.ColumnIndex].Name == "delete")
                 {
                     Member currentmember = this.member_list_grdaview.Rows[e.RowIndex].DataBoundItem as Member;
+
+                    if (MessageBox.Show("确定删除用戶: " + currentmember.weixin_uername +" ?", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        this.user.DeleteUser(currentmember.ID);
+                        this.BindDataMemberList();
+                    }
                 }
             }
         }
@@ -273,7 +287,8 @@ namespace test
         private void UpdateCheckInDataGrid(object data)
         {
             List<MemberCheckIn> list = data as List<MemberCheckIn>;
-           this.wait_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Waiting; }).ToList().Select((m)=> {
+            this.wait_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Waiting; }).ToList().Select((m) =>
+            {
                 return new Member
                 {
                     ID = m.ID,
@@ -287,7 +302,8 @@ namespace test
                 };
             }).ToList();
 
-            this.success_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Success; }).ToList().Select((m) => {
+            this.success_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Success; }).ToList().Select((m) =>
+            {
                 return new Member
                 {
                     ID = m.ID,
@@ -301,7 +317,8 @@ namespace test
                 };
             }).ToList();
 
-            this.error_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Error; }).ToList().Select((m) => {
+            this.error_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Error; }).ToList().Select((m) =>
+            {
                 return new Member
                 {
                     ID = m.ID,

@@ -18,5 +18,6 @@ namespace test.DAL
         public string status { get; set; }
         public string registertime { get; set; }
         public string checkintime { get; set; }
+        public string checkin_addressId { get; set; }
     }
 }

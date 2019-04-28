@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -17,27 +18,54 @@ namespace test
     public partial class AddUser : Form
     {
         private AddUserDAL user;
-        public string imagepath;
         public string base64Str;
+        public string currentID;
+        public AddUser(string ID) {
+            this.currentID = ID;
+            InitializeComponent();
+            user = new AddUserDAL();
+            this.BindDataMember();
+
+        }
         public AddUser()
         {
             InitializeComponent();
-            user = new AddUserDAL();
+
+        }
+
+        
+        private void BindDataMember() {
+
             this.checkin_address_combox.DataSource = user.getCheckInAddressList();
             this.checkin_address_combox.DisplayMember = "Name";
             this.checkin_address_combox.ValueMember = "Address";
+
+            MemberCheckIn data = user.getOneMemberById(this.currentID);
+            this.weixin_username_txt.Text = data.weixin_uername;
+            this.weixin_number_txt.Text = data.weixin_number;
+            this.contact_name_txt.Text = data.username;
+            this.contact_telephone_txt.Text = data.telephone;
+            this.checkin_address_combox.SelectedValue = data.checkin_addressId;
+            this.image_picturebox.Image = this.LoadImage(data.avatarurl);            
         }
 
-        private void confirm_btn_Click(object sender, EventArgs e)
+        // <summary>
+        /// 根据URL生成Image对象
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private Image LoadImage(string url)
         {
-            string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
-            Location userlocation = getAddressLocation(selecteaddress);
-            /*bool result = user.AddUser(userlocation, this.user_name_txt.Text, this.telephone_txt.Text, this.base64Str);
-            if (result)
-            {
-                
-                this.Close();
-            }*/
+            System.Net.WebRequest request = System.Net.WebRequest.Create(url);
+            System.Net.WebResponse response = request.GetResponse();
+            System.IO.Stream responseStream = response.GetResponseStream();
+            Bitmap bmp = new Bitmap(responseStream);
+            System.IO.MemoryStream ms = new MemoryStream();
+            bmp.Save(ms, ImageFormat.Jpeg);
+            byte[] byteImage = ms.ToArray();
+            var SigBase64 = Convert.ToBase64String(byteImage); // Get Base64
+            responseStream.Dispose();
+            return bmp;
         }
 
         private void upload_image_btn_Click(object sender, EventArgs e)
@@ -51,53 +79,34 @@ namespace test
                 {
                     try
                     {
-                        this.imagepath = file.FileName;   //获得文件的绝对路径
+                        string imagepath = file.FileName;   //获得文件的绝对路径
                         string fileExtension = Path.GetExtension(file.FileName).Substring(1);
-                        FileStream filestream = new FileStream(this.imagepath, FileMode.Open);
-                        byte[] bt = new byte[filestream.Length];
-                        //调用read读取方法
-                        filestream.Read(bt, 0, bt.Length);
-                        this.base64Str = "data:image/" + fileExtension + ";base64,"+ Convert.ToBase64String(bt);
-                        filestream.Close();
-                        this.image_picturebox.Load(this.imagepath);
+                        using (FileStream filestream = new FileStream(imagepath, FileMode.Open))
+                        {
+                            byte[] bt = new byte[filestream.Length];
+                            //调用read读取方法
+                            filestream.Read(bt, 0, bt.Length);
+                            this.base64Str = "data:image/" + fileExtension + ";base64," + Convert.ToBase64String(bt);
+                            this.image_picturebox.Image = new Bitmap(filestream);
+                            filestream.Close();
+                        }
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message);
                     }
                 }
-                
+
             }
         }
 
-        private Location getAddressLocation(string address)
+        private void commit_btn_Click(object sender, EventArgs e)
         {
-            Location currentLocation = new Location();
-            string url = $"http://api.map.baidu.com/geocoder/v2/?address={address}&output=json&ak=oLrWGIzoPEusmDqQrmG37OuUC7UE60uo";
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = "GET";
-            request.ContentType = "text/html;charset=UTF-8";
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            Stream myResponseStream = response.GetResponseStream();
-            StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
-            string retString = myStreamReader.ReadToEnd();
-            AddressUnity addressUnity = JsonConvert.DeserializeObject<AddressUnity>(retString);
-            if (addressUnity.status == 0)
-            {
-                //string lng = float.Parse(jo.result.location.lng.ToString()).ToString("F2");
-                //string lat = float.Parse(jo.result.location.lat.ToString()).ToString("F2");
-                currentLocation.lng = addressUnity.result.location.lng;
-                currentLocation.lat = addressUnity.result.location.lat;
+            bool result = user.UpdateUser(this.currentID, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.checkin_address_combox.SelectedValue.ToString(), this.base64Str);
+            if (result) {
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
-            else
-            {
-                currentLocation.lng = 0;
-                currentLocation.lat = 0;
-            }
-            myStreamReader.Close();
-            myResponseStream.Close();
-            return currentLocation;
         }
     }
 }
