@@ -27,6 +27,8 @@ namespace test
         public string base64Str;
         SynchronizationContext m_SyncContext = null;
 
+        public event EventHandler OnImageLoaded = (object sender, EventArgs e) => { };
+
         public Main()
         {
             InitializeComponent();
@@ -38,6 +40,17 @@ namespace test
             SingletonProxyServer.Instance.OnReceiveResponse += Instance_OnReceiveResponse;
 
             MemberCheckInSingletonService.Instance.OnReceiveCheckInResponse += Instance_OnReceiveCheckInResponse;
+
+            this.OnImageLoaded += (object sender, EventArgs e) =>
+            {
+                Console.WriteLine(DateTime.Now);
+                this.m_SyncContext.Post((data) =>
+                {
+                    this.wait_checkin_datagrid.Refresh();
+                    this.success_checkin_datagrid.Refresh();
+                    this.error_checkin_datagrid.Refresh();
+                }, null);
+            };
         }
 
         //窗体加载事件
@@ -56,7 +69,10 @@ namespace test
             if (e is CustomCheckInEventArge)
             {
                 var CustomCheckIn = (e as CustomCheckInEventArge);
-                m_SyncContext.Post(UpdateCheckInDataGrid, CustomCheckIn.currentdata);
+                m_SyncContext.Post((argument) =>
+                {
+                    UpdateCheckInDataGrid(argument);
+                }, CustomCheckIn.currentdata);
             }
         }
 
@@ -165,11 +181,11 @@ namespace test
         }
 
         //提交用户信息
-        private void confirm_btn_Click(object sender, EventArgs e)
+        private async void confirm_btn_Click(object sender, EventArgs e)
         {
             string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
-            Location userlocation = getAddressLocation(selecteaddress);
-            bool result = user.AddUser(userlocation, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.base64Str);
+            // Location userlocation = getAddressLocation(selecteaddress);
+            bool result = await user.AddUser(selecteaddress, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.base64Str, this.openId_txt.Text);
             if (result)
             {
                 this.weixin_username_txt.Text = String.Empty;
@@ -197,17 +213,19 @@ namespace test
         }
 
         //左导航栏选择
-        private void tabControl1_Selected(object sender, TabControlEventArgs e)
+        private async void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
             if (e.TabPage.Text == "会员列表")
             {
-                this.BindDataMemberList();
+                await this.BindDataMemberList();
             }
             else if (e.TabPage.Text == "会员注册")
             {
-                this.checkin_address_combox.DataSource = user.getCheckInAddressList();
-                this.checkin_address_combox.DisplayMember = "Name";
-                this.checkin_address_combox.ValueMember = "Address";
+                this.checkin_address_combox.DataSource = await user.getCheckInAddressList();
+                this.checkin_address_combox.DisplayMember = "text";
+                this.checkin_address_combox.ValueMember = "value";
+
+                this.checkin_address_combox.SelectedIndex = 0;
             }
             else if (e.TabPage.Text == "会员管理")
             {
@@ -218,42 +236,33 @@ namespace test
         /// <summary>
         /// 绑定会员列表数据数据
         /// </summary>
-        private void BindDataMemberList()
+        private async Task BindDataMemberList()
         {
-            List<Member> memberlist = user.getAllMemberList().Select((m) =>
+            var result = await user.getAllMemberList();
+
+            List<Member> memberlist = result.AsParallel().Select((m) =>
             {
                 return new Member
                 {
-                    ID = m.ID,
-                    avatar = LoadImage(m.avatarurl),
-                    weixin_uername = m.weixin_uername,
-                    username = m.username,
+                    ID = m._id,
+                    avatarUrl = m.avatarUrl,
+                    avatar = null,
+                    weixin_uername = m.nickName,
+                    username = m.contactName,
                     telephone = m.telephone,
-                    weixin_number = m.weixin_number,
+                    weixin_number = m.wechatId,
                     status = MappingStatus(m.status),
-                    registertime = m.registertime
+                    registertime = m.registerTime,
                 };
             }).ToList();
-            this.member_list_grdaview.DataSource = memberlist;
-        }
 
-        /// <summary>
-        /// 根据URL生成Image对象
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        private Image LoadImage(string url)
-        {
-            System.Net.WebRequest request = System.Net.WebRequest.Create(url);
-            System.Net.WebResponse response = request.GetResponse();
-            System.IO.Stream responseStream = response.GetResponseStream();
-            Bitmap bmp = new Bitmap(responseStream);
-            System.IO.MemoryStream ms = new MemoryStream();
-            bmp.Save(ms, ImageFormat.Jpeg);
-            byte[] byteImage = ms.ToArray();
-            var SigBase64 = Convert.ToBase64String(byteImage); // Get Base64
-            responseStream.Dispose();
-            return bmp;
+            memberlist.AsParallel().ForAll(async member =>
+            {
+                member.avatar = await ImageLoader.LoadImage(Constant.Host + member.avatarUrl);
+                OnImageLoaded(this, new EventArgs());
+            });
+
+            this.member_list_grdaview.DataSource = memberlist;
         }
 
         /// <summary>
@@ -261,7 +270,7 @@ namespace test
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void member_list_grdaview_CellClick(object sender, DataGridViewCellEventArgs e)
+        private async void member_list_grdaview_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex != -1)
             {
@@ -273,17 +282,17 @@ namespace test
                     updateform.ShowDialog();
                     if (updateform.DialogResult == DialogResult.OK)
                     {
-                        this.BindDataMemberList();
+                        await this.BindDataMemberList();
                     }
                 }
                 else if (this.member_list_grdaview.Columns[e.ColumnIndex].Name == "delete")
                 {
                     Member currentmember = this.member_list_grdaview.Rows[e.RowIndex].DataBoundItem as Member;
 
-                    if (MessageBox.Show("确定删除用戶: " + currentmember.weixin_uername +" ?", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    if (MessageBox.Show("确定删除用戶: " + currentmember.weixin_uername + " ?", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
                         this.user.DeleteUser(currentmember.ID);
-                        this.BindDataMemberList();
+                        await this.BindDataMemberList();
                     }
                 }
             }
@@ -296,50 +305,37 @@ namespace test
         private void UpdateCheckInDataGrid(object data)
         {
             List<MemberCheckIn> list = data as List<MemberCheckIn>;
-            this.wait_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Waiting; }).ToList().Select((m) =>
+
+            this.wait_checkin_datagrid.DataSource = ConstructMember(list, CheckInStatus.Waiting);
+
+            this.success_checkin_datagrid.DataSource = ConstructMember(list, CheckInStatus.Success);
+
+            this.error_checkin_datagrid.DataSource = ConstructMember(list, CheckInStatus.Error);
+        }
+
+        private List<Member> ConstructMember(List<MemberCheckIn> list, CheckInStatus status)
+        {
+            var waiting = list.Where((a) => { return a.status == status; }).ToList().Select((m) =>
             {
                 return new Member
                 {
-                    ID = m.ID,
-                    avatar = LoadImage(m.avatarurl),
-                    weixin_uername = m.weixin_uername,
-                    username = m.username,
+                    ID = m._id,
+                    avatarUrl = m.avatarUrl,
+                    weixin_uername = m.nickName,
+                    username = m.contactName,
                     telephone = m.telephone,
-                    weixin_number = m.weixin_number,
+                    weixin_number = m.wechatId,
                     status = MappingStatus(m.status),
-                    registertime = m.registertime
+                    checkintime = m.checkInTime?.ToString()
                 };
             }).ToList();
 
-            this.success_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Success; }).ToList().Select((m) =>
+            waiting.AsParallel().ForAll(async member =>
             {
-                return new Member
-                {
-                    ID = m.ID,
-                    avatar = LoadImage(m.avatarurl),
-                    weixin_uername = m.weixin_uername,
-                    username = m.username,
-                    telephone = m.telephone,
-                    weixin_number = m.weixin_number,
-                    status = MappingStatus(m.status),
-                    registertime = m.registertime
-                };
-            }).ToList();
-
-            this.error_checkin_datagrid.DataSource = list.Where((a) => { return a.status == CheckInStatus.Error; }).ToList().Select((m) =>
-            {
-                return new Member
-                {
-                    ID = m.ID,
-                    avatar = LoadImage(m.avatarurl),
-                    weixin_uername = m.weixin_uername,
-                    username = m.username,
-                    telephone = m.telephone,
-                    weixin_number = m.weixin_number,
-                    status = MappingStatus(m.status),
-                    registertime = m.registertime
-                };
-            }).ToList();
+                member.avatar = await ImageLoader.LoadImage(Constant.Host + member.avatarUrl);
+                OnImageLoaded(this, new EventArgs());
+            });
+            return waiting;
         }
 
         private string MappingStatus(CheckInStatus status)

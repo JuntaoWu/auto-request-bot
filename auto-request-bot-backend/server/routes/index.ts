@@ -9,6 +9,8 @@ import paramValidation from '../config/param-validation';
 const router = express.Router();
 
 import locationRouter from './location';
+import memberRouter from './member';
+
 import userRouter from './user';
 import versionRouter from './version';
 import gameRouter from './game';
@@ -21,6 +23,8 @@ import sharedRouter from './shared';
 import imRouter from './im';
 
 router.use('/location', locationRouter);
+router.use('/member', memberRouter);
+
 router.use('/users', userRouter);
 router.use('/version', versionRouter);
 router.use('/games/:gameId', gameRouter);

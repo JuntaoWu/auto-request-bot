@@ -20,52 +20,52 @@ namespace test
         private AddUserDAL user;
         public string base64Str;
         public string currentID;
-        public AddUser(string ID) {
-            this.currentID = ID;
-            InitializeComponent();
-            user = new AddUserDAL();
-            this.BindDataMember();
+        public string openId;
 
+        public AddUser(string ID)
+        {
+            InitializeComponent();
+
+            this.currentID = ID;
+            this.user = new AddUserDAL();
+            this.InitializeData();
         }
+
         public AddUser()
         {
             InitializeComponent();
-
         }
 
-        
-        private void BindDataMember() {
-
-            this.checkin_address_combox.DataSource = user.getCheckInAddressList();
-            this.checkin_address_combox.DisplayMember = "Name";
-            this.checkin_address_combox.ValueMember = "Address";
-
-            MemberCheckIn data = user.getOneMemberById(this.currentID);
-            this.weixin_username_txt.Text = data.weixin_uername;
-            this.weixin_number_txt.Text = data.weixin_number;
-            this.contact_name_txt.Text = data.username;
-            this.contact_telephone_txt.Text = data.telephone;
-            this.checkin_address_combox.SelectedValue = data.checkin_addressId;
-            this.image_picturebox.Image = this.LoadImage(data.avatarurl);            
-        }
-
-        // <summary>
-        /// 根据URL生成Image对象
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        private Image LoadImage(string url)
+        public async void InitializeData()
         {
-            System.Net.WebRequest request = System.Net.WebRequest.Create(url);
-            System.Net.WebResponse response = request.GetResponse();
-            System.IO.Stream responseStream = response.GetResponseStream();
-            Bitmap bmp = new Bitmap(responseStream);
+            await this.BindDataMember();
+        }
+
+        private async Task BindDataMember()
+        {
+            this.checkin_address_combox.DataSource = await user.getCheckInAddressList();
+            this.checkin_address_combox.DisplayMember = "text";
+            this.checkin_address_combox.ValueMember = "value";
+
+            MemberCheckIn data = await user.getOneMemberById(this.currentID);
+            this.weixin_username_txt.Text = data.nickName;
+            this.weixin_number_txt.Text = data.wechatId;
+            this.contact_name_txt.Text = data.contactName;
+            this.contact_telephone_txt.Text = data.telephone;
+            this.checkin_address_combox.SelectedValue = data.locationId;
+            this.openId = data.openId;
+
+            this.image_picturebox.Image = await ImageLoader.LoadImage(Constant.Host + data.avatarUrl);
+            this.base64Str = GetImageBase64(this.image_picturebox.Image);
+        }
+
+        private string GetImageBase64(Image bImage)
+        {
             System.IO.MemoryStream ms = new MemoryStream();
-            bmp.Save(ms, ImageFormat.Jpeg);
+            bImage.Save(ms, ImageFormat.Jpeg);
             byte[] byteImage = ms.ToArray();
             var SigBase64 = Convert.ToBase64String(byteImage); // Get Base64
-            responseStream.Dispose();
-            return bmp;
+            return "data:image/" + "jpeg" + ";base64," + SigBase64;
         }
 
         private void upload_image_btn_Click(object sender, EventArgs e)
@@ -100,10 +100,11 @@ namespace test
             }
         }
 
-        private void commit_btn_Click(object sender, EventArgs e)
+        private async void commit_btn_Click(object sender, EventArgs e)
         {
-            bool result = user.UpdateUser(this.currentID, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.checkin_address_combox.SelectedValue.ToString(), this.base64Str);
-            if (result) {
+            bool result = await user.UpdateUser(this.currentID, locationId: this.checkin_address_combox.SelectedValue.ToString(), nickName: this.weixin_username_txt.Text, wechatId: this.weixin_number_txt.Text, contactName: this.contact_name_txt.Text, telephone: this.contact_telephone_txt.Text, imagedata: this.base64Str, openId: this.openId);
+            if (result)
+            {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

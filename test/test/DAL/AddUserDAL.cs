@@ -1,7 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,100 +14,162 @@ namespace test.DAL
 {
     public class AddUserDAL
     {
-        public List<CheckInAddress> getCheckInAddressList()
+        public async Task<List<CheckInAddress>> getCheckInAddressList()
         {
-            List<CheckInAddress> result = new List<CheckInAddress>();
-            result.Add(new CheckInAddress("", ""));
-            result.Add(new CheckInAddress("四川省成都市青羊区草市街街道泰丰国际广场", "四川省成都市青羊区草市街街道泰丰国际广场"));
-            result.Add(new CheckInAddress("四川省成都市高新区老成仁6号", "四川省成都市高新区老成仁6号"));
-            return result;
+            string url = $"http://localhost:4040/api/location";
+
+            var result = await Request(url);
+
+            var obj = JsonConvert.DeserializeObject<ResponseResult<List<CheckInAddress>>>(result);
+
+            if (obj.code == 0)
+            {
+                return obj.data;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public bool AddUser(Location userlocation, string weixin_uername, string weixin_number, string contact_name, string contact_telephone, string imagedata)
+        private static async Task<string> Request(string url, string method = "GET", object data = null)
         {
-            return true;
+            HttpClient client = new HttpClient();
+            HttpResponseMessage result;
+            switch (method)
+            {
+                case "GET":
+                    result = await client.GetAsync(url);
+                    break;
+                case "POST":
+                    result = await client.PostAsJsonAsync(url, data);
+                    break;
+                case "PUT":
+                    result = await client.PutAsJsonAsync(url, data);
+                    break;
+                case "DELETE":
+                    result = await client.DeleteAsync(url);
+                    break;
+                default:
+                    result = null;
+                    break;
+            }
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            result.EnsureSuccessStatusCode();
+
+            return await result.Content.ReadAsStringAsync();
         }
 
-        public bool UpdateUser(string ID, string weixin_uername, string weixin_number, string contact_name, string contact_telephone, string locationId, string imagedata) {
-            return true;
+        /*
+            @prop()
+            nickName: String;
+            @prop()
+            wechatId: String;
+            @prop()
+            contactName: String;
+            @prop()
+            telephone: String;
+            @prop()
+            locationId: String;
+            @prop()
+            avatar: String;
+            @prop()
+            status: String;
+            @prop()
+            registerTime: String;
+        */
+        public async Task<bool> AddUser(string locationId, string nickName, string wechatId, string contactName, string telephone, string imagedata, string openId)
+        {
+            var url = "http://localhost:4040/api/member";
+            var response = await Request(url, "POST", new
+            {
+                openId = openId,
+                nickName = nickName,
+                wechatId = wechatId,
+                contactName = contactName,
+                telephone = telephone,
+                locationId = locationId,
+                avatar = imagedata,
+            });
+
+            var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
+            return obj.code == 0;
         }
 
-        public bool DeleteUser(string ID) {
-            return true;
+        public async Task<bool> UpdateUser(string ID, string locationId, string nickName, string wechatId, string contactName, string telephone, string imagedata, string openId)
+        {
+            var url = $"http://localhost:4040/api/member/{ID}";
+            var response = await Request(url, "PUT", new
+            {
+                openId = openId,
+                nickName = nickName,
+                wechatId = wechatId,
+                contactName = contactName,
+                telephone = telephone,
+                locationId = locationId,
+                avatar = imagedata,
+            });
+
+            var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
+            return obj.code == 0;
         }
 
-        public List<MemberCheckIn> getAllMemberList() {
-            List<MemberCheckIn> result = new List<MemberCheckIn>();
-            result.Add(new MemberCheckIn
-            {
-                ID = "000001",
-                openId = "0000001",
-                avatarurl ="https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
-                weixin_uername = "stefnjiang",
-                username = "jiangshangfeng",
-                telephone = "11111111",
-                weixin_number = "111111",
-                status = CheckInStatus.Actived,
-                registertime = "2019-4-27",
-                checkin_addressId= "四川省成都市青羊区草市街街道泰丰国际广场"
-            });
-            result.Add(new MemberCheckIn
-            {
-                ID = "000002",
-                openId = "0000002",
-                avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
-                weixin_uername = "lihan",
-                username = "lihan",
-                telephone = "22222222",
-                weixin_number = "222222",
-                status = CheckInStatus.Actived,
-                registertime = "2019-4-27",
-                checkin_addressId = "四川省成都市高新区老成仁6号"
-            });
-            result.Add(new MemberCheckIn
-            {
-                ID = "000003",
-                openId = "0000003",
-                avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
-                weixin_uername = "wujuntao",
-                username = "wujuntao",
-                telephone = "33333333",
-                weixin_number = "3333333",
-                status = CheckInStatus.Actived,
-                registertime = "2019-4-27",
-                checkin_addressId = "四川省成都市青羊区草市街街道泰丰国际广场"
-            });
-            result.Add(new MemberCheckIn
-            {
-                ID = "000004",
-                openId = "0000004",
-                avatarurl = "https://cn.bing.com/sa/simg/SharedSpriteDesktopRewards_022118.png",
-                weixin_uername = "zhangxiaolan",
-                username = "zhangxiaolan",
-                telephone = "44444444",
-                weixin_number = "444444",
-                status = CheckInStatus.Actived,
-                registertime = "2019-4-27",
-                checkin_addressId = "四川省成都市高新区老成仁6号"
-            });
-            return result;
+        public async Task<bool> DeleteUser(string ID)
+        {
+            var url = $"http://localhost:4040/api/member/{ID}";
+            var response = await Request(url, "DELETE");
+
+            var obj = JsonConvert.DeserializeObject<ResponseResult>(response);
+            return obj.code == 0;
         }
 
-        public MemberCheckIn getOneMemberById(string ID) {
-            MemberCheckIn result = getAllMemberList().FirstOrDefault(m => m.ID == ID);
-            return result;
-        } 
+        public async Task<List<MemberCheckIn>> getAllMemberList()
+        {
+            var url = $"{Constant.Host}/api/member/";
+            var response = await Request(url);
+
+            var obj = JsonConvert.DeserializeObject<ResponseResult<List<MemberCheckIn>>>(response);
+            if (obj.code == 0)
+            {
+                return obj.data;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<MemberCheckIn> getOneMemberById(string id)
+        {
+            var url = $"{Constant.Host}/api/member/{id}";
+            var response = await Request(url);
+
+            var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
+            if (obj.code == 0)
+            {
+                return obj.data;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
     }
 
     public class CheckInAddress
     {
-        public string Name { get; set; }
-        public string Address { get; set; }
-        public CheckInAddress(string name, string address)
+        public string text { get; set; }
+        public string value { get; set; }
+        public CheckInAddress(string text, string value)
         {
-            this.Name = name;
-            this.Address = address;
+            this.text = text;
+            this.value = value;
         }
     }
 

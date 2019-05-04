@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Titanium.Web.Proxy;
@@ -18,10 +20,11 @@ namespace test
         Stopped,
         Register,
         Checkin
-        
+
     }
 
-    public class MyCustomEventArge : EventArgs {
+    public class MyCustomEventArge : EventArgs
+    {
         public string text { get; set; }
         public OperationType type { get; set; }
     }
@@ -35,7 +38,7 @@ namespace test
 
         public static OperationType OperationType = OperationType.Checkin;
         public event EventHandler OnReceiveResponse;
-       
+
         // Constructor
         protected SingletonProxyServer()
         {
@@ -140,7 +143,8 @@ namespace test
 
                     Instance.sendRequst(my_dictionay, "104.07", "30.67");
                 }
-                else if(OperationType == OperationType.Register) {
+                else if (OperationType == OperationType.Register)
+                {
                     Dictionary<string, string> my_dictionay = new Dictionary<string, string>();
                     var requsturl = new System.Uri(e.HttpClient.Request.Url);
                     var requestquery = requsturl.Query;
@@ -153,7 +157,7 @@ namespace test
                     my_dictionay.TryGetValue("openid", out openId);
                     Instance.OnReceiveResponse(Instance, new MyCustomEventArge { text = openId, type = OperationType.Register });
                 }
-               
+
             }
 
             ////read request headers
@@ -265,10 +269,24 @@ namespace test
             Stream myResponseStream = response.GetResponseStream();
             StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
             string retString = myStreamReader.ReadToEnd();
+
+            Regex regex = new Regex("success_jsonpCallback\\((.*)\\)");
+
+            if (regex.IsMatch(retString))
+            {
+                var result = regex.Match(retString).Groups[1].Value;
+                var checkInResult = JsonConvert.DeserializeObject<CheckInServerResponse>(result);
+
+                MemberCheckInSingletonService.updateMemberCheckInInformation(openId, checkInResult.result == "success" ? CheckInStatus.Success : CheckInStatus.Error, checkInResult.message);
+            }
+            else
+            {
+                MemberCheckInSingletonService.updateMemberCheckInInformation(openId, CheckInStatus.Error, retString);
+            }
             myStreamReader.Close();
             myResponseStream.Close();
-            //OnReceiveResponse(this, new MyCustomEventArge { text = retString,type = OperationType.Checkin });
-            MemberCheckInSingletonService.updateMemberCheckInInformation(openId, CheckInStatus.Success);
+
+
         }
     }
 }

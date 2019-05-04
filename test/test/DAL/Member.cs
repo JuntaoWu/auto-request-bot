@@ -10,6 +10,7 @@ namespace test.DAL
     public class Member
     {
         public string ID { get; set; }
+        public string avatarUrl { get; set; }
         public Image avatar { get; set; }
         public string weixin_uername { get; set; }
         public string username { get; set; }

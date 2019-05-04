@@ -5,29 +5,41 @@ import { prop, Typegoose, ModelType, InstanceType, pre } from 'typegoose';
  * Member Schema
  *      public string ID { get; set; }
         public Image avatar { get; set; }
-        public string weixin_uername { get; set; }
+        public string weixin_username { get; set; }
         public string username { get; set; }
         public string telephone { get; set; }
         public string weixin_number { get; set; }
         public string status { get; set; }
-        public string registertiem { get; set; }
+        public string registertime { get; set; }
  */
+
+export enum CheckInStatus {
+    Waiting,
+    Success,
+    Error,
+    Activated,
+    UnActive
+}
 
 export class Member extends Typegoose {
     @prop()
-    avatar: String;
+    openId: String;
     @prop()
-    weixin_uername: String;
+    nickName: String;
     @prop()
-    username: String;
+    wechatId: String;
+    @prop()
+    contactName: String;
     @prop()
     telephone: String;
     @prop()
-    weixin_number: String;
+    locationId: String;
     @prop()
-    status: String;
+    avatarUrl: String;
+    @prop({ default: CheckInStatus.Activated })
+    status: CheckInStatus;
     @prop()
-    registertiem: String;
+    registerTime: String;
 }
 
 const MemberModel = new Member().getModelForClass(Member, {
