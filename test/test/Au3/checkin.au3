@@ -1,12 +1,13 @@
 #include <MsgBoxConstants.au3>
 #include <Debug.au3>
+#include<GetDPI.au3>
 
-_DebugSetup("checkin")
+;~ _DebugSetup("checkin")
 
 $argc = $CmdLine[0]
 $userCount = $argc > 1 ? $CmdLine[1] : 1
 
-_DebugOut($argc & $userCount)
+;~ _DebugOut("argc, argv:" & $argc & $userCount)
 
 $colorSelectedUser = 0xa9a9ab
 $colorNormalUser = 0xa7c2f7
@@ -15,6 +16,9 @@ $colorMessageBox = 0x9eea6a
 
 Global $dpiFactor = RegRead("HKEY_CURRENT_CONFIG\Software\Fonts", "LogPixels") / 96
 ; MsgBox($MB_SYSTEMMODAL, "", $dpiFactor)
+$dpiFactor = _GetDPI()[2]
+
+;~ _DebugOut("dpiFactor: " & $dpiFactor & _GetDPI()[2])
 
 Global $hWnd = openDuoliao()
 Local $aWindowPosition = WinGetPos("多聊")
@@ -67,7 +71,7 @@ Func checkin()
       MouseClick("left")
       Sleep(200)
       WinWaitActive("File Transfer")
-      
+
       ; Add new data to the clipboard.
       ClipPut($url)
       Send("^v")
@@ -93,7 +97,7 @@ Func openUrl()
 
    $aCoord = findColorByPositionReverse($aFileTransferArea, $colorMessageBox)
    If Not($aCoord = Null) Then
-	  MouseMove($aCoord[0], $aCoord[1])
+	  MouseMove($aCoord[0] - (100 * $dpiFactor), $aCoord[1] - (25 * $dpiFactor))
 	  Sleep(200)
 	  MouseClick("left")
 	  Sleep(200)
@@ -125,15 +129,10 @@ EndFunc
 
 Func findColorByPositionReverse($aWindowPosition, $color)
    Local $aCoord[4]
-   $aCoord[0] = $aWindowPosition[0]
+   $aCoord[2] = $aWindowPosition[0]
    $aCoord[3] = $aWindowPosition[1]
-   $aCoord[2] = $aWindowPosition[0] + $aWindowPosition[2]
+   $aCoord[0] = $aWindowPosition[0] + $aWindowPosition[2]
    $aCoord[1] = $aWindowPosition[1] + $aWindowPosition[3]
-
-   _DebugOut($aCoord[0])
-   _DebugOut($aCoord[1])
-   _DebugOut($aCoord[2])
-   _DebugOut($aCoord[3])
 
    Return findColorByCoord($aCoord, $color)
 EndFunc
@@ -168,7 +167,7 @@ Func findColorByCoord($aWindowCoord, $color)
 	  Return $normalizedCoord
    Else
      $error = "Error: Cannot find color" & $color & "in:" & "left: " & $aWindowCoord[0] * $dpiFactor & ", top:" & $aWindowCoord[1] * $dpiFactor & ", right: " & $aWindowCoord[2] * $dpiFactor & ", bottom:" & $aWindowPosition[3] * $dpiFactor
-     _DebugOut($error)
+     ;~ _DebugOut($error)
 	  MsgBox($MB_SYSTEMMODAL, "", $error)
 	  Return Null
    EndIf
