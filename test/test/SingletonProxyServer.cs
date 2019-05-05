@@ -165,71 +165,71 @@ namespace test
 
             }
 
-            ////read request headers
-            var requestHeaders = e.HttpClient.Request.Headers;
+            //////read request headers
+            //var requestHeaders = e.HttpClient.Request.Headers;
 
-            var method = e.HttpClient.Request.Method.ToUpper();
-            if ((method == "POST" || method == "PUT" || method == "PATCH"))
-            {
-                //Get/Set request body bytes
-                byte[] bodyBytes = await e.GetRequestBody();
-                e.SetRequestBody(bodyBytes);
+            //var method = e.HttpClient.Request.Method.ToUpper();
+            //if ((method == "POST" || method == "PUT" || method == "PATCH"))
+            //{
+            //    //Get/Set request body bytes
+            //    byte[] bodyBytes = await e.GetRequestBody();
+            //    e.SetRequestBody(bodyBytes);
 
-                //Get/Set request body as string
-                string bodyString = await e.GetRequestBodyAsString();
-                e.SetRequestBodyString(bodyString);
+            //    //Get/Set request body as string
+            //    string bodyString = await e.GetRequestBodyAsString();
+            //    e.SetRequestBodyString(bodyString);
 
-                //store request 
-                //so that you can find it from response handler 
-                e.UserData = e.HttpClient.Request;
-            }
+            //    //store request 
+            //    //so that you can find it from response handler 
+            //    e.UserData = e.HttpClient.Request;
+            //}
 
-            //To cancel a request with a custom HTML content
-            //Filter URL
-            if (e.HttpClient.Request.RequestUri.AbsoluteUri.Contains("google.com"))
-            {
-                e.Ok("<!DOCTYPE html>" +
-                      "<html><body><h1>" +
-                      "Website Blocked" +
-                      "</h1>" +
-                      "<p>Blocked by titanium web proxy.</p>" +
-                      "</body>" +
-                      "</html>");
-            }
-            //Redirect example
-            if (e.HttpClient.Request.RequestUri.AbsoluteUri.Contains("wikipedia.org"))
-            {
-                e.Redirect("https://www.paypal.com");
-            }
+            ////To cancel a request with a custom HTML content
+            ////Filter URL
+            //if (e.HttpClient.Request.RequestUri.AbsoluteUri.Contains("google.com"))
+            //{
+            //    e.Ok("<!DOCTYPE html>" +
+            //          "<html><body><h1>" +
+            //          "Website Blocked" +
+            //          "</h1>" +
+            //          "<p>Blocked by titanium web proxy.</p>" +
+            //          "</body>" +
+            //          "</html>");
+            //}
+            ////Redirect example
+            //if (e.HttpClient.Request.RequestUri.AbsoluteUri.Contains("wikipedia.org"))
+            //{
+            //    e.Redirect("https://www.paypal.com");
+            //}
         }
 
         //Modify response
         public async static Task OnResponse(object sender, SessionEventArgs e)
         {
             //read response headers
-            var responseHeaders = e.HttpClient.Response.Headers;
+            //var responseHeaders = e.HttpClient.Response.Headers;
 
-            //if (!e.ProxySession.Request.Host.Equals("medeczane.sgk.gov.tr")) return;
-            if (e.HttpClient.Request.Method == "GET" || e.HttpClient.Request.Method == "POST")
-            {
-                if (e.HttpClient.Response.StatusCode == 200)
-                {
-                    if (e.HttpClient.Response.ContentType != null && e.HttpClient.Response.ContentType.Trim().ToLower().Contains("text/html"))
-                    {
-                        byte[] bodyBytes = await e.GetResponseBody();
-                        e.SetResponseBody(bodyBytes);
+            ////if (!e.ProxySession.Request.Host.Equals("medeczane.sgk.gov.tr")) return;
+            //if (e.HttpClient.Request.Method == "GET" || e.HttpClient.Request.Method == "POST")
+            //{
+            //    if (e.HttpClient.Response.StatusCode == 200)
+            //    {
+            //        if (e.HttpClient.Response.ContentType != null && e.HttpClient.Response.ContentType.Trim().ToLower().Contains("text/html"))
+            //        {
+            //            byte[] bodyBytes = await e.GetResponseBody();
+            //            e.SetResponseBody(bodyBytes);
 
-                        string body = await e.GetResponseBodyAsString();
-                        e.SetResponseBodyString(body);
-                    }
-                }
-            }
+            //            string body = await e.GetResponseBodyAsString();
+            //            e.SetResponseBodyString(body);
+            //        }
+            //    }
+            //}
 
-            if (e.UserData != null)
-            {
-                //access request from UserData property where we stored it in RequestHandler
-                var request = (Request)e.UserData;
-            }
+            //if (e.UserData != null)
+            //{
+            //    //access request from UserData property where we stored it in RequestHandler
+            //    var request = (Request)e.UserData;
+            //}
 
         }
 
