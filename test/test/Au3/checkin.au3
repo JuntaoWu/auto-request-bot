@@ -1,19 +1,23 @@
 #include <MsgBoxConstants.au3>
+#include <Debug.au3>
+
+_DebugSetup("checkin")
+
+$argc = $CmdLine[0]
+$userCount = $argc > 1 ? $CmdLine[1] : 1
+
+_DebugOut($argc & $userCount)
+
+$colorSelectedUser = 0xa9a9ab
+$colorNormalUser = 0xa7c2f7
+$colorFileTransfer = 0x2ba245
+$colorMessageBox = 0x9eea6a
 
 Global $dpiFactor = RegRead("HKEY_CURRENT_CONFIG\Software\Fonts", "LogPixels") / 96
 ; MsgBox($MB_SYSTEMMODAL, "", $dpiFactor)
 
 Global $hWnd = openDuoliao()
-WinActivate($hWnd)
-
-   ;WinWait("∂‡¡ƒ", "")
-   ;If Not WinActivate("∂‡¡ƒ", "") Then _
-   ;WinActivate("∂‡¡ƒ", "")
-   ;WinWaitActive("∂‡¡ƒ", "")
-
-;checkin()
-
-Local $aWindowPosition = WinGetPos("∂‡¡ƒ")
+Local $aWindowPosition = WinGetPos("Â§öËÅä")
 
 ;drawRect($aWindowPosition)
 
@@ -35,70 +39,59 @@ $sessionArea[3] = $aWindowPosition[3]
 
 Global $url = "http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=1546523890746&nonce=7150788195ff4a4fa0ae73d56a4245d0&trade_source=TMS&signature=D5CE85CD68327998A7C78EB0D48B806F&data=%7B%22redirectURL%22%3A%22http%3A%2F%2Ftms.ihxlife.com%2Ftms%2Fhtml%2F1_kqlr%2Fsign.html%22%2C%22attach%22%3A%2200000000000000105723%22%7D"
 
-;selected user
-If Not(findColorByPosition($avatarArea, 0xa9a9ab) = Null) Then
-   MouseClick("left")
-   Sleep(200)
+; checkin selectedUser
+; checkin()
+;~ If Not(findColorByPosition($avatarArea, $colorSelectedUser) = Null) Then
+;~    MouseClick("left")
+;~    Sleep(200)
+;~    checkin()
+;~ EndIf
+
+For $i = 1 To $userCount Step +1
+   ConsoleWrite($i)
+   checkin()
+   Send("!~")
+Next
+
+; checkin normalUser
+;~ If Not(findColorByPosition($avatarArea, $colorNormalUser) = Null) Then
+;~    MouseClick("left")
+;~    Sleep(200)
+;~    checkin()
+;~ EndIf
+
+Func checkin()
    ;FileTransfer Session
-   If Not(findColorByPosition($sessionArea, 0x2ba245) = Null) Then
-	  MouseClick("left")
-	  MouseClick("left")
+   If Not(findColorByPosition($sessionArea, $colorFileTransfer) = Null) Then
+      MouseClick("left")
+      MouseClick("left")
+      Sleep(200)
+      WinWaitActive("File Transfer")
+      
+      ; Add new data to the clipboard.
+      ClipPut($url)
+      Send("^v")
+      Sleep(200)
 
-	  Sleep(200)
+      ; Send Message
+      Send("!s")
+      Sleep(500)
 
-	  WinWaitActive("File Transfer")
-	  ; Add new data to the clipboard.
-	  ClipPut($url)
-	  Send("^v")
-	  Sleep(200)
+      openUrl()
 
-	  Send("!s")
-	  Sleep(200)
-
-	  openUrl()
-
-	  WinClose("File Transfer")
+      WinClose("File Transfer")
    EndIf
-EndIf
-Sleep(200)
-
-;normal user
-If Not(findColorByPosition($avatarArea, 0xa7c2f7) = Null) Then
-   MouseClick("left")
-   Sleep(200)
-   ;FileTransfer Session
-   If Not(findColorByPosition($sessionArea, 0x2ba245) = Null) Then
-	  MouseClick("left")
-	  MouseClick("left")
-
-	  Sleep(200)
-
-	  WinWaitActive("File Transfer")
-	  ; Add new data to the clipboard.
-	  ClipPut($url)
-	  Send("^v")
-	  Sleep(200)
-
-	  Send("!s")
-	  Sleep(200)
-
-	  openUrl()
-
-	  WinClose("File Transfer")
-   EndIf
-EndIf
-Sleep(200)
+EndFunc
 
 Func openUrl()
-   ; 0x9eea6a message box color
    Local $hFileTransferWnd = WinGetHandle("File Transfer")
    Local $aFileTransferArea = WinGetPos("File Transfer")
 
    ; MsgBox($MB_SYSTEMMODAL, "", $aFileTransferArea[0] & "," & $aFileTransferArea[1] & "," & $aFileTransferArea[2] & "," & $aFileTransferArea[3])
 
-   ; drawRect($aFileTransferArea)
+   drawRect($aFileTransferArea)
 
-   $aCoord = findColorByPositionReverse($aFileTransferArea, 0x9eea6a)
+   $aCoord = findColorByPositionReverse($aFileTransferArea, $colorMessageBox)
    If Not($aCoord = Null) Then
 	  MouseMove($aCoord[0], $aCoord[1])
 	  Sleep(200)
@@ -106,7 +99,7 @@ Func openUrl()
 	  Sleep(200)
 
 	  WinWaitActive("WeChat")
-	  Sleep(3000)
+	  Sleep(5000)
 	  WinClose("WeChat")
    EndIf
 EndFunc
@@ -123,24 +116,26 @@ Func drawRect($aRectArea)
 EndFunc
 
 Func openDuoliao()
-   Return WinGetHandle("∂‡¡ƒ", "")
-EndFunc
-
-Func checkin()
-   WinWait("WeChat", "")
-   If Not WinActivate("WeChat", "") Then _
-   WinActivate("WeChat", "")
-   WinWaitActive("WeChat", "")
-   WinClose("WeChat", "")
+   WinWait("Â§öËÅä")
+   If Not WinActivate("Â§öËÅä") Then _
+      WinActivate("Â§öËÅä")
+   WinWaitActive("Â§öËÅä")
+   Return WinGetHandle("Â§öËÅä")
 EndFunc
 
 Func findColorByPositionReverse($aWindowPosition, $color)
-   Local $aPosition[4]
-   $aPosition[0] = $aWindowPosition[0] + $aWindowPosition[2] ;right
-   $aPosition[1] = $aWindowPosition[1] + $aWindowPosition[3] ;bottom
-   $aPosition[2] = $aWindowPosition[0]
-   $aPosition[3] = $aWindowPosition[1]
-   Return findColorByPosition($aPosition, $color)
+   Local $aCoord[4]
+   $aCoord[0] = $aWindowPosition[0]
+   $aCoord[3] = $aWindowPosition[1]
+   $aCoord[2] = $aWindowPosition[0] + $aWindowPosition[2]
+   $aCoord[1] = $aWindowPosition[1] + $aWindowPosition[3]
+
+   _DebugOut($aCoord[0])
+   _DebugOut($aCoord[1])
+   _DebugOut($aCoord[2])
+   _DebugOut($aCoord[3])
+
+   Return findColorByCoord($aCoord, $color)
 EndFunc
 
 ; findColor by x, y, width, height
@@ -155,15 +150,15 @@ EndFunc
 
 ; findColor by left, top, right, bottom & dpi factor need to be considered.
 Func findColorByCoord($aWindowCoord, $color)
+   ; _DebugOut("left:" & $aWindowCoord[0] * $dpiFactor & ", top:" & $aWindowCoord[1] * $dpiFactor & "right:" & $aWindowCoord[2] * $dpiFactor & "bottom:" & $aWindowPosition[3] * $dpiFactor)
    ; Find a pure red pixel in the range 0,0-20,300
    ;MsgBox($MB_SYSTEMMODAL, "", $hWnd)
-   Local $aCoord = PixelSearch($aWindowCoord[0] * $dpiFactor, $aWindowCoord[1] * $dpiFactor, $aWindowCoord[2] * $dpiFactor, $aWindowPosition[3] * $dpiFactor, $color, 0, 1, $hWnd)
+   Local $aCoord = PixelSearch($aWindowCoord[0] * $dpiFactor, $aWindowCoord[1] * $dpiFactor, $aWindowCoord[2] * $dpiFactor, $aWindowPosition[3] * $dpiFactor, $color)
    ;Local $aCoord = PixelSearch(0, 0, @DesktopWidth, @DesktopHeight, 0xFF0000)
 
    ; MsgBox($MB_SYSTEMMODAL, "", "findColor")
 
    If Not @error Then
-
 	  ; MsgBox($MB_SYSTEMMODAL, "", "X and Y are: " & $aCoord[0] & "," & $aCoord[1])
 	  MouseMove($aCoord[0] / $dpiFactor, $aCoord[1] / $dpiFactor)
 
@@ -172,7 +167,9 @@ Func findColorByCoord($aWindowCoord, $color)
 	  $normalizedCoord[1] = $aCoord[1] / $dpiFactor
 	  Return $normalizedCoord
    Else
-	  MsgBox($MB_SYSTEMMODAL, "", "Error: " & @error)
+     $error = "Error: Cannot find color" & $color & "in:" & "left: " & $aWindowCoord[0] * $dpiFactor & ", top:" & $aWindowCoord[1] * $dpiFactor & ", right: " & $aWindowCoord[2] * $dpiFactor & ", bottom:" & $aWindowPosition[3] * $dpiFactor
+     _DebugOut($error)
+	  MsgBox($MB_SYSTEMMODAL, "", $error)
 	  Return Null
    EndIf
 EndFunc
