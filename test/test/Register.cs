@@ -18,7 +18,7 @@ namespace test
             InitializeComponent();
         }
 
-        private void register_click(object sender, EventArgs e)
+        private async void register_click(object sender, EventArgs e)
         {
             if (this.password_txtbox.Text != this.confirm_password_txtbox.Text)
             {
@@ -28,8 +28,13 @@ namespace test
             else
             {
                 RegisterDAL register = new RegisterDAL();
-                if (register.Register(this.username_txtbox.Text, this.telephone_txtbox.Text, this.password_txtbox.Text)) {
+                ResponseResult result = await register.Register(this.username_txtbox.Text, this.telephone_txtbox.Text, this.password_txtbox.Text);
+                if (result.code == 0)
+                {
                     this.Close();
+                }
+                else {
+                    MessageBox.Show(result.message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

@@ -19,20 +19,21 @@ namespace test
             InitializeComponent();
         }
 
-        private void login_btn_click(object sender, EventArgs e)
+        private async void login_btn_click(object sender, EventArgs e)
         {
             string username = this.user_name_txtbox.Text;
             string password = this.password_txtbox.Text;
             LoginDAL login = new LoginDAL();
-            if (login.Login(username, password))
+            ResponseResult result = await login.Login(this.user_name_txtbox.Text, this.password_txtbox.Text);
+            if (result.code == 0)
             {
                 this.exit = false;
                 this.Dispose();
             }
             else {
-
-                this.display_message.Text = "登录失败";
-                this.display_message.ForeColor = Color.Red;
+                 MessageBox.Show(result.message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //this.display_message.Text = "登录失败";
+                //this.display_message.ForeColor = Color.Red;
             }
         }
 
