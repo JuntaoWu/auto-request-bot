@@ -27,7 +27,7 @@ namespace test
     public class MemberCheckInSingletonService
     {
         private static MemberCheckInSingletonService instance;
-        private List<MemberCheckIn> membercheckinlist;
+        public List<MemberCheckIn> membercheckinlist;
         public event EventHandler OnReceiveCheckInResponse;
 
         // Constructor
@@ -51,9 +51,8 @@ namespace test
             }
         }
 
-        public static async void getAllMemberCheckInOnToday()
+        public static async void getAllMemberCheckInOnToday(CheckInType type)
         {
-            var type = CheckInType.CheckIn;
             var url = $"{Constant.Host}/api/member/checkin/?type={Convert.ToInt32(type)}";
 
             var response = await HttpUtil.Request(url);

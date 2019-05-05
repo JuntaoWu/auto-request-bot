@@ -13,6 +13,7 @@ import * as moment from 'moment';
 import * as path from 'path';
 
 import * as file from 'fs';
+import LocationModel from '../models/location.model';
 
 export let list = async (req, res, next) => {
     const data = await MemberModel.find();
@@ -35,31 +36,40 @@ export let load = async (req, res, next) => {
 export let create = async (req, res, next) => {
 
     let data = req.body;
+    
+    let existmember = await MemberModel.findOne({ openId: data.openId });
+    if (!existmember) {
+        const base64String = req.body.avatar.match(/data:(.*);base64,(.*)/)[2];
 
-    const base64String = req.body.avatar.match(/data:(.*);base64,(.*)/)[2];
+        const avatar = Buffer.from(base64String, "base64");
+        const fileName = `/static/avatar/${data.openId}-${+new Date()}.jpg`;
+        data.avatarUrl = fileName;
 
-    const avatar = Buffer.from(base64String, "base64");
-    const fileName = `/static/avatar/${data.openId}-${+new Date()}.jpg`;
-    data.avatarUrl = fileName;
+        let member = new MemberModel(data);
 
-    let member = new MemberModel(data);
+        file.writeFile(path.join(__dirname, `../../..${fileName}`), avatar, async (err) => {
+            if (err) {
+                return res.json({
+                    code: 500,
+                    message: err,
+                });
+            }
 
-    file.writeFile(path.join(__dirname, `../../..${fileName}`), avatar, async (err) => {
-        if (err) {
+            await member.save();
+
             return res.json({
-                code: 500,
-                message: err,
+                code: 0,
+                message: "OK",
+                data: member
             });
-        }
-
-        await member.save();
-
-        return res.json({
-            code: 0,
-            message: "OK",
-            data: member
         });
-    });
+    }else {
+        return res.json({
+            code: 500,
+            message: "当前用户已经存在,不能重复注册"
+        });
+    }
+
 };
 
 
@@ -117,7 +127,7 @@ export let remove = async (req, res, next) => {
 };
 
 export let checkin = async (req, res, next) => {
-
+    let locations = await LocationModel.find();
     let checkinList = await CheckInModel.find({
         createdAt: {
             $gte: moment({ hour: 0 })
@@ -149,18 +159,55 @@ export let checkin = async (req, res, next) => {
                 });
             }
 
+            let result = docs.map(item=>{
+                let location = locations.find(loc=>loc._id == item.locationId)
+                return {
+                    _id: item._id,
+                    openId: item.openId,
+                    nickName: item.nickName,
+                    wechatId: item.wechatId,
+                    contactName: item.contactName,
+                    telephone: item.telephone,
+                    locationId: item.locationId,
+                    avatarUrl: item.avatarUrl,
+                    status: item.status,
+                    type: item.type,
+                    checkInTime: item.checkInTime,
+                    longitude: location.longitude,
+                    latitude: location.latitude
+                }
+            })
+
             return res.json({
                 code: 0,
                 message: "OK",
-                data: docs
+                data: result
             });
         });
     }
     else {
+        let result = checkinList.map(item=>{
+            let location = locations.find(loc=>loc._id == item.locationId)
+            return {
+                _id: item._id,
+                openId: item.openId,
+                nickName: item.nickName,
+                wechatId: item.wechatId,
+                contactName: item.contactName,
+                telephone: item.telephone,
+                locationId: item.locationId,
+                avatarUrl: item.avatarUrl,
+                status: item.status,
+                type: item.type,
+                checkInTime: item.checkInTime,
+                longitude: location.longitude,
+                latitude: location.latitude
+            }
+        })
         return res.json({
             code: 0,
             message: "OK",
-            data: checkinList
+            data:result
         });
     }
 };
@@ -171,7 +218,7 @@ export let updateCheckin = async (req, res, next) => {
 
     await CheckInModel.findByIdAndUpdate(req.params.id, {
         status: req.body.status,
-        checkInTime: checkInTime,
+        checkInTime: checkInTime.toLocaleString(),
         message: req.body.message,
     }, (error, updatedCheckin) => {
         if (error) {
@@ -181,7 +228,7 @@ export let updateCheckin = async (req, res, next) => {
             });
         }
 
-        ((updatedCheckin.checkInTime) as any) = checkInTime;
+        ((updatedCheckin.checkInTime) as any) = checkInTime.toLocaleString();
 
         return res.json({
             code: 0,

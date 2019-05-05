@@ -36,7 +36,7 @@ namespace test
             user = new AddUserDAL();
             //开始启动监听服务，并注册事件响应函数
             SingletonProxyServer.OperationType = OperationType.Stopped;
-            SingletonProxyServer.ServerStart();
+
             SingletonProxyServer.Instance.OnReceiveResponse += Instance_OnReceiveResponse;
 
             MemberCheckInSingletonService.Instance.OnReceiveCheckInResponse += Instance_OnReceiveCheckInResponse;
@@ -59,7 +59,7 @@ namespace test
             Login loginform = new Login();
             loginform.StartPosition = FormStartPosition.CenterScreen;
             loginform.ShowDialog();
-            MemberCheckInSingletonService.getAllMemberCheckInOnToday();
+            //MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
         }
 
 
@@ -185,19 +185,24 @@ namespace test
         {
             string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
             // Location userlocation = getAddressLocation(selecteaddress);
-            bool result = await user.AddUser(selecteaddress, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.base64Str, this.openId_txt.Text);
-            if (result)
+            ResponseResult<MemberCheckIn> result = await user.AddUser(selecteaddress, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.base64Str, this.openId_txt.Text);
+            if (result.code == 0)
             {
                 this.weixin_username_txt.Text = String.Empty;
                 this.weixin_number_txt.Text = String.Empty;
                 this.contact_name_txt.Text = String.Empty;
                 this.contact_telephone_txt.Text = String.Empty;
-                this.checkin_address_combox.SelectedValue = String.Empty;
+                this.checkin_address_combox.SelectedIndex = 0;
                 this.openId_txt.Text = String.Empty;
                 this.register_btn.Enabled = true;
                 this.confirm_btn.Enabled = false;
                 this.active_label.Text = "未激活";
                 this.image_picturebox.Image = null;
+                SingletonProxyServer.OperationType = OperationType.Checkin;
+            }
+            else
+            {
+                MessageBox.Show(result.message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -225,11 +230,12 @@ namespace test
                 this.checkin_address_combox.DisplayMember = "text";
                 this.checkin_address_combox.ValueMember = "value";
 
+
                 this.checkin_address_combox.SelectedIndex = 0;
             }
-            else if (e.TabPage.Text == "会员管理")
+            else if (e.TabPage.Text == "打卡管理")
             {
-                MemberCheckInSingletonService.getAllMemberCheckInOnToday();
+                MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
             }
         }
 
@@ -299,7 +305,7 @@ namespace test
         }
 
         /// <summary>
-        /// 当CheckIn完成之后更新会员管理全部打卡列表
+        /// 当CheckIn完成之后更新打卡管理全部打卡列表
         /// </summary>
         /// <param name="data"></param>
         private void UpdateCheckInDataGrid(object data)
@@ -371,6 +377,7 @@ namespace test
         private void start_chekcin_btn_Click(object sender, EventArgs e)
         {
             SingletonProxyServer.OperationType = OperationType.Checkin;
+            SingletonProxyServer.ServerStart();
             this.start_chekcin_btn.Enabled = false;
             this.stop_checkin_btn.Enabled = true;
         }
@@ -383,8 +390,51 @@ namespace test
         private void stop_checkin_btn_Click(object sender, EventArgs e)
         {
             SingletonProxyServer.OperationType = OperationType.Stopped;
+            SingletonProxyServer.ServerStop();
             this.start_chekcin_btn.Enabled = true;
             this.stop_checkin_btn.Enabled = false;
         }
+
+        /// <summary>
+        /// 窗体关闭时停止打卡
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Main_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            SingletonProxyServer.ServerStop();
+        }
+
+        /// <summary>
+        /// 获取打卡类型
+        /// </summary>
+        /// <returns></returns>
+        private CheckInType getCheckInType()
+        {
+            switch (this.checkin_type_combox.Text)
+            {
+                case "上班打卡":
+                    return CheckInType.CheckIn;
+                    break;
+                case "下班打卡":
+                    return CheckInType.CheckOut;
+                    break;
+                default:
+                    return CheckInType.CheckIn;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 打卡类型变化事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkin_type_combox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
+              
+        }
     }
+
 }
