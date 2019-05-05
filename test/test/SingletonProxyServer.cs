@@ -67,6 +67,11 @@ namespace test
             //locally trust root certificate used by this proxy 
             Instance.proxyServer.CertificateManager.TrustRootCertificate(true);
 
+         
+        }
+
+        public static void ServerStart()
+        {
             Instance.explicitEndPoint = new ExplicitProxyEndPoint(IPAddress.Any, 8765, true)
             {
             };
@@ -81,10 +86,6 @@ namespace test
             {
 
             }
-        }
-
-        public static void ServerStart()
-        {
 
             Instance.proxyServer.Start();
 
@@ -109,6 +110,10 @@ namespace test
             Instance.proxyServer.ServerCertificateValidationCallback -= OnCertificateValidation;
             Instance.proxyServer.ClientCertificateSelectionCallback -= OnCertificateSelection;
 
+            Instance.proxyServer.DisableSystemHttpProxy();
+            Instance.proxyServer.DisableSystemHttpsProxy();
+
+            
             Instance.proxyServer.Stop();
         }
 
@@ -141,7 +146,7 @@ namespace test
                         my_dictionay[item.Split('=')[0]] = item.Split('=')[1];
                     });
 
-                    Instance.sendRequst(my_dictionay, "104.07", "30.67");
+                    Instance.sendRequst(my_dictionay);
                 }
                 else if (OperationType == OperationType.Register)
                 {
@@ -245,10 +250,10 @@ namespace test
             return Task.FromResult(0);
         }
 
-        private void sendRequst(Dictionary<string, string> template, string longitude, string latitude)
+        private void sendRequst(Dictionary<string, string> template)
         {
             string ur = $"{string.Format("0")}\"\",\"\"";
-            string openId, userId, timestamp, nonce, trade_source, signature, qrcodeid;
+            string openId, userId, timestamp, nonce, trade_source, signature, qrcodeid, longitude, latitude;
             template.TryGetValue("openid", out openId);
             template.TryGetValue("userid", out userId);
             template.TryGetValue("timestamp", out timestamp);
@@ -256,6 +261,10 @@ namespace test
             template.TryGetValue("trade_source", out trade_source);
             template.TryGetValue("signature", out signature);
             template.TryGetValue("attach", out qrcodeid);
+
+            var member =MemberCheckInSingletonService.Instance.membercheckinlist.Single(m => m.openId == openId);
+            longitude = member.longitude.ToString();
+            latitude = member.latitude.ToString();
 
             string customParams = $"{{\"openid\":\"{openId}\",\"userid\":\"{userId}\",\"timestamp\":\"{timestamp}\",\"nonce\":\"{nonce}\",\"trade_source\":\"{trade_source}\",\"signature\":\"{signature}\",\"qrcodeid\":\"{qrcodeid}\",\"attentype\":\"morning\",\"longitude\":{longitude},\"latitude\":{latitude},\"cacheflag\":\"0\"}}";
             //"openid":"","userid":"510129760","timestamp":"1555230703033","nonce":"b422fca3-6745-45fb-942e-3277e4c2872f","trade_source":"HXQYH","signature":"C5B39A04405C819AB045BD54A3376D59","qrcodeid":"00000000000000105723","attentype":"morning","longitude":104.07,"latitude":30.67,"cacheflag":"0"

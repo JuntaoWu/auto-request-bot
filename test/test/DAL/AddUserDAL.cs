@@ -65,25 +65,7 @@ namespace test.DAL
             return await result.Content.ReadAsStringAsync();
         }
 
-        /*
-            @prop()
-            nickName: String;
-            @prop()
-            wechatId: String;
-            @prop()
-            contactName: String;
-            @prop()
-            telephone: String;
-            @prop()
-            locationId: String;
-            @prop()
-            avatar: String;
-            @prop()
-            status: String;
-            @prop()
-            registerTime: String;
-        */
-        public async Task<bool> AddUser(string locationId, string nickName, string wechatId, string contactName, string telephone, string imagedata, string openId)
+        public async Task<ResponseResult<MemberCheckIn>> AddUser(string locationId, string nickName, string wechatId, string contactName, string telephone, string imagedata, string openId)
         {
             var url = "http://localhost:4040/api/member";
             var response = await Request(url, "POST", new
@@ -97,8 +79,7 @@ namespace test.DAL
                 avatar = imagedata,
             });
 
-            var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
-            return obj.code == 0;
+            return JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
         }
 
         public async Task<bool> UpdateUser(string ID, string locationId, string nickName, string wechatId, string contactName, string telephone, string imagedata, string openId)
@@ -193,4 +174,5 @@ namespace test.DAL
         public int comprehension { get; set; }
         public string level { get; set; }
     }
+
 }

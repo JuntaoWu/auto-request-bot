@@ -29,13 +29,17 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.register_btn = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.start_chekcin_btn = new System.Windows.Forms.Button();
+            this.stop_checkin_btn = new System.Windows.Forms.Button();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.wait_checkin_tabpage = new System.Windows.Forms.TabPage();
             this.wait_checkin_datagrid = new System.Windows.Forms.DataGridView();
@@ -66,10 +70,7 @@
             this.update = new System.Windows.Forms.DataGridViewButtonColumn();
             this.delete = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Titile_label = new System.Windows.Forms.Label();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.start_chekcin_btn = new System.Windows.Forms.Button();
-            this.stop_checkin_btn = new System.Windows.Forms.Button();
+            this.checkin_type_combox = new System.Windows.Forms.ComboBox();
             this.avatarDataGridViewImageColumn1 = new System.Windows.Forms.DataGridViewImageColumn();
             this.weixinuernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -102,7 +103,10 @@
             this.registertiemDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.memberBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabControl1.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.wait_checkin_tabpage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wait_checkin_datagrid)).BeginInit();
@@ -115,8 +119,6 @@
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).BeginInit();
-            this.tabPage4.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).BeginInit();
@@ -136,10 +138,10 @@
             // tabControl1
             // 
             this.tabControl1.Alignment = System.Windows.Forms.TabAlignment.Left;
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.tabControl1.ItemSize = new System.Drawing.Size(60, 120);
@@ -153,27 +155,96 @@
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControl1_DrawItem_1);
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.tableLayoutPanel2);
+            this.tabPage4.Location = new System.Drawing.Point(124, 4);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(1454, 745);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "打卡";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.start_chekcin_btn, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.stop_checkin_btn, 1, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(358, 49);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // start_chekcin_btn
+            // 
+            this.start_chekcin_btn.BackColor = System.Drawing.Color.White;
+            this.start_chekcin_btn.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.start_chekcin_btn.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.start_chekcin_btn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.start_chekcin_btn.Location = new System.Drawing.Point(3, 3);
+            this.start_chekcin_btn.Name = "start_chekcin_btn";
+            this.start_chekcin_btn.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.start_chekcin_btn.Size = new System.Drawing.Size(173, 43);
+            this.start_chekcin_btn.TabIndex = 1;
+            this.start_chekcin_btn.Text = "启动打卡";
+            this.start_chekcin_btn.UseVisualStyleBackColor = false;
+            this.start_chekcin_btn.Click += new System.EventHandler(this.start_chekcin_btn_Click);
+            // 
+            // stop_checkin_btn
+            // 
+            this.stop_checkin_btn.BackColor = System.Drawing.Color.White;
+            this.stop_checkin_btn.Enabled = false;
+            this.stop_checkin_btn.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.stop_checkin_btn.ForeColor = System.Drawing.Color.Red;
+            this.stop_checkin_btn.Location = new System.Drawing.Point(182, 3);
+            this.stop_checkin_btn.Name = "stop_checkin_btn";
+            this.stop_checkin_btn.Size = new System.Drawing.Size(173, 43);
+            this.stop_checkin_btn.TabIndex = 2;
+            this.stop_checkin_btn.Text = "停止打卡";
+            this.stop_checkin_btn.UseVisualStyleBackColor = false;
+            this.stop_checkin_btn.Click += new System.EventHandler(this.stop_checkin_btn_Click);
+            // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.tabControl2);
+            this.tabPage1.Controls.Add(this.tableLayoutPanel3);
             this.tabPage1.Location = new System.Drawing.Point(124, 4);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(1454, 745);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "会员管理";
+            this.tabPage1.Text = "打卡管理";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 1;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.Controls.Add(this.tabControl2, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.checkin_type_combox, 0, 0);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(10);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 8.79567F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 91.20433F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1448, 739);
+            this.tableLayoutPanel3.TabIndex = 1;
             // 
             // tabControl2
             // 
             this.tabControl2.Controls.Add(this.wait_checkin_tabpage);
             this.tabControl2.Controls.Add(this.successs_checkin_tabpage);
             this.tabControl2.Controls.Add(this.error_checkin_page);
-            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl2.Location = new System.Drawing.Point(3, 3);
+            this.tabControl2.Location = new System.Drawing.Point(3, 67);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(1448, 739);
+            this.tabControl2.Size = new System.Drawing.Size(1442, 669);
             this.tabControl2.TabIndex = 0;
             // 
             // wait_checkin_tabpage
@@ -183,7 +254,7 @@
             this.wait_checkin_tabpage.Location = new System.Drawing.Point(4, 25);
             this.wait_checkin_tabpage.Name = "wait_checkin_tabpage";
             this.wait_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3);
-            this.wait_checkin_tabpage.Size = new System.Drawing.Size(1440, 710);
+            this.wait_checkin_tabpage.Size = new System.Drawing.Size(1434, 640);
             this.wait_checkin_tabpage.TabIndex = 0;
             this.wait_checkin_tabpage.Text = "等待打卡";
             this.wait_checkin_tabpage.UseVisualStyleBackColor = true;
@@ -206,7 +277,7 @@
             this.wait_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
             this.wait_checkin_datagrid.Name = "wait_checkin_datagrid";
             this.wait_checkin_datagrid.RowTemplate.Height = 27;
-            this.wait_checkin_datagrid.Size = new System.Drawing.Size(1434, 704);
+            this.wait_checkin_datagrid.Size = new System.Drawing.Size(1428, 634);
             this.wait_checkin_datagrid.TabIndex = 0;
             // 
             // successs_checkin_tabpage
@@ -216,7 +287,7 @@
             this.successs_checkin_tabpage.Location = new System.Drawing.Point(4, 25);
             this.successs_checkin_tabpage.Name = "successs_checkin_tabpage";
             this.successs_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3);
-            this.successs_checkin_tabpage.Size = new System.Drawing.Size(1440, 710);
+            this.successs_checkin_tabpage.Size = new System.Drawing.Size(1434, 640);
             this.successs_checkin_tabpage.TabIndex = 1;
             this.successs_checkin_tabpage.Text = "已打卡";
             this.successs_checkin_tabpage.UseVisualStyleBackColor = true;
@@ -240,7 +311,7 @@
             this.success_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
             this.success_checkin_datagrid.Name = "success_checkin_datagrid";
             this.success_checkin_datagrid.RowTemplate.Height = 27;
-            this.success_checkin_datagrid.Size = new System.Drawing.Size(1434, 704);
+            this.success_checkin_datagrid.Size = new System.Drawing.Size(1428, 634);
             this.success_checkin_datagrid.TabIndex = 0;
             // 
             // error_checkin_page
@@ -250,7 +321,7 @@
             this.error_checkin_page.Location = new System.Drawing.Point(4, 25);
             this.error_checkin_page.Name = "error_checkin_page";
             this.error_checkin_page.Padding = new System.Windows.Forms.Padding(3);
-            this.error_checkin_page.Size = new System.Drawing.Size(1440, 710);
+            this.error_checkin_page.Size = new System.Drawing.Size(1434, 640);
             this.error_checkin_page.TabIndex = 2;
             this.error_checkin_page.Text = "异常打卡";
             this.error_checkin_page.UseVisualStyleBackColor = true;
@@ -274,7 +345,7 @@
             this.error_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
             this.error_checkin_datagrid.Name = "error_checkin_datagrid";
             this.error_checkin_datagrid.RowTemplate.Height = 27;
-            this.error_checkin_datagrid.Size = new System.Drawing.Size(1434, 704);
+            this.error_checkin_datagrid.Size = new System.Drawing.Size(1428, 634);
             this.error_checkin_datagrid.TabIndex = 0;
             // 
             // tabPage2
@@ -499,9 +570,9 @@
             // 
             // update
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.Aqua;
-            this.update.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.Aqua;
+            this.update.DefaultCellStyle = dataGridViewCellStyle2;
             this.update.HeaderText = "";
             this.update.Name = "update";
             this.update.Text = "编辑";
@@ -509,9 +580,9 @@
             // 
             // delete
             // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.Red;
-            this.delete.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.Red;
+            this.delete.DefaultCellStyle = dataGridViewCellStyle3;
             this.delete.HeaderText = "";
             this.delete.Name = "delete";
             this.delete.Text = "删除";
@@ -528,67 +599,27 @@
             this.Titile_label.TabIndex = 0;
             this.Titile_label.Text = "会员列表";
             // 
-            // tabPage4
+            // checkin_type_combox
             // 
-            this.tabPage4.Controls.Add(this.tableLayoutPanel2);
-            this.tabPage4.Location = new System.Drawing.Point(124, 4);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(1454, 745);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "打卡";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.start_chekcin_btn, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.stop_checkin_btn, 1, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(358, 49);
-            this.tableLayoutPanel2.TabIndex = 0;
-            // 
-            // start_chekcin_btn
-            // 
-            this.start_chekcin_btn.BackColor = System.Drawing.Color.White;
-            this.start_chekcin_btn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.start_chekcin_btn.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.start_chekcin_btn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            this.start_chekcin_btn.Location = new System.Drawing.Point(3, 3);
-            this.start_chekcin_btn.Name = "start_chekcin_btn";
-            this.start_chekcin_btn.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.start_chekcin_btn.Size = new System.Drawing.Size(173, 43);
-            this.start_chekcin_btn.TabIndex = 1;
-            this.start_chekcin_btn.Text = "启动打卡";
-            this.start_chekcin_btn.UseVisualStyleBackColor = false;
-            this.start_chekcin_btn.Click += new System.EventHandler(this.start_chekcin_btn_Click);
-            // 
-            // stop_checkin_btn
-            // 
-            this.stop_checkin_btn.BackColor = System.Drawing.Color.White;
-            this.stop_checkin_btn.Enabled = false;
-            this.stop_checkin_btn.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.stop_checkin_btn.ForeColor = System.Drawing.Color.Red;
-            this.stop_checkin_btn.Location = new System.Drawing.Point(182, 3);
-            this.stop_checkin_btn.Name = "stop_checkin_btn";
-            this.stop_checkin_btn.Size = new System.Drawing.Size(173, 43);
-            this.stop_checkin_btn.TabIndex = 2;
-            this.stop_checkin_btn.Text = "停止打卡";
-            this.stop_checkin_btn.UseVisualStyleBackColor = false;
-            this.stop_checkin_btn.Click += new System.EventHandler(this.stop_checkin_btn_Click);
+            this.checkin_type_combox.Dock = System.Windows.Forms.DockStyle.Left;
+            this.checkin_type_combox.FormattingEnabled = true;
+            this.checkin_type_combox.Items.AddRange(new object[] {
+            "上班打卡",
+            "下班打卡"});
+            this.checkin_type_combox.Location = new System.Drawing.Point(3, 3);
+            this.checkin_type_combox.Name = "checkin_type_combox";
+            this.checkin_type_combox.Size = new System.Drawing.Size(251, 23);
+            this.checkin_type_combox.TabIndex = 1;
+            this.checkin_type_combox.Text = "打卡类型";
+            this.checkin_type_combox.SelectedValueChanged += new System.EventHandler(this.checkin_type_combox_SelectedValueChanged);
             // 
             // avatarDataGridViewImageColumn1
             // 
             this.avatarDataGridViewImageColumn1.DataPropertyName = "avatar";
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("KaiTi", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle6.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle6.NullValue")));
-            this.avatarDataGridViewImageColumn1.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("KaiTi", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.NullValue = null;
+            this.avatarDataGridViewImageColumn1.DefaultCellStyle = dataGridViewCellStyle1;
             this.avatarDataGridViewImageColumn1.HeaderText = "头像";
             this.avatarDataGridViewImageColumn1.Name = "avatarDataGridViewImageColumn1";
             // 
@@ -779,7 +810,10 @@
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Main_Load);
             this.tabControl1.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.wait_checkin_tabpage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.wait_checkin_datagrid)).EndInit();
@@ -794,8 +828,6 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).EndInit();
-            this.tabPage4.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).EndInit();
@@ -873,6 +905,8 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button start_chekcin_btn;
         private System.Windows.Forms.Button stop_checkin_btn;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.ComboBox checkin_type_combox;
     }
 }
 

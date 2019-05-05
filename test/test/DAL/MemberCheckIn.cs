@@ -19,5 +19,7 @@ namespace test.DAL
         public string registerTime { get; set; }
         public string checkInTime { get; set; }
         public string locationId { get; set; }
+        public double longitude { get; set; }
+        public double latitude { get; set; }
     }
 }
