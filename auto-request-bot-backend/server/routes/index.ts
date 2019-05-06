@@ -21,10 +21,11 @@ import adRouter from './ad';
 import gameIconRouter from './gameicon';
 import sharedRouter from './shared';
 import imRouter from './im';
+import usermanageRouter from './user-manage'
 
 router.use('/location', locationRouter);
 router.use('/member', memberRouter);
-
+router.use('/usermanage' ,usermanageRouter);
 router.use('/users', userRouter);
 router.use('/version', versionRouter);
 router.use('/games/:gameId', gameRouter);
@@ -35,5 +36,6 @@ router.use('/ads', adRouter);
 router.use('/gameIcons', gameIconRouter);
 router.use('/shared', sharedRouter);
 router.use('/im', imRouter);
+
 
 export default router;
