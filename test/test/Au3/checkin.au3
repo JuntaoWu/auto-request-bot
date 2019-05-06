@@ -17,13 +17,17 @@ Global $colorNormalUser = 0xa7c2f7
 Global $colorFileTransfer = 0x2ba245
 Global $colorMessageBox = 0x9eea6a
 
+Global $titleDuoliao = "多聊"
+Global $titleFileTransfer = "[CLASS:ChatWnd;REGEXPTITLE:(File Transfer|文件传输助手)]"
+Global $titleWeChatBrowser = "[CLASS:CefWebViewWnd;REGEXPTITLE:(WeChat|微信)]"
+
 ;~ Global $dpiFactor = RegRead("HKEY_CURRENT_CONFIG\Software\Fonts", "LogPixels") / 96
 Global $dpiFactor = _GetDPI()[2]
 ;~ MsgBox($MB_SYSTEMMODAL, "", $dpiFactor)
 ;~ _DebugOut("dpiFactor: " & $dpiFactor & _GetDPI()[2])
 
-Global $hWnd = openMainWindow("多聊")
-Global $aWindowPosition = WinGetPos("多聊")
+Global $hWnd = openMainWindow($titleDuoliao)
+Global $aWindowPosition = WinGetPos($titleDuoliao)
 
 ; Main process
 Main()
@@ -82,18 +86,18 @@ Func checkin($sessionArea, $url)
    If Not($aFileTransferIcon = Null) Then
       MouseMove($aFileTransferIcon[0], $aFileTransferIcon[1])
       Sleep(100)
-      
+
       MouseClick("left")
       MouseClick("left")
       Sleep(200)
-      
-      WinWaitActive("File Transfer")
+
+      WinWaitActive($titleFileTransfer)
 
       ; todo: Ensure Textbox had been auto-focused
       openUrl($url)
       Sleep(500)
 
-      WinClose("File Transfer")
+      WinClose($titleFileTransfer)
    Else
       ConsoleWriteError(-1)
       Exit(-1)
@@ -111,8 +115,8 @@ Func openUrl($url)
    Sleep(500)
 
    ; Click url in message box
-   Local $hFileTransferWnd = WinGetHandle("File Transfer")
-   Local $aFileTransferArea = WinGetPos("File Transfer")
+   Local $hFileTransferWnd = WinGetHandle($titleFileTransfer)
+   Local $aFileTransferArea = WinGetPos($titleFileTransfer)
 
    ; MsgBox($MB_SYSTEMMODAL, "", $hFileTransferWnd)
    ; MsgBox($MB_SYSTEMMODAL, "", $aFileTransferArea[0] & "," & $aFileTransferArea[1] & "," & $aFileTransferArea[2] & "," & $aFileTransferArea[3])
@@ -120,15 +124,15 @@ Func openUrl($url)
 
    Local $aMessageBox = findColorByPositionReverse($aFileTransferArea, $colorMessageBox, $hFileTransferWnd)
    If Not($aMessageBox = Null) Then
-	  MouseMove($aMessageBox[0] + 12, $aMessageBox[1] - 15)
+	  MouseMove($aMessageBox[0] + (12 * $dpiFactor), $aMessageBox[1] - (15 * $dpiFactor))
 	  Sleep(100)
 
 	  MouseClick("left")
 	  Sleep(200)
 
-	  WinWaitActive("WeChat")
+	  WinWaitActive($titleWeChatBrowser)
 	  Sleep(5000)
-	  WinClose("WeChat")
+	  WinClose($titleWeChatBrowser)
    Else
       ConsoleWriteError(-1)
       Exit(-1)
