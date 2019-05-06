@@ -28,3 +28,10 @@ openid, userid, timestamp, nonce, signature //attach
  attentype,                   // signdata.
 http://kqapi.hxlife.com/tms/api/QRcodeSign?callbackparam=success_jsonpCallback&params= 
 {"openid":"o43yZt-ax60RdEq2tRID2cKW7Mt4","userid":"510129760","timestamp":"1555230703033","nonce":"b422fca3-6745-45fb-942e-3277e4c2872f","trade_source":"HXQYH","signature":"C5B39A04405C819AB045BD54A3376D59","qrcodeid":"00000000000000105723","attentype":"morning","longitude":104.07,"latitude":30.67,"cacheflag":"0"}&_=1555225095571
+
+
+经纬度查询:
+(纬度, 经度)
+http://www.gpsspg.com/maps.htm
+longitude: 经度
+latitude: 纬度
