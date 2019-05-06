@@ -1,6 +1,6 @@
-��������
-ץȡ����
-ת������
+拦截请求
+抓取数据
+转发请求
 
 
 http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=1546523890746&nonce=7150788195ff4a4fa0ae73d56a4245d0&trade_source=TMS&signature=D5CE85CD68327998A7C78EB0D48B806F&data={"redirectURL":"http://tms.ihxlife.com/tms/html/1_kqlr/sign.html","attach":"00000000000000105723"}
@@ -9,17 +9,17 @@ http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=15465238907
 
 
 
-�˺�:   369340425          ����: zyf1995.
-����ƽ: 17716131667        ����: fhs139807
-����:   17323249180        ����: fhs139807
+账号:   369340425          密码: zyf1995.
+蒋泽平: 17716131667        密码: fhs139807
+蒋亚:   17323249180        密码: fhs139807
 
-Step 1: ��������
+Step 1: 拦截请求
 http://tms.ihxlife.com/tms/html/1_kqlr/sign.html?attach=00000000000000105723&agentCode=510129760&userid=510129760&openid=o43yZt-ax60RdEq2tRID2cKW7Mt4&timestamp=1555227896140&nonce=c502b8ff-6f45-4044-b660-b6549cd56013&trade_source=HXQYH&signature=513F6DF8FB855544E9AD022FFE2625B2
 
 http://tms.ihxlife.com/tms/html/1_kqlr/sign.html?attach=00000000000000105723&agentCode=510129760&userid=510129760&openid=o43yZt-ax60RdEq2tRID2cKW7Mt4&timestamp=1555230703033&nonce=b422fca3-6745-45fb-942e-3277e4c2872f&trade_source=HXQYH&signature=C5B39A04405C819AB045BD54A3376D59
 
 
-Step 2: ���������޸�
+Step 2: 构造请求，修改
 openid, userid, timestamp, nonce, signature //attach
  qrcodeid,                     //attach
  longitude,                    //baiduAPI
@@ -30,8 +30,68 @@ http://kqapi.hxlife.com/tms/api/QRcodeSign?callbackparam=success_jsonpCallback&p
 {"openid":"o43yZt-ax60RdEq2tRID2cKW7Mt4","userid":"510129760","timestamp":"1555230703033","nonce":"b422fca3-6745-45fb-942e-3277e4c2872f","trade_source":"HXQYH","signature":"C5B39A04405C819AB045BD54A3376D59","qrcodeid":"00000000000000105723","attentype":"morning","longitude":104.07,"latitude":30.67,"cacheflag":"0"}&_=1555225095571
 
 
-��γ�Ȳ�ѯ:
-(γ��, ����)
+经纬度查询:
+(纬度, 经度)
 http://www.gpsspg.com/maps.htm
-longitude: ����
-latitude: γ��
+longitude: 经度
+latitude: 纬度
+
+人脸打卡 
+场景: respose.result == "needface"
+      response.message.split("#")包含如下信息: 
+      	"traceno": paramStrs[0],
+	"name": paramStrs[1],
+        "idnotype": paramStrs[2],
+        "idno": paramStrs[3],
+        traincode: paramStrs[4],
+        managecom: paramStrs[5]
+Step 1: 获取签名
+http://kqapi.hxlife.com/tms/api/GetSignatureInfo?params= location.href.split("#")[0]
+
+Step 2: wx.config
+
+configData = {
+                    debug : false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                    appId: data.appid, // 必填，公众号的唯一标识
+                    timestamp: data.timestamp, // 必填，生成签名的时间戳
+                    nonceStr: data.nonceStr, // 必填，生成签名的随机串
+                    signature: data.signature,// 必填，签名，见附录1
+                    jsApiList : ['chooseImage','previewImage','uploadImage','downloadImage']
+                    // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                };
+
+Step 3: wx.chooseImage return localId
+
+wx.chooseImage({
+    count: 1, // 默认9
+    sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+    sourceType: ['camera'],
+    success: (res) => {
+	localIds = res.localIds;
+    }
+});
+
+Step 4: wx.uploadImage return mediaId
+
+wx.uploadImage({
+    localId: localIds[0],
+    success: (res) => {
+    	mediaId = res.serverId;
+    }
+});
+
+Step 5: 上传mediaId
+
+"mediaId": mediaId,
+"traceno": paramStrs[0],
+"name": paramStrs[1],
+"idnotype": paramStrs[2],
+"idno": paramStrs[3],
+traincode: paramStrs[4],
+managecom: paramStrs[5]
+
+http://kqapi.hxlife.com/tms/api/FaceSign
+
+该后端接口会自行请求下载相应mediaId存于微信临时服务器的资源
+
+Note: JSSDK中处理本地资源的部分是使用本地代码做的一个bridge,因此不能直接从js中分析出有用的信息,需要考虑是否能构造网络包

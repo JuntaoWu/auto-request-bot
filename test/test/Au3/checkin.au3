@@ -74,7 +74,9 @@ Func Main()
 
    For $i = 1 To $userCount Step +1
       checkin($sessionArea, $argUrl)
-      Send("!~")
+      openMainWindow($titleDuoliao)
+      Send("!`")
+      Sleep(200)
    Next
    ConsoleWrite(0)
    Exit(0)
