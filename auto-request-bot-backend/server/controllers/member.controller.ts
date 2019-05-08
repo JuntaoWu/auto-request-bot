@@ -174,7 +174,8 @@ export let checkin = async (req, res, next) => {
                     type: item.type,
                     checkInTime: item.checkInTime,
                     longitude: location.longitude,
-                    latitude: location.latitude
+                    latitude: location.latitude,
+                    message: item.message
                 }
             })
 
@@ -201,7 +202,8 @@ export let checkin = async (req, res, next) => {
                 type: item.type,
                 checkInTime: item.checkInTime,
                 longitude: location.longitude,
-                latitude: location.latitude
+                latitude: location.latitude,
+                message: item.message
             }
         })
         return res.json({

@@ -341,7 +341,8 @@ namespace test
                     telephone = m.telephone,
                     weixin_number = m.wechatId,
                     status = MappingStatus(m.status),
-                    checkintime = m.checkInTime?.ToString()
+                    checkintime = m.checkInTime?.ToString(),
+                    message = m.message
                 };
             }).ToList();
 
@@ -443,11 +444,6 @@ namespace test
         {
             MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
               
-        }
-
-        private void Checkin_type_combox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
 
         /// <summary>
