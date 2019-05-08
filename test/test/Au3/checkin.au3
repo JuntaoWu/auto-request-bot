@@ -2,7 +2,7 @@
 #include <Debug.au3>
 #include <GetDPI.au3>
 
-;~ _DebugSetup("checkin")
+_DebugSetup("checkin")
 
 Global $argc = $CmdLine[0]
 Global $argUrl = $argc > 1 ? $CmdLine[1] : "http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=1546523890746&nonce=7150788195ff4a4fa0ae73d56a4245d0&trade_source=TMS&signature=D5CE85CD68327998A7C78EB0D48B806F&data=%7B%22redirectURL%22%3A%22http%3A%2F%2Ftms.ihxlife.com%2Ftms%2Fhtml%2F1_kqlr%2Fsign.html%22%2C%22attach%22%3A%2200000000000000105723%22%7D"
@@ -10,20 +10,24 @@ Global $userCount = $argc > 2 ? $CmdLine[2] : 1
 
 ;~ $argUrl = "http://www.baidu.com/"
 
-;~ _DebugOut("argc, argv:" & $argc & $userCount)
+_DebugOut("argc, argv:" & $argc & $userCount)
 
 Global $colorSelectedUser = 0xa9a9ab
 Global $colorNormalUser = 0xa7c2f7
 Global $colorFileTransfer = 0x2ba245
 Global $colorMessageBox = 0x9eea6a
 
+Global $titleDuoliao = "多聊"
+Global $titleFileTransfer = "[CLASS:ChatWnd;REGEXPTITLE:(File Transfer|文件传输助手)]"
+Global $titleWeChatBrowser = "[CLASS:CefWebViewWnd;REGEXPTITLE:(WeChat|微信)]"
+
 ;~ Global $dpiFactor = RegRead("HKEY_CURRENT_CONFIG\Software\Fonts", "LogPixels") / 96
 Global $dpiFactor = _GetDPI()[2]
 ;~ MsgBox($MB_SYSTEMMODAL, "", $dpiFactor)
 ;~ _DebugOut("dpiFactor: " & $dpiFactor & _GetDPI()[2])
 
-Global $hWnd = openMainWindow("多聊")
-Global $aWindowPosition = WinGetPos("多聊")
+Global $hWnd = openMainWindow($titleDuoliao)
+Global $aWindowPosition = WinGetPos($titleDuoliao)
 
 ; Main process
 Main()
@@ -70,7 +74,9 @@ Func Main()
 
    For $i = 1 To $userCount Step +1
       checkin($sessionArea, $argUrl)
-      Send("!~")
+      openMainWindow($titleDuoliao)
+      Send("!`")
+      Sleep(200)
    Next
    ConsoleWrite(0)
    Exit(0)
@@ -82,18 +88,18 @@ Func checkin($sessionArea, $url)
    If Not($aFileTransferIcon = Null) Then
       MouseMove($aFileTransferIcon[0], $aFileTransferIcon[1])
       Sleep(100)
-      
+
       MouseClick("left")
       MouseClick("left")
       Sleep(200)
-      
-      WinWaitActive("File Transfer")
+
+      WinWaitActive($titleFileTransfer)
 
       ; todo: Ensure Textbox had been auto-focused
       openUrl($url)
       Sleep(500)
 
-      WinClose("File Transfer")
+      WinClose($titleFileTransfer)
    Else
       ConsoleWriteError(-1)
       Exit(-1)
@@ -111,8 +117,8 @@ Func openUrl($url)
    Sleep(500)
 
    ; Click url in message box
-   Local $hFileTransferWnd = WinGetHandle("File Transfer")
-   Local $aFileTransferArea = WinGetPos("File Transfer")
+   Local $hFileTransferWnd = WinGetHandle($titleFileTransfer)
+   Local $aFileTransferArea = WinGetPos($titleFileTransfer)
 
    ; MsgBox($MB_SYSTEMMODAL, "", $hFileTransferWnd)
    ; MsgBox($MB_SYSTEMMODAL, "", $aFileTransferArea[0] & "," & $aFileTransferArea[1] & "," & $aFileTransferArea[2] & "," & $aFileTransferArea[3])
@@ -120,15 +126,15 @@ Func openUrl($url)
 
    Local $aMessageBox = findColorByPositionReverse($aFileTransferArea, $colorMessageBox, $hFileTransferWnd)
    If Not($aMessageBox = Null) Then
-	  MouseMove($aMessageBox[0] + 12, $aMessageBox[1] - 15)
+	  MouseMove($aMessageBox[0] + (12 * $dpiFactor), $aMessageBox[1] - (15 * $dpiFactor))
 	  Sleep(100)
 
 	  MouseClick("left")
 	  Sleep(200)
 
-	  WinWaitActive("WeChat")
+	  WinWaitActive($titleWeChatBrowser)
 	  Sleep(5000)
-	  WinClose("WeChat")
+	  WinClose($titleWeChatBrowser)
    Else
       ConsoleWriteError(-1)
       Exit(-1)
