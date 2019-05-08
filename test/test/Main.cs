@@ -60,7 +60,7 @@ namespace test
             Login loginform = new Login();
             loginform.StartPosition = FormStartPosition.CenterScreen;
             loginform.ShowDialog();
-            //MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
+            MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
         }
 
 
