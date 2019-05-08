@@ -16,7 +16,7 @@ namespace test
                 username = username,
                 password = password
             };
-            var url = "http://localhost:4040/api/usermanage/login";
+            var url = $"{Constant.Host}/api/usermanage/login";
             HttpClient client = new HttpClient();
             HttpResponseMessage result;
             result = await client.PostAsJsonAsync(url, data);
