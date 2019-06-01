@@ -46,7 +46,10 @@ latitude: 纬度
         traincode: paramStrs[4],
         managecom: paramStrs[5]
 Step 1: 获取签名
+可以手工跳转至数据库保存的 checkin.url字段，然后拼接如下请求：
 http://kqapi.hxlife.com/tms/api/GetSignatureInfo?params= location.href.split("#")[0]
+`http://kqapi.hxlife.com/tms/api/GetSignatureInfo?callbackparam=success_jsonpCallback_select&params=${encodeURIComponent(requestUrl)}&_=${+new Date()}`
+访问结果中提取出json对象部分，存入checkin.signatureStr字段.
 
 Step 2: wx.config
 

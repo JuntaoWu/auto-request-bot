@@ -204,7 +204,10 @@ export let checkin = async (req, res, next) => {
                 checkInTime: item.checkInTime,
                 longitude: location.longitude,
                 latitude: location.latitude,
-                message: item.message
+                message: item.message,
+                result: item.result,
+                url: item.url,
+                signatureStr: item.signatureStr
             }
         })
         return res.json({
@@ -249,7 +252,7 @@ export let updateCheckin = async (req, res, next) => {
 };
 
 async function needFace(requestUrl): Promise<string> {
-    const url = `http://kqapi.hxlife.com/tms/api/GetSignatureInfo?params=${requestUrl}`;
+    const url = `http://kqapi.hxlife.com/tms/api/GetSignatureInfo?callbackparam=success_jsonpCallback_select&params=${encodeURIComponent(requestUrl)}&_=${+new Date()}`;
     return new Promise((resolve, reject) => {
         http.get(url, (wxRes) => {
             console.log('response from wx api.');

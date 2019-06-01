@@ -24,3 +24,10 @@ table {
     width: calc(100vw - 15px);
     overflow: auto;
 }
+
+td {
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100px;
+    text-overflow: ellipsis;
+}

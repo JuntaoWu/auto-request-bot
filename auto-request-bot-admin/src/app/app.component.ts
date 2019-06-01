@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
-import { Member } from './member.model';
+import { Member, CheckInStatus } from './member.model';
 import { Constants } from './constants';
 
 declare var wx;
+declare var $;
 
 @Component({
   selector: 'app-root',
@@ -80,11 +81,30 @@ export class AppComponent implements OnInit {
                 managecom
               };
 
-              this.httpClient.get(Constants.faceSignEndpoint, {
-                params: { params: JSON.stringify(requestData) }
-              }).subscribe((response) => {
-                alert(JSON.stringify(response));
+              $.ajax({
+                url: Constants.faceSignEndpoint,
+                type: 'get',
+                // params意为参数，是自定义的，用以表明这是传给后台的数据。
+                data: { params: JSON.stringify(requestData) },
+                contentType: 'application/json; charset=utf-8',
+                // 数据类型为jsonp，解决跨域问题。
+                dataType: 'jsonp',
+                // 自定义的jsonp回调函数名,默认为jQuery自动生成的随机函数
+                jsonpCallback: 'success_jsonpCallback_select',
+                // 传递给请求处理程序或页面的,用以获得jsonp回调函数名的参数名(默认为callback)
+                jsonp: 'callbackparam',
+                // 访问成功时的回调函数
+                success: async (response) => {
+                  await this.updateCheckInStatus(response);
+                  if (response.result === 'fail') {
+                    alert(response.message);
+                  }
+                },
+                error: (data) => {
+                  alert('服务器连接失败2');
+                }
               });
+
             }
           });
         }
@@ -93,6 +113,10 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
+    await this.refresh();
+  }
+
+  async refresh() {
     const response = await this.httpClient.get<any>(`${Constants.arbHost}/api/member/checkin?type=0`).toPromise();
 
     if (!response || !response.data) {
@@ -105,5 +129,22 @@ export class AppComponent implements OnInit {
         avatarUrl: Constants.arbHost + member.avatarUrl
       };
     });
+  }
+
+  async updateCheckInStatus(response) {
+    const updateCheckInResult = await this.httpClient.put<any>(`${Constants.arbHost}/api/member/checkin?type=0`, {
+      status: response.result === 'success' ? CheckInStatus.Success : CheckInStatus.Error,
+      result: response.result,
+      message: response.message,
+      url: location.href.split('#')[0]
+    }).toPromise();
+
+    if (updateCheckInResult.code === 0) {
+      this.refresh();
+    }
+  }
+
+  isAvailable(member: Member) {
+    return member.url === location.href.split('#')[0];
   }
 }
