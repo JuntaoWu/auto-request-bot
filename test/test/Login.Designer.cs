@@ -116,7 +116,7 @@
             this.Controls.Add(this.user_name_txtbox);
             this.Controls.Add(this.user_name_label);
             this.Name = "Login";
-            this.Text = "Login";
+            this.Text = "登录";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Login_Closed);
             this.ResumeLayout(false);
             this.PerformLayout();

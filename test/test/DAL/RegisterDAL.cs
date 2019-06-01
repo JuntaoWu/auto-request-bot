@@ -18,7 +18,7 @@ namespace test.DAL
                 telephone = telephone,
                 password = password
             };
-            var url = "http://localhost:4040/api/usermanage/register";
+            var url = $"{Constant.Host}/api/usermanage/register";
             HttpClient client = new HttpClient();
             HttpResponseMessage result;
             result = await client.PostAsJsonAsync(url, data);

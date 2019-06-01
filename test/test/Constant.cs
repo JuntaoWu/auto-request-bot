@@ -8,7 +8,7 @@ namespace test
 {
     public class Constant
     {
-        public const string Host = "http://localhost:4040";
+        public const string Host = "http://arb.hzsdgames.com";
     }
 
     public enum CheckInType

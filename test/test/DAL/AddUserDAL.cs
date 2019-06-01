@@ -16,7 +16,7 @@ namespace test.DAL
     {
         public async Task<List<CheckInAddress>> getCheckInAddressList()
         {
-            string url = $"http://localhost:4040/api/location";
+            string url = $"{Constant.Host}/api/location";
 
             var result = await Request(url);
 
@@ -67,7 +67,7 @@ namespace test.DAL
 
         public async Task<ResponseResult<MemberCheckIn>> AddUser(string locationId, string nickName, string wechatId, string contactName, string telephone, string imagedata, string openId)
         {
-            var url = "http://localhost:4040/api/member";
+            var url = $"{Constant.Host}/api/member";
             var response = await Request(url, "POST", new
             {
                 openId = openId,
@@ -84,7 +84,7 @@ namespace test.DAL
 
         public async Task<bool> UpdateUser(string ID, string locationId, string nickName, string wechatId, string contactName, string telephone, string imagedata, string openId)
         {
-            var url = $"http://localhost:4040/api/member/{ID}";
+            var url = $"{Constant.Host}/api/member/{ID}";
             var response = await Request(url, "PUT", new
             {
                 openId = openId,
@@ -102,7 +102,7 @@ namespace test.DAL
 
         public async Task<bool> DeleteUser(string ID)
         {
-            var url = $"http://localhost:4040/api/member/{ID}";
+            var url = $"{Constant.Host}/api/member/{ID}";
             var response = await Request(url, "DELETE");
 
             var obj = JsonConvert.DeserializeObject<ResponseResult>(response);

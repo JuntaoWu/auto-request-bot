@@ -144,7 +144,7 @@
             this.Controls.Add(this.telephone_label);
             this.Controls.Add(this.user_name_label);
             this.Name = "Register";
-            this.Text = "Register";
+            this.Text = "注册";
             this.ResumeLayout(false);
             this.PerformLayout();
 

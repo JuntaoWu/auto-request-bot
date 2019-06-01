@@ -88,6 +88,7 @@ namespace test
             {
                 member.status = status;
                 member.checkInTime = obj.data?.checkInTime;
+                member.message = message;
                 Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
             }
             else
