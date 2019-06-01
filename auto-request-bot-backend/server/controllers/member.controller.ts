@@ -11,6 +11,7 @@ import CheckInModel, { CheckIn, CheckInType } from '../models/checkin.model';
 
 import * as moment from 'moment';
 import * as path from 'path';
+import * as http from 'http';
 
 import * as file from 'fs';
 import LocationModel from '../models/location.model';
@@ -36,7 +37,7 @@ export let load = async (req, res, next) => {
 export let create = async (req, res, next) => {
 
     let data = req.body;
-    
+
     let existmember = await MemberModel.findOne({ openId: data.openId });
     if (!existmember) {
         const base64String = req.body.avatar.match(/data:(.*);base64,(.*)/)[2];
@@ -63,7 +64,7 @@ export let create = async (req, res, next) => {
                 data: member
             });
         });
-    }else {
+    } else {
         return res.json({
             code: 500,
             message: "当前用户已经存在,不能重复注册"
@@ -159,8 +160,8 @@ export let checkin = async (req, res, next) => {
                 });
             }
 
-            let result = docs.map(item=>{
-                let location = locations.find(loc=>loc._id == item.locationId)
+            let result = docs.map(item => {
+                let location = locations.find(loc => loc._id == item.locationId)
                 return {
                     _id: item._id,
                     openId: item.openId,
@@ -186,8 +187,8 @@ export let checkin = async (req, res, next) => {
         });
     }
     else {
-        let result = checkinList.map(item=>{
-            let location = locations.find(loc=>loc._id == item.locationId)
+        let result = checkinList.map(item => {
+            let location = locations.find(loc => loc._id == item.locationId)
             return {
                 _id: item._id,
                 openId: item.openId,
@@ -207,7 +208,7 @@ export let checkin = async (req, res, next) => {
         return res.json({
             code: 0,
             message: "OK",
-            data:result
+            data: result
         });
     }
 };
@@ -215,11 +216,18 @@ export let checkin = async (req, res, next) => {
 export let updateCheckin = async (req, res, next) => {
 
     const checkInTime = new Date();
+    let signatureStr = '';
+    if (req.body.result === "needface") {
+        signatureStr = await needFace(req.body.url);
+    }
 
     await CheckInModel.findByIdAndUpdate(req.params.id, {
         status: req.body.status,
         checkInTime: checkInTime.toLocaleString(),
+        result: req.body.result,
         message: req.body.message,
+        url: req.body.url,
+        signatureStr: signatureStr
     }, (error, updatedCheckin) => {
         if (error) {
             return res.json({
@@ -237,5 +245,24 @@ export let updateCheckin = async (req, res, next) => {
         });
     });
 };
+
+async function needFace(requestUrl): Promise<string> {
+    const url = `http://kqapi.hxlife.com/tms/api/GetSignatureInfo?params=${requestUrl}`;
+    return new Promise((resolve, reject) => {
+        http.get(url, (wxRes) => {
+            console.log('response from wx api.');
+
+            let data = '';
+            wxRes.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            wxRes.on('end', async () => {
+                const signatureStr = data.match(/.*\((.*)\)/)[1];
+                resolve(signatureStr);
+            });
+        });
+    });
+}
 
 export default { list, load, create, update, remove, checkin, updateCheckin };

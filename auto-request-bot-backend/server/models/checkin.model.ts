@@ -36,7 +36,13 @@ export class CheckIn extends Typegoose {
     @prop({ default: CheckInType.CheckIn })
     type: CheckInType;
     @prop()
+    result: String;
+    @prop()
     message: String;
+    @prop()
+    url: String;
+    @prop()
+    signatureStr: String;
     @prop()
     createAt: Date;
     @prop()

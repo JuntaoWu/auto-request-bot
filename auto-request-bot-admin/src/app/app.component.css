@@ -1,0 +1,26 @@
+.avatar {
+    width: 20px;
+    height: 20px;
+}
+
+.toolbar {
+    justify-content: space-between;
+}
+
+table {
+    width: 100%;
+}
+
+.mat-form-field {
+    font-size: smaller;
+}
+
+.divider {
+    width: 20px;
+}
+
+.container {
+    height: calc(100vh - 100px);
+    width: calc(100vw - 15px);
+    overflow: auto;
+}

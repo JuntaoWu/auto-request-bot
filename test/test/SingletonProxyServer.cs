@@ -146,7 +146,7 @@ namespace test
                         my_dictionay[item.Split('=')[0]] = item.Split('=')[1];
                     });
 
-                    Instance.sendRequst(my_dictionay);
+                    Instance.sendRequst(my_dictionay, requsturl);
                 }
                 else if (OperationType == OperationType.Register)
                 {
@@ -250,7 +250,7 @@ namespace test
             return Task.FromResult(0);
         }
 
-        private void sendRequst(Dictionary<string, string> template)
+        private void sendRequst(Dictionary<string, string> template, Uri requestUrl)
         {
             string ur = $"{string.Format("0")}\"\",\"\"";
             string openId, userId, timestamp, nonce, trade_source, signature, qrcodeid, longitude, latitude;
@@ -286,11 +286,11 @@ namespace test
                 var result = regex.Match(retString).Groups[1].Value;
                 var checkInResult = JsonConvert.DeserializeObject<CheckInServerResponse>(result);
 
-                MemberCheckInSingletonService.updateMemberCheckInInformation(openId, checkInResult.result == "success" ? CheckInStatus.Success : CheckInStatus.Error, checkInResult.message);
+                MemberCheckInSingletonService.updateMemberCheckInInformation(openId, checkInResult.result == "success" ? CheckInStatus.Success : CheckInStatus.Error, checkInResult.result, checkInResult.message, requestUrl.ToString());
             }
             else
             {
-                MemberCheckInSingletonService.updateMemberCheckInInformation(openId, CheckInStatus.Error, retString);
+                MemberCheckInSingletonService.updateMemberCheckInInformation(openId, CheckInStatus.Error, null, retString, requestUrl.ToString());
             }
             myStreamReader.Close();
             myResponseStream.Close();

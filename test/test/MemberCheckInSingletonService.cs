@@ -69,7 +69,7 @@ namespace test
             Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
         }
 
-        public static async void updateMemberCheckInInformation(string openId, CheckInStatus status, string message)
+        public static async void updateMemberCheckInInformation(string openId, CheckInStatus status, string result, string message, string requestUrl)
         {
             var member = Instance.membercheckinlist.Single(m => m.openId == openId);
             string Id = member._id;
@@ -78,6 +78,8 @@ namespace test
             {
                 status = Convert.ToInt32(status),
                 message = message,
+                result = result,
+                url = requestUrl
             });
 
             var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
