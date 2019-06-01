@@ -1,5 +1,15 @@
 <div style="position: fixed; top: 0; width: 100%">
     <mat-toolbar class="toolbar">
+        <mat-form-field>
+            <mat-select [(value)]="checkInType" (selectionChange)="refresh()">
+                <mat-option value="0">上班打卡</mat-option>
+                <mat-option value="1">下班打卡</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <!-- <select [(ngModel)]="checkInType" (change)="refresh()">
+            <option value="0">上班打卡</option>
+            <option value="1">下班打卡</option>
+        </select> -->
         <button mat-raised-button color="primary" (click)="refresh()">刷新</button>
     </mat-toolbar>
 </div>

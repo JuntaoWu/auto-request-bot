@@ -3,6 +3,9 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
 import { Member, CheckInStatus } from './member.model';
 import { Constants } from './constants';
+import { environment } from 'src/environments/environment';
+
+// import * as VConsole from 'vconsole';
 
 declare var wx;
 declare var $;
@@ -13,11 +16,15 @@ declare var $;
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'auto-request-bot-admin';
+  // vConsole = new VConsole();
 
-  displayedColumns: string[] = ['nickName', 'contactName', 'avatarUrl', 'checkInTime', 'result', 'message', 'url', 'signatureStr',
+  public title = 'auto-request-bot-admin';
+
+  public checkInType = '0';
+
+  public displayedColumns: string[] = ['nickName', 'contactName', 'avatarUrl', 'checkInTime', 'result', 'message', 'url', 'signatureStr',
     'operation'];
-  private members: Member[];
+  public members: Member[];
 
   constructor(private httpClient: HttpClient) {
 
@@ -66,7 +73,7 @@ export class AppComponent implements OnInit {
             localId: imgLocalId[0], // 需要上传的图片的本地ID，由chooseImage接口获得
             isShowProgressTips: 1, // 默认为1，显示进度提示
             success: (uploadImageRes) => {
-              if (res.serverId.indexOf('wxLocalResource://') >= 0) {
+              if (uploadImageRes.serverId.indexOf('wxLocalResource://') >= 0) {
                 return;
               }
               const mediaId = uploadImageRes.serverId;
@@ -82,7 +89,7 @@ export class AppComponent implements OnInit {
               };
 
               $.ajax({
-                url: Constants.faceSignEndpoint,
+                url: environment.faceSignEndpoint,
                 type: 'get',
                 // params意为参数，是自定义的，用以表明这是传给后台的数据。
                 data: { params: JSON.stringify(requestData) },
@@ -95,9 +102,11 @@ export class AppComponent implements OnInit {
                 jsonp: 'callbackparam',
                 // 访问成功时的回调函数
                 success: async (response) => {
-                  await this.updateCheckInStatus(response);
+                  console.log(response);
                   if (response.result === 'fail') {
                     alert(response.message);
+                  } else {
+                    await this.updateCheckInStatus(member._id, response);
                   }
                 },
                 error: (data) => {
@@ -117,7 +126,7 @@ export class AppComponent implements OnInit {
   }
 
   async refresh() {
-    const response = await this.httpClient.get<any>(`${Constants.arbHost}/api/member/checkin?type=0`).toPromise();
+    const response = await this.httpClient.get<any>(`${environment.arbHost}/api/member/checkin?type=${this.checkInType}`).toPromise();
 
     if (!response || !response.data) {
       return;
@@ -126,13 +135,13 @@ export class AppComponent implements OnInit {
     this.members = (response.data as Member[]).map(member => {
       return {
         ...member,
-        avatarUrl: Constants.arbHost + member.avatarUrl
+        avatarUrl: `${environment.arbHost}${member.avatarUrl}`
       };
     });
   }
 
-  async updateCheckInStatus(response) {
-    const updateCheckInResult = await this.httpClient.put<any>(`${Constants.arbHost}/api/member/checkin?type=0`, {
+  async updateCheckInStatus(id, response) {
+    const updateCheckInResult = await this.httpClient.put<any>(`${Constants.arbHost}/api/member/checkin/${id}`, {
       status: response.result === 'success' ? CheckInStatus.Success : CheckInStatus.Error,
       result: response.result,
       message: response.message,
@@ -145,6 +154,6 @@ export class AppComponent implements OnInit {
   }
 
   isAvailable(member: Member) {
-    return member.url === location.href.split('#')[0];
+    return member.result === 'needface' && member.url === location.href.split('#')[0];
   }
 }

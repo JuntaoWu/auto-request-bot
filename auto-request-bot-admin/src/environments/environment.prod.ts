@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  arbHost: 'http://arb.hzsdgames.com',
+  faceSignEndpoint: 'http://kqapi.hxlife.com/tms/api/FaceSign'
 };

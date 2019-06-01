@@ -8,6 +8,7 @@ export enum CheckInStatus {
 }
 
 export interface Member {
+    _id: string;
     nickName: string;
     wechatId: string;
     contactName: string;

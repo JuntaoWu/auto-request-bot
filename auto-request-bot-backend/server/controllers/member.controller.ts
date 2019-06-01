@@ -128,6 +128,11 @@ export let remove = async (req, res, next) => {
 };
 
 export let checkin = async (req, res, next) => {
+
+    if(!req.query.type) {
+        req.query.type = 0;
+    }
+
     let locations = await LocationModel.find();
     let checkinList = await CheckInModel.find({
         createdAt: {
