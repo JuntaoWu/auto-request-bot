@@ -3,7 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
 import { Member, CheckInStatus } from './member.model';
 import { Constants } from './constants';
-import { environment } from 'src/environments/environment';
+import { environment } from '../environments/environment';
 
 // import * as VConsole from 'vconsole';
 
@@ -51,10 +51,12 @@ export class AppComponent implements OnInit {
     // const signatureResponse = await this.httpClient
     //   .get<string>(`http://kqapi.hxlife.com/tms/api/GetSignatureInfo?params=${location.href.split('#')[0]}`).toPromise();
 
-    const signatureData = JSON.parse(member.signatureStr);
+    const signatureData = await this.needFace();
+
+    // const signatureData = JSON.parse(member.signatureStr);
 
     wx.config({
-      debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+      debug: !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
       appId: signatureData.appid, // 必填，公众号的唯一标识
       timestamp: signatureData.timestamp, // 必填，生成签名的时间戳
       nonceStr: signatureData.nonceStr, // 必填，生成签名的随机串
@@ -118,6 +120,23 @@ export class AppComponent implements OnInit {
           });
         }
       });
+    });
+  }
+
+  async needFace(): Promise<any> {
+    return $.ajax({
+      url: `http://kqapi.hxlife.com/tms/api/GetSignatureInfo`,
+      // data: {pageUrl: location.href.split('#')[0]},
+      type: 'get',
+      // params意为参数，是自定义的，用以表明这是传给后台的数据。
+      data: { params: location.href.split('#')[0] },
+      contentType: 'application/json; charset=utf-8',
+      // 数据类型为jsonp，解决跨域问题。
+      dataType: 'jsonp',
+      // 自定义的jsonp回调函数名,默认为jQuery自动生成的随机函数
+      jsonpCallback: 'success_jsonpCallback_select',
+      // 传递给请求处理程序或页面的,用以获得jsonp回调函数名的参数名(默认为callback)
+      jsonp: 'callbackparam'
     });
   }
 
