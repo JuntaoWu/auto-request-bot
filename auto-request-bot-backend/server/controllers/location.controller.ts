@@ -16,7 +16,9 @@ export let list = async (req, res, next) => {
         data: data.map(item => {
             return {
                 text: item.text,
-                value: item._id
+                value: item._id,
+                latitude: item.latitude,
+                longitude: item.longitude
             };
         })
     });

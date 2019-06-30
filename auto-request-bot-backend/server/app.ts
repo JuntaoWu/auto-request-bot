@@ -33,8 +33,8 @@ app.use(logger('dev'));
 app.use((passport).initialize());
 app.use((passport).session());
 
+app.use('/', express.static(path.join(__dirname, '../../public')), cors());
 app.use('/api', indexRouter);
-app.use('/public', express.static(path.join(__dirname, '../../public')), cors());
 app.use('/static', express.static(path.join(__dirname, '../../static')), cors());
 
 // catch 404 and forward to error handler

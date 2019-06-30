@@ -46,6 +46,8 @@ const envVarsSchema = Joi.object({
     .description('WeChat LoginUri'),
   REDIRECT_URI: Joi.string().required()
     .description('WeChat RedirectUri'),
+  CHECK_IN_URI: Joi.string().required()
+    .description('ihx-life CheckInUri'),
   MSSQL_HOST: Joi.string().required()
     .description('MSSQL_HOST'),
   MSSQL_USER: Joi.string().required()
@@ -96,6 +98,7 @@ export const config = {
     appSecretMobile: envVars.WX_APP_SECRET,
     loginUrl: envVars.WX_LOGIN_URI,
     redirectUrl: encodeURIComponent(envVars.REDIRECT_URI),
+    checkInUrl: envVars.CHECK_IN_URI,
     downloadUrl: envVars.DOWNLOAD_URI,
   },
   mysql: {

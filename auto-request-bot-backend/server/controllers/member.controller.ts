@@ -17,8 +17,8 @@ import * as file from 'fs';
 import LocationModel from '../models/location.model';
 
 export let authorize = (req, res, next) => {
-    const scope = 'snsapi_info';
-    return res.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wx.appId}&redirect_uri=${config.wx.redirectUrl}&response_type=code&scope=${scope}&state=${encodeURIComponent(req.query.state)}#wechat_redirect`);
+    const scope = 'snsapi_userinfo';
+    return res.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wx.appId}&redirect_uri=${config.wx.redirectUrl}&response_type=code&scope=${scope}&state=${encodeURIComponent(req.query.state || '')}#wechat_redirect`);
 };
 
 export let login = async (req: Request, res: Response, next: NextFunction) => {
@@ -34,17 +34,17 @@ export let login = async (req: Request, res: Response, next: NextFunction) => {
             await dbUser.save();
         }
 
-        res.cookie('wxOpenId', req.user.openId);
-        let redirectUrl = decodeURIComponent(req.query.state);
+        res.cookie('internalOpenId', req.user.internalOpenId);
+        let redirectUrl = decodeURIComponent(req.query.state || config.rootUrl);
         console.log('state:', redirectUrl);
         if (/\?/.test(redirectUrl)) {
-            redirectUrl += `&wxOpenId=${req.user.openId}`;
+            redirectUrl += `&internalOpenId=${req.user.internalOpenId}`;
         }
         else if (/#/.test(redirectUrl)) {
-            redirectUrl = redirectUrl.replace(/(.*)#([^#]*)/, `$1?wxOpenId=${req.user.openId}#$2`);
+            redirectUrl = redirectUrl.replace(/(.*)#([^#]*)/, `$1?internalOpenId=${req.user.internalOpenId}#$2`);
         }
         else {
-            redirectUrl += `?wxOpenId=${req.user.openId}`;
+            redirectUrl += `?internalOpenId=${req.user.internalOpenId}`;
         }
 
         console.log('redirectTo:', redirectUrl);
@@ -54,6 +54,29 @@ export let login = async (req: Request, res: Response, next: NextFunction) => {
         console.error('Login failed,', err);
         return next(err);
     }
+};
+
+export let register = async (req: Request, res: Response, next: NextFunction) => {
+
+    const existingMember = await MemberModel.findOne({ internalOpenId: req.body.internalOpenId });
+
+    if (!existingMember) {
+        return res.json({
+            code: 404,
+            message: 'Member not found'
+        });
+    }
+
+    existingMember.locationId = req.body.locationId;
+    await existingMember.save();
+
+    return res.json({
+        code: 0,
+        message: "OK",
+        data: {
+            redirectUrl: config.wx.checkInUrl
+        }
+    });
 };
 
 export let list = async (req, res, next) => {
@@ -317,25 +340,34 @@ async function needFace(requestUrl): Promise<string> {
 
 export let checkStatus = async (req, res, next) => {
     let data = req.body;
+
+    console.log('checkStatus:', req.body);
+
     let existmember = await MemberModel.findOne({ openId: data.openId });
+
+    console.log('existingMember:', existmember);
+
     if (!existmember) {
         let updateMembers = await MemberModel.find({ openId: null }).sort({ createdAt: -1 });
         if (updateMembers && updateMembers.length > 0) {
-            let updateMember =  updateMembers[0];
-            updateMember.openId =  data.openId;
+            let updateMember = updateMembers[0];
+
+            console.log('updateMember before:', updateMember);
+
+            updateMember.openId = data.openId;
             updateMember.userId = data.userId;
+
+            console.log('updateMember after:', updateMember);
+
             await updateMember.save();
 
             let checkinList = await CheckInModel.find({
-                createdAt: {
-                    $gte: moment({ hour: 0 })
-                },
-                type: CheckInType.CheckIn
+                openId: updateMember.openId
             });
 
-            let checkinmodel:any
+            let checkInModel: any;
             if (!checkinList || checkinList.length == 0) {
-                checkinmodel = new CheckInModel({
+                checkInModel = new CheckInModel({
                     openId: updateMember.openId,
                     nickName: updateMember.nickName,
                     wechatId: updateMember.wechatId,
@@ -344,41 +376,62 @@ export let checkStatus = async (req, res, next) => {
                     locationId: updateMember.locationId,
                     avatarUrl: updateMember.avatarUrl,
                     status: CheckInStatus.Waiting,
-                    type:CheckInType.CheckIn,
+                    type: CheckInType.CheckIn,
                     createdAt: new Date(),
                     updateAt: new Date(),
                 });
-                await checkinmodel.save()
+                await checkInModel.save()
+            }
+            else {
+                checkInModel = checkinList[0];
             }
             return res.json({
                 code: 201,
                 message: "created",
                 data: {
                     member: updateMember,
-                    checkin: checkinmodel
+                    checkin: checkInModel
                 }
-            }); 
+            });
         }
-        else{
+        else {
             return res.json({
                 code: 404,
-                message: "no data fund",
+                message: "no data found",
                 data: null
-            }); 
+            });
         }
     }
     else {
-        let checkinmodel = await CheckInModel.find({openId: data.openId});
+        let type = moment() > moment({ hour: 12 }) ? CheckInType.CheckOut : CheckInType.CheckIn;
+
+        let checkInModel = await CheckInModel.find({
+            openId: data.openId,
+            createdAt: {
+                $gte: moment({ hour: 0 })
+            },
+            type: type
+        });
         return res.json({
             code: 0,
             message: "checkin",
             data: {
                 member: existmember,
-                checkin: checkinmodel
+                checkin: checkInModel
             }
-        });  
+        });
     }
 
 }
 
-export default { list, load, create, update, remove, checkin, updateCheckin };
+export let locationList = async (req, res, next) => {
+    const locations = await LocationModel.find();
+
+    return res.json({
+        code: 0,
+        message: 'OK',
+        data: locations
+    });
+}
+
+export default { list, load, create, update, remove, checkin, updateCheckin, checkStatus, locationList };

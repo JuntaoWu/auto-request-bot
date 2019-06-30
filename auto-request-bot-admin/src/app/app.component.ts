@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, timestamp } from 'rxjs/operators';
 import { Member, CheckInStatus } from './member.model';
 import { Constants } from './constants';
 import { environment } from '../environments/environment';
@@ -9,6 +9,9 @@ import { environment } from '../environments/environment';
 
 declare var wx;
 declare var $;
+
+export interface Location { text: string; value: string; longitude: number; latitude: number; }
+export interface CheckInServerResponse { result: string; message: string; reason: string; }
 
 @Component({
   selector: 'app-root',
@@ -24,16 +27,73 @@ export class AppComponent implements OnInit {
 
   public displayedColumns: string[] = ['nickName', 'contactName', 'avatarUrl', 'checkInTime', 'result', 'message', 'url', 'signatureStr',
     'operation'];
+
+  public locations: Location[];
   public members: Member[];
 
-  public member: Member;
+  public memberModel: Member;
+  public checkInModel: Member;
+
+  public checkInParams: {
+    openid: string,
+    userid: string,
+    timestamp: string,
+    nonce: string,
+    trade_source: string,
+    signature: string,
+    attach: string,
+  };
 
   constructor(private httpClient: HttpClient) {
 
   }
 
-  async checkIn() {
-    
+  async checkIn(member: Member, location: Location) {
+    alert('checkIn called.');
+    const {
+      openid,
+      userid,
+      nonce,
+      trade_source,
+      signature,
+      attach
+    } = this.checkInParams;
+
+    const {
+      longitude,
+      latitude,
+    } = location;
+
+    let customParams = `{"openid":"${openid}","userid":"${userid}","timestamp":"${timestamp}","nonce":"${nonce}","trade_source":"${trade_source}","signature":"${signature}","qrcodeid":"${attach}","attentype":"morning","longitude":${longitude},"latitude":${latitude},"cacheflag":"0"}}"`;
+    let url = `http://kqapi.hxlife.com/tms/api/QRcodeSign`;
+    const checkInResult: CheckInServerResponse = await this.checkInRequest(url, customParams);
+
+    await this.updateCheckInStatus(member._id, checkInResult);
+
+    if (checkInResult.result !== 'success') {
+      alert(checkInResult.reason);
+      await this.checkFace({
+        ...member,
+        ...checkInResult
+      });
+    }
+  }
+
+  async checkInRequest(url, params): Promise<any> {
+    return $.ajax({
+      url: url,
+      // data: {pageUrl: location.href.split('#')[0]},
+      type: 'get',
+      // params意为参数，是自定义的，用以表明这是传给后台的数据。
+      data: { params: params },
+      contentType: 'application/json; charset=utf-8',
+      // 数据类型为jsonp，解决跨域问题。
+      dataType: 'jsonp',
+      // 自定义的jsonp回调函数名,默认为jQuery自动生成的随机函数
+      jsonpCallback: 'success_jsonpCallback_select',
+      // 传递给请求处理程序或页面的,用以获得jsonp回调函数名的参数名(默认为callback)
+      jsonp: 'callbackparam'
+    });
   }
 
   async checkFace(member: Member) {
@@ -147,7 +207,19 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
+    await this.getLocationList();
+    await this.checkStatus();
     await this.refresh();
+  }
+
+  async getLocationList() {
+    this.httpClient.get(`${environment.arbHost}/api/location`).subscribe((res: any) => {
+      if (res.code !== 0) {
+        alert('Unable to find Locations');
+        return;
+      }
+      this.locations = res.data;
+    });
   }
 
   /**
@@ -162,7 +234,7 @@ export class AppComponent implements OnInit {
    */
 
   async checkStatus() {
-    const globalObj: any = {};
+    const checkInParams: any = {};
     location.search.slice(1).split('&')
       .map(i => {
         const obj: any = {};
@@ -170,24 +242,31 @@ export class AppComponent implements OnInit {
         obj.value = i.split('=')[1];
         return obj;
       }).forEach(m => {
-        globalObj[m.key] = m.value;
+        checkInParams[m.key] = m.value;
       });
 
-    this.httpClient.post<any>(`${Constants.arbHost}/api/member/checkStatus`, globalObj).subscribe(res => {
-      this.member = res.data;
+    this.checkInParams = checkInParams;
+
+    this.httpClient.post<any>(`${Constants.arbHost}/api/member/checkStatus`, {
+      openId: checkInParams.openid,
+      userId: checkInParams.userid,
+    }).subscribe(res => {
+      this.memberModel = res.data.member;
+      this.checkInModel = res.data.checkin;
 
       if (res.code === 201) {
         // todo: 成功注册用户
-        alert(`用户${this.member.nickName}注册完成`);
+        alert(`用户${this.memberModel.nickName}注册完成`);
         return;
       }
 
-      if (this.member.status === CheckInStatus.Waiting) {
+      if (this.memberModel.status === CheckInStatus.Waiting) {
         // todo: checkIn
-
+        let location = this.locations.find(item => this.memberModel.locationId === item.value);
+        this.checkIn(this.memberModel, location);
       }
       else {
-        this.checkFace(this.member);
+        this.checkFace(this.memberModel);
       }
     });
   }
@@ -215,9 +294,9 @@ export class AppComponent implements OnInit {
       url: location.href.split('#')[0]
     }).toPromise();
 
-    if (updateCheckInResult.code === 0) {
-      this.refresh();
-    }
+    // if (updateCheckInResult.code === 0) {
+    //   this.refresh();
+    // }
   }
 
   isAvailable(member: Member) {

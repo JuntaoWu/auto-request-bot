@@ -15,6 +15,9 @@ router.get('/authorize', memberCtrl.authorize);
 router.route('/login')
     .get(passport.authenticate("localWx", { failWithError: true }), memberCtrl.login);
 
+router.route('/register')
+    .post(memberCtrl.register);
+
 router.get('/', memberCtrl.list);
 
 router.get('/checkin', memberCtrl.checkin);
@@ -30,5 +33,7 @@ router.put('/:id', memberCtrl.update);
 router.delete('/:id', memberCtrl.remove);
 
 router.post('/checkStatus',memberCtrl.checkStatus);
+
+router.get('/locationList', memberCtrl.locationList);
 
 export default router;

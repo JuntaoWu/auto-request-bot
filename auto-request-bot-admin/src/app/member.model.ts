@@ -19,4 +19,5 @@ export interface Member {
     message: string;
     url: string;
     signatureStr: string;
+    locationId: string;
 }

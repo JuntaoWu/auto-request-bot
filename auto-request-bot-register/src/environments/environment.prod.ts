@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  arbHost: 'http://arb.hzsdgames.com'
+  arbHost: 'https://arb.hzsdgames.com'
 };
