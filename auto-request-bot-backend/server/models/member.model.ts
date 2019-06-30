@@ -40,6 +40,10 @@ export class Member extends Typegoose {
     status: CheckInStatus;
     @prop()
     registerTime: String;
+    @prop()
+    internalOpenId: String;
+    @prop()
+    internalUnionId: String;
 }
 
 const MemberModel = new Member().getModelForClass(Member, {

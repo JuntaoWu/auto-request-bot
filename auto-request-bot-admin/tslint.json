@@ -1,5 +1,6 @@
 {
   "extends": "tslint:recommended",
+  "defaultSeverity": "warn",
   "rules": {
     "array-type": false,
     "arrow-parens": false,

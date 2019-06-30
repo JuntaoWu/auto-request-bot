@@ -16,6 +16,46 @@ import * as http from 'http';
 import * as file from 'fs';
 import LocationModel from '../models/location.model';
 
+export let authorize = (req, res, next) => {
+    const scope = 'snsapi_info';
+    return res.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.wx.appId}&redirect_uri=${config.wx.redirectUrl}&response_type=code&scope=${scope}&state=${encodeURIComponent(req.query.state)}#wechat_redirect`);
+};
+
+export let login = async (req: Request, res: Response, next: NextFunction) => {
+
+    try {
+        let dbUser = await MemberModel.findOne({
+            internalOpenId: req.user.internalOpenId,
+        });
+
+        if (!dbUser) {
+            console.log('req.user', req.user);
+            dbUser = new MemberModel(req.user);
+            await dbUser.save();
+        }
+
+        res.cookie('wxOpenId', req.user.openId);
+        let redirectUrl = decodeURIComponent(req.query.state);
+        console.log('state:', redirectUrl);
+        if (/\?/.test(redirectUrl)) {
+            redirectUrl += `&wxOpenId=${req.user.openId}`;
+        }
+        else if (/#/.test(redirectUrl)) {
+            redirectUrl = redirectUrl.replace(/(.*)#([^#]*)/, `$1?wxOpenId=${req.user.openId}#$2`);
+        }
+        else {
+            redirectUrl += `?wxOpenId=${req.user.openId}`;
+        }
+
+        console.log('redirectTo:', redirectUrl);
+        return res.redirect(redirectUrl);
+    }
+    catch (err) {
+        console.error('Login failed,', err);
+        return next(err);
+    }
+};
+
 export let list = async (req, res, next) => {
     const data = await MemberModel.find();
     return res.json({

@@ -10,6 +10,11 @@ const router = express.Router();
 
 import * as memberCtrl from '../controllers/member.controller';
 
+router.get('/authorize', memberCtrl.authorize);
+
+router.route('/login')
+    .get(passport.authenticate("localWx", { failWithError: true }), memberCtrl.login);
+
 router.get('/', memberCtrl.list);
 
 router.get('/checkin', memberCtrl.checkin);
