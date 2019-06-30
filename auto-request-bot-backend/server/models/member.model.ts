@@ -44,6 +44,8 @@ export class Member extends Typegoose {
     internalOpenId: String;
     @prop()
     internalUnionId: String;
+    @prop()
+    userId:String;
 }
 
 const MemberModel = new Member().getModelForClass(Member, {
