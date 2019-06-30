@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { map, switchMap, timestamp } from 'rxjs/operators';
 import { Member, CheckInStatus } from './member.model';
 import { Constants } from './constants';
 import { environment } from '../environments/environment';
@@ -48,7 +47,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  async checkIn(member: Member, location: Location) {
+  async checkIn(checkInModel: Member, location: Location) {
     alert('checkIn called.');
     const {
       openid,
@@ -56,7 +55,8 @@ export class AppComponent implements OnInit {
       nonce,
       trade_source,
       signature,
-      attach
+      attach,
+      timestamp
     } = this.checkInParams;
 
     const {
@@ -64,16 +64,28 @@ export class AppComponent implements OnInit {
       latitude,
     } = location;
 
-    let customParams = `{"openid":"${openid}","userid":"${userid}","timestamp":"${timestamp}","nonce":"${nonce}","trade_source":"${trade_source}","signature":"${signature}","qrcodeid":"${attach}","attentype":"morning","longitude":${longitude},"latitude":${latitude},"cacheflag":"0"}}"`;
-    let url = `http://kqapi.hxlife.com/tms/api/QRcodeSign`;
+    const customParams = {
+      openid,
+      userid,
+      timestamp,
+      nonce,
+      trade_source,
+      signature,
+      qrcodeid: attach,
+      attentype: 'morning',
+      longitude,
+      latitude,
+      cacheflag: '0'
+    };
+    const url = `http://kqapi.hxlife.com/tms/api/QRcodeSign`;
     const checkInResult: CheckInServerResponse = await this.checkInRequest(url, customParams);
 
-    await this.updateCheckInStatus(member._id, checkInResult);
+    await this.updateCheckInStatus(checkInModel._id, checkInResult);
 
     if (checkInResult.result !== 'success') {
       alert(checkInResult.reason);
       await this.checkFace({
-        ...member,
+        ...checkInModel,
         ...checkInResult
       });
     }
@@ -81,28 +93,28 @@ export class AppComponent implements OnInit {
 
   async checkInRequest(url, params): Promise<any> {
     return $.ajax({
-      url: url,
+      url,
       // data: {pageUrl: location.href.split('#')[0]},
       type: 'get',
       // params意为参数，是自定义的，用以表明这是传给后台的数据。
-      data: { params: params },
+      data: { params: JSON.stringify(params) },
       contentType: 'application/json; charset=utf-8',
       // 数据类型为jsonp，解决跨域问题。
       dataType: 'jsonp',
       // 自定义的jsonp回调函数名,默认为jQuery自动生成的随机函数
-      jsonpCallback: 'success_jsonpCallback_select',
+      jsonpCallback: 'success_jsonpCallback',
       // 传递给请求处理程序或页面的,用以获得jsonp回调函数名的参数名(默认为callback)
       jsonp: 'callbackparam'
     });
   }
 
-  async checkFace(member: Member) {
+  async checkFace(checkInModel: Member) {
 
-    if (!member || member.result !== 'needface') {
+    if (!checkInModel || checkInModel.result !== 'needface') {
       return;
     }
 
-    const paramStrs = member.message.split('#'); // 'f8c2dcd8f86a49c6a451b899a08469cb#廖星程#0#510823199308040017#T001140703#86510201';
+    const paramStrs = checkInModel.message.split('#'); // 'f8c2dcd8f86a49c6a451b899a08469cb#廖星程#0#510823199308040017#T001140703#86510201';
 
     const traceno = paramStrs[0];
     const name = paramStrs[1];
@@ -174,7 +186,7 @@ export class AppComponent implements OnInit {
                   if (response.result === 'fail') {
                     alert(response.message);
                   } else {
-                    await this.updateCheckInStatus(member._id, response);
+                    await this.updateCheckInStatus(checkInModel._id, response);
                   }
                 },
                 error: (data) => {
@@ -256,17 +268,17 @@ export class AppComponent implements OnInit {
 
       if (res.code === 201) {
         // todo: 成功注册用户
-        alert(`用户${this.memberModel.nickName}注册完成`);
+        alert(`用户${this.checkInModel.nickName}注册完成`);
         return;
       }
 
-      if (this.memberModel.status === CheckInStatus.Waiting) {
+      if (this.checkInModel.status === CheckInStatus.Waiting) {
         // todo: checkIn
-        let location = this.locations.find(item => this.memberModel.locationId === item.value);
-        this.checkIn(this.memberModel, location);
-      }
-      else {
-        this.checkFace(this.memberModel);
+        const location = this.locations.find(item => this.checkInModel.locationId === item.value);
+        alert(JSON.stringify(location));
+        this.checkIn(this.checkInModel, location);
+      } else {
+        this.checkFace(this.checkInModel);
       }
     });
   }
@@ -281,7 +293,7 @@ export class AppComponent implements OnInit {
     this.members = (response.data as Member[]).map(member => {
       return {
         ...member,
-        avatarUrl: `${environment.arbHost}${member.avatarUrl}`
+        avatarUrl: member.avatarUrl.startsWith('http') ? member.avatarUrl : `${environment.arbHost}${member.avatarUrl}`
       };
     });
   }

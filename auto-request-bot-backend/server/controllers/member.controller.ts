@@ -58,6 +58,8 @@ export let login = async (req: Request, res: Response, next: NextFunction) => {
 
 export let register = async (req: Request, res: Response, next: NextFunction) => {
 
+    console.log('register:', req.body);
+
     const existingMember = await MemberModel.findOne({ internalOpenId: req.body.internalOpenId });
 
     if (!existingMember) {
@@ -366,7 +368,9 @@ export let checkStatus = async (req, res, next) => {
             });
 
             let checkInModel: any;
+
             if (!checkinList || checkinList.length == 0) {
+                let type = moment() > moment({ hour: 10, minute: 30 }) ? CheckInType.CheckOut : CheckInType.CheckIn;
                 checkInModel = new CheckInModel({
                     openId: updateMember.openId,
                     nickName: updateMember.nickName,
@@ -376,7 +380,7 @@ export let checkStatus = async (req, res, next) => {
                     locationId: updateMember.locationId,
                     avatarUrl: updateMember.avatarUrl,
                     status: CheckInStatus.Waiting,
-                    type: CheckInType.CheckIn,
+                    type: type,
                     createdAt: new Date(),
                     updateAt: new Date(),
                 });
@@ -403,9 +407,9 @@ export let checkStatus = async (req, res, next) => {
         }
     }
     else {
-        let type = moment() > moment({ hour: 12 }) ? CheckInType.CheckOut : CheckInType.CheckIn;
+        let type = moment() > moment({ hour: 10, minute: 30 }) ? CheckInType.CheckOut : CheckInType.CheckIn;
 
-        let checkInModel = await CheckInModel.find({
+        let checkInModel = await CheckInModel.findOne({
             openId: data.openId,
             createdAt: {
                 $gte: moment({ hour: 0 })
