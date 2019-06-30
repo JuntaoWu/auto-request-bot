@@ -29,4 +29,6 @@ router.put('/:id', memberCtrl.update);
 
 router.delete('/:id', memberCtrl.remove);
 
+router.post('/checkStatus',memberCtrl.checkStatus);
+
 export default router;

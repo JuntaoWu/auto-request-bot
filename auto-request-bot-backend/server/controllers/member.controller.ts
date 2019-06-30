@@ -169,7 +169,7 @@ export let remove = async (req, res, next) => {
 
 export let checkin = async (req, res, next) => {
 
-    if(!req.query.type) {
+    if (!req.query.type) {
         req.query.type = 0;
     }
 
@@ -313,6 +313,72 @@ async function needFace(requestUrl): Promise<string> {
             });
         });
     });
+}
+
+export let checkStatus = async (req, res, next) => {
+    let data = req.body;
+    let existmember = await MemberModel.findOne({ openId: data.openId });
+    if (!existmember) {
+        let updateMembers = await MemberModel.find({ openId: null }).sort({ createdAt: -1 });
+        if (updateMembers && updateMembers.length > 0) {
+            let updateMember =  updateMembers[0];
+            updateMember.openId =  data.openId;
+            updateMember.userId = data.userId;
+            await updateMember.save();
+
+            let checkinList = await CheckInModel.find({
+                createdAt: {
+                    $gte: moment({ hour: 0 })
+                },
+                type: CheckInType.CheckIn
+            });
+
+            let checkinmodel:any
+            if (!checkinList || checkinList.length == 0) {
+                checkinmodel = new CheckInModel({
+                    openId: updateMember.openId,
+                    nickName: updateMember.nickName,
+                    wechatId: updateMember.wechatId,
+                    contactName: updateMember.contactName,
+                    telephone: updateMember.telephone,
+                    locationId: updateMember.locationId,
+                    avatarUrl: updateMember.avatarUrl,
+                    status: CheckInStatus.Waiting,
+                    type:CheckInType.CheckIn,
+                    createdAt: new Date(),
+                    updateAt: new Date(),
+                });
+                await checkinmodel.save()
+            }
+            return res.json({
+                code: 201,
+                message: "created",
+                data: {
+                    member: updateMember,
+                    checkin: checkinmodel
+                }
+            }); 
+        }
+        else{
+            return res.json({
+                code: 404,
+                message: "no data fund",
+                data: null
+            }); 
+        }
+    }
+    else {
+        let checkinmodel = await CheckInModel.find({openId: data.openId});
+        return res.json({
+            code: 0,
+            message: "checkin",
+            data: {
+                member: existmember,
+                checkin: checkinmodel
+            }
+        });  
+    }
+
 }
 
 export default { list, load, create, update, remove, checkin, updateCheckin };
