@@ -26,8 +26,14 @@ export class AppComponent implements OnInit {
     'operation'];
   public members: Member[];
 
+  public member: Member;
+
   constructor(private httpClient: HttpClient) {
 
+  }
+
+  async checkIn() {
+    
   }
 
   async checkFace(member: Member) {
@@ -142,6 +148,48 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     await this.refresh();
+  }
+
+  /**
+    * agentCode: "510129760"
+    * attach: "00000000000000105723"
+    * nonce: "b422fca3-6745-45fb-942e-3277e4c2872f"
+      openid: "o43yZt-ax60RdEq2tRID2cKW7Mt4"
+      signature: "C5B39A04405C819AB045BD54A3376D59"
+      timestamp: "1555230703033"
+      trade_source: "HXQYH"
+      userid: "510129760"
+   */
+
+  async checkStatus() {
+    const globalObj: any = {};
+    location.search.slice(1).split('&')
+      .map(i => {
+        const obj: any = {};
+        obj.key = i.split('=')[0];
+        obj.value = i.split('=')[1];
+        return obj;
+      }).forEach(m => {
+        globalObj[m.key] = m.value;
+      });
+
+    this.httpClient.post<any>(`${Constants.arbHost}/api/member/checkStatus`, globalObj).subscribe(res => {
+      this.member = res.data;
+
+      if (res.code === 201) {
+        // todo: 成功注册用户
+        alert(`用户${this.member.nickName}注册完成`);
+        return;
+      }
+
+      if (this.member.status === CheckInStatus.Waiting) {
+        // todo: checkIn
+
+      }
+      else {
+        this.checkFace(this.member);
+      }
+    });
   }
 
   async refresh() {
