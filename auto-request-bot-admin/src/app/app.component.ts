@@ -83,7 +83,7 @@ export class AppComponent implements OnInit {
     await this.updateCheckInStatus(checkInModel._id, checkInResult);
 
     if (checkInResult.result !== 'success') {
-      alert(checkInResult.reason);
+      alert(JSON.stringify(checkInResult));
       await this.checkFace({
         ...checkInModel,
         ...checkInResult
