@@ -42,6 +42,8 @@ namespace test
 
             MemberCheckInSingletonService.Instance.OnReceiveCheckInResponse += Instance_OnReceiveCheckInResponse;
 
+            SocketService.Instance.OnMessage += Instance_OnMessage;
+
             this.OnImageLoaded += (object sender, EventArgs e) =>
             {
                 Console.WriteLine(DateTime.Now);
@@ -443,7 +445,7 @@ namespace test
         private void checkin_type_combox_SelectedValueChanged(object sender, EventArgs e)
         {
             MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
-              
+
         }
 
         /// <summary>
@@ -461,6 +463,30 @@ namespace test
 
             process.StartInfo = startInfo;
             process.Start();
+        }
+
+        private void Instance_OnMessage(object sender, CustomEventArgs e)
+        {
+            Console.WriteLine("Handling SocketService.OnMessage................................");
+            Console.WriteLine(JsonConvert.SerializeObject(e.Data));
+            MessageBox.Show(nameof(e.Data.op));
+            //this.m_SyncContext.Post((data) =>
+            //{
+            //    MessageBox.Show(e.Data.op.ToString());
+            //}, null);
+
+            switch(e.Data.op)
+            {
+                case SocketOp.ACK:
+                case SocketOp.PLAIN:
+                    break;
+                case SocketOp.CHECK_IN_CREATED:
+                    break;
+                case SocketOp.CHECK_IN_STARTED:
+                    break;
+                case SocketOp.CHECK_IN_UPDATED:
+                    break;
+            }
         }
     }
 

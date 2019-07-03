@@ -15,6 +15,11 @@ import * as http from 'http';
 
 import * as file from 'fs';
 import LocationModel from '../models/location.model';
+import socket, { SocketOp } from '../config/socket-service';
+
+socket.onEvent.subscribe((data) => {
+    console.log(`received socket event data`, data);
+});
 
 export let authorize = (req, res, next) => {
     const scope = 'snsapi_userinfo';
@@ -192,22 +197,28 @@ export let remove = async (req, res, next) => {
     });
 };
 
-export let checkin = async (req, res, next) => {
+export let checkIn = async (req, res, next) => {
 
     if (!req.query.type) {
         req.query.type = 0;
     }
 
     let locations = await LocationModel.find();
-    let checkinList = await CheckInModel.find({
+    let checkInList = await CheckInModel.find({
         createdAt: {
             $gte: moment({ hour: 0 })
         },
         type: req.query.type
     });
 
-    if (!checkinList || checkinList.length == 0) {
+    if (!checkInList || checkInList.length == 0) {
+
         let members = await MemberModel.find();
+
+        socket.broadcast(SocketOp.PLAIN, {
+            message: `check-in total ${members.length} records initializing.`
+        });
+
         CheckInModel.insertMany(members.map(member => {
             return {
                 openId: member.openId,
@@ -258,7 +269,7 @@ export let checkin = async (req, res, next) => {
         });
     }
     else {
-        let result = checkinList.map(item => {
+        let result = checkInList.map(item => {
             let location = locations.find(loc => loc._id == item.locationId)
             return {
                 _id: item._id,
@@ -288,7 +299,7 @@ export let checkin = async (req, res, next) => {
     }
 };
 
-export let updateCheckin = async (req, res, next) => {
+export let updateCheckIn = async (req, res, next) => {
 
     const checkInTime = new Date();
     let signatureStr = '';
@@ -303,20 +314,25 @@ export let updateCheckin = async (req, res, next) => {
         message: req.body.message,
         url: req.body.url,
         signatureStr: signatureStr
-    }, (error, updatedCheckin) => {
+    }, (error, updatedCheckIn) => {
         if (error) {
             return res.json({
                 code: 500,
-                message: "Remove Error",
+                message: "update check-in error.",
             });
         }
 
-        ((updatedCheckin.checkInTime) as any) = checkInTime.toLocaleString();
+        socket.broadcast(SocketOp.CHECK_IN_UPDATED, {
+            id: req.params.id,
+            message: `check-in ${updatedCheckIn._id} updated.`
+        });
+
+        ((updatedCheckIn.checkInTime) as any) = checkInTime.toLocaleString();
 
         return res.json({
             code: 0,
             message: "OK",
-            data: updatedCheckin,
+            data: updatedCheckIn,
         });
     });
 };
@@ -389,6 +405,12 @@ export let checkStatus = async (req, res, next) => {
             else {
                 checkInModel = checkinList[0];
             }
+
+            socket.broadcast(SocketOp.CHECK_IN_CREATED, {
+                id: checkInModel._id,
+                message: `check-in ${checkInModel._id} created.`,
+            });
+
             return res.json({
                 code: 201,
                 message: "created",
@@ -416,6 +438,19 @@ export let checkStatus = async (req, res, next) => {
             },
             type: type
         });
+
+        if (!checkInModel) {
+            return res.json({
+                code: 404,
+                message: 'check-in record not found.'
+            });
+        }
+
+        socket.broadcast(SocketOp.CHECK_IN_STARTED, {
+            id: checkInModel._id,
+            message: `check-in ${checkInModel._id} started.`,
+        });
+
         return res.json({
             code: 0,
             message: "checkin",
@@ -438,4 +473,4 @@ export let locationList = async (req, res, next) => {
     });
 }
 
-export default { list, load, create, update, remove, checkin, updateCheckin, checkStatus, locationList };
+export default { list, load, create, update, remove, checkin: checkIn, updateCheckin: updateCheckIn, checkStatus, locationList };

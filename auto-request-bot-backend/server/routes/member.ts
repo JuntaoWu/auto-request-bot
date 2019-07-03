@@ -20,9 +20,9 @@ router.route('/register')
 
 router.get('/', memberCtrl.list);
 
-router.get('/checkin', memberCtrl.checkin);
+router.get('/checkin', memberCtrl.checkIn);
 
-router.put('/checkin/:id', memberCtrl.updateCheckin);
+router.put('/checkin/:id', memberCtrl.updateCheckIn);
 
 router.get('/:id', memberCtrl.load);
 

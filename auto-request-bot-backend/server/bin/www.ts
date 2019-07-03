@@ -5,6 +5,7 @@
  */
 // config should be imported before importing any other file
 import config from "../config/config";
+import socket from '../config/socket-service';
 
 import * as fs from "fs";
 import * as http from "http";
@@ -42,6 +43,11 @@ if (process.env.MONGOOSE_DEBUG) {
  * Create HTTP server.
  */
 const server = http.createServer(app);
+
+/**
+ * Create Standalone Socket server.
+ */
+socket.init();
 
 /**
  * Listen on provided port, on all network interfaces.
