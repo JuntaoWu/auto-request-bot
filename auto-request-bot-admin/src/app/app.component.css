@@ -31,3 +31,7 @@ td {
     max-width: 100px;
     text-overflow: ellipsis;
 }
+
+tr.highlight td {
+    background: #cecece;
+}

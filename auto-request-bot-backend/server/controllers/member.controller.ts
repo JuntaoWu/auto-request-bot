@@ -474,7 +474,7 @@ export let locationList = async (req, res, next) => {
 }
 
 export let getCheckIn = async (req,res,next) => {
-    const data = await MemberModel.findById(req.params.id)
+    const data = await CheckInModel.findById(req.params.id)
     return res.json({
         code: data? 0:404,
         message: "OK",

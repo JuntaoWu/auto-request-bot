@@ -1,0 +1,5 @@
+WinWaitActive("Open")
+Send("D:\Documents\")
+Send("{Enter}")
+ControlClick("Open", "Default.rdp", "left")
+ControlClick("Open", "Open", "left")

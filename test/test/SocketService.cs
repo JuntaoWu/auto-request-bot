@@ -17,8 +17,8 @@ namespace test
     public class SocketService
     {
         private static object consoleLock = new object();
-        private const int sendChunkSize = 256;
-        private const int receiveChunkSize = 256;
+        private const int sendChunkSize = 1024;
+        private const int receiveChunkSize = 1024;
         private const bool verbose = true;
         private static readonly TimeSpan delay = TimeSpan.FromMilliseconds(30000);
 
@@ -115,13 +115,22 @@ namespace test
                 else
                 {
                     LogStatus(true, buffer, result.Count);
-                    string jsonResult = UTF8Encoding.Default.GetString(buffer, 0, result.Count);
-                    var block = JsonConvert.DeserializeObject<MessageBlock>(jsonResult);
+                    string jsonResult = UTF8Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-                    // todo: handle received message blocks.
-                    Console.WriteLine(block.data.message);
+                    try
+                    {
+                        var block = JsonConvert.DeserializeObject<MessageBlock>(jsonResult);
 
-                    instance.OnMessage(instance, new CustomEventArgs { Data = block });
+                        // todo: handle received message blocks.
+                        Console.WriteLine(block.data.message);
+
+                        instance.OnMessage(instance, new CustomEventArgs { Data = block });
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+
                 }
             }
         }

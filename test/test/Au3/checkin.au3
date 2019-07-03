@@ -75,7 +75,7 @@ Func Main()
    For $i = 1 To $userCount Step +1
       checkin($sessionArea, $argUrl)
       openMainWindow($titleDuoliao)
-      Send("!`")
+      ;~ Send("!`")
       Sleep(200)
    Next
    ConsoleWrite(0)
@@ -133,8 +133,8 @@ Func openUrl($url)
 	  Sleep(200)
 
 	  WinWaitActive($titleWeChatBrowser)
-	  Sleep(5000)
-	  WinClose($titleWeChatBrowser)
+	  ;~ Sleep(5000)
+	  ;~ WinClose($titleWeChatBrowser)
    Else
       ConsoleWriteError(-1)
       Exit(-1)

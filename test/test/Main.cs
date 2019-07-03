@@ -21,6 +21,12 @@ using Titanium.Web.Proxy.Models;
 
 namespace test
 {
+    public enum CheckInMode
+    {
+        Batch,
+        Single
+    }
+
     public partial class Main : Form
     {
 
@@ -29,6 +35,8 @@ namespace test
         SynchronizationContext m_SyncContext = null;
 
         public event EventHandler OnImageLoaded = (object sender, EventArgs e) => { };
+
+        public CheckInMode CheckInMode { get; set; }
 
         public Main()
         {
@@ -42,7 +50,7 @@ namespace test
 
             MemberCheckInSingletonService.Instance.OnReceiveCheckInResponse += Instance_OnReceiveCheckInResponse;
 
-            //SocketService.Instance.OnMessage += Instance_OnMessage;
+            SocketService.Instance.OnMessage += Instance_OnMessage;
 
             this.OnImageLoaded += (object sender, EventArgs e) =>
             {
@@ -455,11 +463,28 @@ namespace test
         /// <param name="e"></param>
         private void Button1_Click(object sender, EventArgs e)
         {
+            CheckInMode = CheckInMode.Batch;
+            CheckInSingleMember();
+        }
+
+        private static void SwitchCheckInMember()
+        {
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "switch.exe";
+
+            process.StartInfo = startInfo;
+            process.Start();
+        }
+
+        private static void CheckInSingleMember()
+        {
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "checkin.exe";
-            startInfo.Arguments = $"http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=1546523890746&nonce=7150788195ff4a4fa0ae73d56a4245d0&trade_source=TMS&signature=D5CE85CD68327998A7C78EB0D48B806F&data=%7B%22redirectURL%22%3A%22http%3A%2F%2Ftms.ihxlife.com%2Ftms%2Fhtml%2F1_kqlr%2Fsign.html%22%2C%22attach%22%3A%2200000000000000105723%22%7D {MemberCheckInSingletonService.Instance.membercheckinlist.Count}";
+            startInfo.Arguments = $"http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=1546523890746&nonce=7150788195ff4a4fa0ae73d56a4245d0&trade_source=TMS&signature=D5CE85CD68327998A7C78EB0D48B806F&data=%7B%22redirectURL%22%3A%22http%3A%2F%2Ftms.ihxlife.com%2Ftms%2Fhtml%2F1_kqlr%2Fsign.html%22%2C%22attach%22%3A%2200000000000000105723%22%7D 1";
 
             process.StartInfo = startInfo;
             process.Start();
@@ -469,13 +494,13 @@ namespace test
         {
             Console.WriteLine("Handling SocketService.OnMessage................................");
             Console.WriteLine(JsonConvert.SerializeObject(e.Data));
-            MessageBox.Show(nameof(e.Data.op));
+            //MessageBox.Show(e.Data.op.ToString());
             //this.m_SyncContext.Post((data) =>
             //{
             //    MessageBox.Show(e.Data.op.ToString());
             //}, null);
 
-            switch(e.Data.op)
+            switch (e.Data.op)
             {
                 case SocketOp.ACK:
                 case SocketOp.PLAIN:
@@ -487,8 +512,26 @@ namespace test
                     break;
                 case SocketOp.CHECK_IN_UPDATED:
                     MemberCheckInSingletonService.updateMemberCheckInInformation(e.Data.data);
+                    if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
+                    {
+                        SwitchCheckInMember();
+                        Thread.Sleep(2000);
+                        CheckInSingleMember();
+                    }
                     break;
             }
+        }
+
+        private bool IsSomeoneWaiting(string id)
+        {
+            MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == id);
+            return memberCheckIn.result != "needface" && MemberCheckInSingletonService.Instance.membercheckinlist.Count(m => m.status == CheckInStatus.Waiting) > 0;
+        }
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            CheckInMode = CheckInMode.Single;
+            CheckInSingleMember();
         }
     }
 

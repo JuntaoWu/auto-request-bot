@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Member, CheckInStatus } from './member.model';
-import { Constants } from './constants';
 import { environment } from '../environments/environment';
 
 // import * as VConsole from 'vconsole';
 
 declare var wx;
 declare var $;
+declare var WeixinJSBridge;
 
 export interface Location { text: string; value: string; longitude: number; latitude: number; }
 export interface CheckInServerResponse { result: string; message: string; reason: string; }
@@ -48,7 +48,6 @@ export class AppComponent implements OnInit {
   }
 
   async checkIn(checkInModel: Member, location: Location) {
-    alert('checkIn called.');
     const {
       openid,
       userid,
@@ -83,7 +82,6 @@ export class AppComponent implements OnInit {
     await this.updateCheckInStatus(checkInModel._id, checkInResult);
 
     if (checkInResult.result !== 'success') {
-      alert(JSON.stringify(checkInResult));
       await this.checkFace({
         ...checkInModel,
         ...checkInResult
@@ -184,7 +182,6 @@ export class AppComponent implements OnInit {
                 success: async (response) => {
                   console.log(response);
                   if (response.result === 'fail') {
-                    alert(response.message);
                   } else {
                     await this.updateCheckInStatus(checkInModel._id, response);
                   }
@@ -259,7 +256,7 @@ export class AppComponent implements OnInit {
 
     this.checkInParams = checkInParams;
 
-    this.httpClient.post<any>(`${Constants.arbHost}/api/member/checkStatus`, {
+    this.httpClient.post<any>(`${environment.arbHost}/api/member/checkStatus`, {
       openId: checkInParams.openid,
       userId: checkInParams.userid,
     }).subscribe(res => {
@@ -272,13 +269,16 @@ export class AppComponent implements OnInit {
         return;
       }
 
-      if (this.checkInModel.status === CheckInStatus.Waiting) {
+      if (!this.checkInModel) {
+        return;
+      }
+
+      if (this.checkInModel.result === 'needface') {
+        this.checkFace(this.checkInModel);
+      } else {
         // todo: checkIn
         const location = this.locations.find(item => this.checkInModel.locationId === item.value);
-        alert(JSON.stringify(location));
         this.checkIn(this.checkInModel, location);
-      } else {
-        this.checkFace(this.checkInModel);
       }
     });
   }
@@ -299,12 +299,16 @@ export class AppComponent implements OnInit {
   }
 
   async updateCheckInStatus(id, response) {
-    const updateCheckInResult = await this.httpClient.put<any>(`${Constants.arbHost}/api/member/checkin/${id}`, {
+    const updateCheckInResult = await this.httpClient.put<any>(`${environment.arbHost}/api/member/checkin/${id}`, {
       status: response.result === 'success' ? CheckInStatus.Success : CheckInStatus.Error,
       result: response.result,
       message: response.message,
       url: location.href.split('#')[0]
     }).toPromise();
+
+    if(response.result !== 'needface') {
+      WeixinJSBridge && WeixinJSBridge.call('closeWindow');
+    }
 
     // if (updateCheckInResult.code === 0) {
     //   this.refresh();
