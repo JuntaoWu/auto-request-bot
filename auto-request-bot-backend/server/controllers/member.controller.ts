@@ -324,7 +324,14 @@ export let updateCheckIn = async (req, res, next) => {
 
         socket.broadcast(SocketOp.CHECK_IN_UPDATED, {
             id: req.params.id,
-            message: `check-in ${updatedCheckIn._id} updated.`
+            message: `check-in ${updatedCheckIn._id} updated.`,
+            resutl:updatedCheckIn.result,
+            allmessage:updatedCheckIn.message,
+            checkInTime:updatedCheckIn.checkInTime,
+            openId:updatedCheckIn.openId,
+            status:updatedCheckIn.status,
+            avatarUrl: updatedCheckIn.avatarUrl,
+            nickName:updatedCheckIn.nickName
         });
 
         ((updatedCheckIn.checkInTime) as any) = checkInTime.toLocaleString();
@@ -409,6 +416,13 @@ export let checkStatus = async (req, res, next) => {
             socket.broadcast(SocketOp.CHECK_IN_CREATED, {
                 id: checkInModel._id,
                 message: `check-in ${checkInModel._id} created.`,
+                resutl:checkInModel.result,
+                allmessage:checkInModel.message,
+                checkInTime:checkInModel.checkInTime,
+                openId:checkInModel.openId,
+                status:checkInModel.status,
+                avatarUrl: checkInModel.avatarUrl,
+                nickName:checkInModel.nickName
             });
 
             return res.json({

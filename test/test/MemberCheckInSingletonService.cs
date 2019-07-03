@@ -96,5 +96,24 @@ namespace test
                 // todo: Error handling
             }
         }
+
+        public static void updateMemberCheckInInformation(MessageBody data) {
+            var member = Instance.membercheckinlist.Single(m => m.openId == data.openId);
+            member.status = data.result == "success" ? CheckInStatus.Success : CheckInStatus.Error;
+            member.checkInTime = data.checkInTime;
+            member.message = data.message;
+            Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
+        }
+
+        public static void createNewMemberCheckInformation(MessageBody data) {
+            MemberCheckIn newMember = new MemberCheckIn();
+            newMember._id = data.id;
+            newMember.openId = data.openId;
+            newMember.avatarUrl = data.avatarUrl;
+            newMember.status = CheckInStatus.Waiting;
+            newMember.nickName = data.nickName;
+            Instance.membercheckinlist.Add(newMember);
+            Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
+        }
     }
 }

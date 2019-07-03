@@ -42,7 +42,7 @@ namespace test
 
             MemberCheckInSingletonService.Instance.OnReceiveCheckInResponse += Instance_OnReceiveCheckInResponse;
 
-            SocketService.Instance.OnMessage += Instance_OnMessage;
+            //SocketService.Instance.OnMessage += Instance_OnMessage;
 
             this.OnImageLoaded += (object sender, EventArgs e) =>
             {
@@ -107,10 +107,10 @@ namespace test
         //设置激活和获取OpenId
         private void SetReigsterAndOpenid(object text)
         {
-            this.openId_txt.Text = text.ToString();
+            /*this.openId_txt.Text = text.ToString();
             this.register_btn.Enabled = false;
             this.confirm_btn.Enabled = true;
-            this.active_label.Text = "激活成功,可以提交";
+            this.active_label.Text = "激活成功,可以提交";*/
         }
 
         //根据用户地址获取经纬度
@@ -147,7 +147,7 @@ namespace test
         //图片上传
         private void upload_image_btn_Click(object sender, EventArgs e)
         {
-            OpenFileDialog file = new OpenFileDialog();
+            /*OpenFileDialog file = new OpenFileDialog();
             file.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
             file.FilterIndex = 1;
             if (file.ShowDialog() == DialogResult.OK)
@@ -174,7 +174,7 @@ namespace test
                     }
                 }
 
-            }
+            }*/
         }
 
         //设置监听状态为Register
@@ -194,7 +194,7 @@ namespace test
         //提交用户信息
         private async void confirm_btn_Click(object sender, EventArgs e)
         {
-            string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
+            /*string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
             // Location userlocation = getAddressLocation(selecteaddress);
             ResponseResult<MemberCheckIn> result = await user.AddUser(selecteaddress, this.weixin_username_txt.Text, this.weixin_number_txt.Text, this.contact_name_txt.Text, this.contact_telephone_txt.Text, this.base64Str, this.openId_txt.Text);
             if (result.code == 0)
@@ -214,7 +214,7 @@ namespace test
             else
             {
                 MessageBox.Show(result.message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }*/
         }
 
         //左导航栏样式更改
@@ -235,7 +235,7 @@ namespace test
             {
                 await this.BindDataMemberList();
             }
-            else if (e.TabPage.Text == "会员注册")
+            /*else if (e.TabPage.Text == "会员注册")
             {
                 this.checkin_address_combox.DataSource = await user.getCheckInAddressList();
                 this.checkin_address_combox.DisplayMember = "text";
@@ -243,7 +243,7 @@ namespace test
 
 
                 this.checkin_address_combox.SelectedIndex = 0;
-            }
+            }*/
             else if (e.TabPage.Text == "打卡管理")
             {
                 MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
@@ -390,8 +390,8 @@ namespace test
         {
             SingletonProxyServer.OperationType = OperationType.Checkin;
             SingletonProxyServer.ServerStart();
-            this.start_chekcin_btn.Enabled = false;
-            this.stop_checkin_btn.Enabled = true;
+            //this.start_chekcin_btn.Enabled = false;
+            //this.stop_checkin_btn.Enabled = true;
         }
 
         /// <summary>
@@ -403,8 +403,8 @@ namespace test
         {
             SingletonProxyServer.OperationType = OperationType.Stopped;
             SingletonProxyServer.ServerStop();
-            this.start_chekcin_btn.Enabled = true;
-            this.stop_checkin_btn.Enabled = false;
+            //this.start_chekcin_btn.Enabled = true;
+            //this.stop_checkin_btn.Enabled = false;
         }
 
         /// <summary>
@@ -481,10 +481,12 @@ namespace test
                 case SocketOp.PLAIN:
                     break;
                 case SocketOp.CHECK_IN_CREATED:
+                    MemberCheckInSingletonService.createNewMemberCheckInformation(e.Data.data);
                     break;
                 case SocketOp.CHECK_IN_STARTED:
                     break;
                 case SocketOp.CHECK_IN_UPDATED:
+                    MemberCheckInSingletonService.updateMemberCheckInInformation(e.Data.data);
                     break;
             }
         }
