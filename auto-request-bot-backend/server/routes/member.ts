@@ -22,6 +22,8 @@ router.get('/', memberCtrl.list);
 
 router.get('/checkin', memberCtrl.checkIn);
 
+router.get('/checkin/:id',memberCtrl.getCheckIn);
+
 router.put('/checkin/:id', memberCtrl.updateCheckIn);
 
 router.get('/:id', memberCtrl.load);

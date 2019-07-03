@@ -97,22 +97,25 @@ namespace test
             }
         }
 
-        public static void updateMemberCheckInInformation(MessageBody data) {
-            var member = Instance.membercheckinlist.Single(m => m.openId == data.openId);
-            member.status = data.result == "success" ? CheckInStatus.Success : CheckInStatus.Error;
-            member.checkInTime = data.checkInTime;
-            member.message = data.message;
+        public static async void updateMemberCheckInInformation(MessageBody data) {
+            string Id = data.id;
+            var url = $"{Constant.Host}/api/member/checkin/{Id}";
+            var response = await HttpUtil.Request(url);
+            var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
+
+            var member = Instance.membercheckinlist.Single(m => m.openId == obj.data.openId);
+            member.status = obj.data.status;
+            member.checkInTime = obj.data.checkInTime;
+            member.message = obj.data.message;
             Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
         }
 
-        public static void createNewMemberCheckInformation(MessageBody data) {
-            MemberCheckIn newMember = new MemberCheckIn();
-            newMember._id = data.id;
-            newMember.openId = data.openId;
-            newMember.avatarUrl = data.avatarUrl;
-            newMember.status = CheckInStatus.Waiting;
-            newMember.nickName = data.nickName;
-            Instance.membercheckinlist.Add(newMember);
+        public static async void createNewMemberCheckInformation(MessageBody data) {
+            string Id = data.id;
+            var url = $"{Constant.Host}/api/member/checkin/{Id}";
+            var response = await HttpUtil.Request(url);
+            var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
+            Instance.membercheckinlist.Add(obj.data);
             Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
         }
     }
