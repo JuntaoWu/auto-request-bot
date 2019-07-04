@@ -9,6 +9,7 @@ namespace test.DAL
 {
     public class Member
     {
+        public bool IsChecked { get; set; }
         public string ID { get; set; }
         public string avatarUrl { get; set; }
         public Image avatar { get; set; }

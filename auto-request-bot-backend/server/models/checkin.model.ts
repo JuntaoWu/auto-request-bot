@@ -14,6 +14,11 @@ export enum CheckInStatus {
     UnActive
 }
 
+export enum NeedChecked {
+    NoNeed,
+    Need
+}
+
 export class CheckIn extends Typegoose {
     @prop()
     openId: String;
@@ -47,6 +52,8 @@ export class CheckIn extends Typegoose {
     createAt: Date;
     @prop()
     updatedAt: Date;
+    @prop({ default: NeedChecked.NoNeed })
+    needChecked: NeedChecked
 }
 
 const CheckInModel = new CheckIn().getModelForClass(CheckIn, {

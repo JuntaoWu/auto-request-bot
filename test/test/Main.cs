@@ -464,6 +464,33 @@ namespace test
         private void Button1_Click(object sender, EventArgs e)
         {
             CheckInMode = CheckInMode.Batch;
+            List<string> checkitems = new List<string>();
+            for (int i = 0; i < this.wait_checkin_datagrid.RowCount; i++) {
+                if ((bool)this.wait_checkin_datagrid.Rows[i].Cells[0].Value) {
+                    Member member = (Member)this.wait_checkin_datagrid.Rows[i].DataBoundItem;
+                    checkitems.Add(member.ID);
+                }
+            }
+            if (checkitems.Count > 0)
+            {
+                MemberCheckInSingletonService.Instance.membercheckinlist.ForEach((item) =>
+                {
+                    if (checkitems.FirstOrDefault(a => a == item._id) != null)
+                    {
+                        item.needChecked = NeeChecked.Need;
+                    }
+                    else {
+                        item.needChecked = NeeChecked.NoNeed;
+                    }
+                });
+            }
+            else {
+                MemberCheckInSingletonService.Instance.membercheckinlist.ForEach((item) =>
+                {
+                    item.needChecked = NeeChecked.NoNeed;
+                });
+            }
+            
             CheckInSingleMember();
         }
 
@@ -525,13 +552,25 @@ namespace test
         private bool IsSomeoneWaiting(string id)
         {
             MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == id);
-            return memberCheckIn.result != "needface" && MemberCheckInSingletonService.Instance.membercheckinlist.Count(m => m.status == CheckInStatus.Waiting) > 0;
+            return memberCheckIn.result != "needface" && MemberCheckInSingletonService.Instance.membercheckinlist.Count(m => m.status == CheckInStatus.Waiting && m.needChecked == NeeChecked.Need) > 0;
         }
 
         private void Button2_Click(object sender, EventArgs e)
         {
             CheckInMode = CheckInMode.Single;
             CheckInSingleMember();
+        }
+
+        private void wait_checkin_datagrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex == -1)//如果单击列表头，全选．
+            {
+                int i;
+                for (i = 0; i < this.wait_checkin_datagrid.RowCount; i++)
+                {
+                    this.wait_checkin_datagrid.Rows[i].Cells[0].Value = !(bool)this.wait_checkin_datagrid.Rows[i].Cells[0].Value;
+                }
+            }
         }
     }
 

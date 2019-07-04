@@ -28,12 +28,5 @@ namespace test
     {
         public string id { get; set; }
         public string message { get; set; }
-        public string result { get; set; }
-        public string allmessage { get; set; }
-        public string checkInTime { get; set; }
-        public string openId { get; set; }
-        public string status { get; set; }
-        public string avatarUrl { get; set; }
-        public string nickName { get; set; }
     }
 }

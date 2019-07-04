@@ -19,6 +19,12 @@ namespace test
         UnActive
     }
 
+    public enum NeeChecked
+    {
+        NoNeed,
+        Need
+    }
+
     public class CustomCheckInEventArge : EventArgs
     {
         public List<MemberCheckIn> currentdata { get; set; }
@@ -97,7 +103,8 @@ namespace test
             }
         }
 
-        public static async void updateMemberCheckInInformation(MessageBody data) {
+        public static async void updateMemberCheckInInformation(MessageBody data)
+        {
             string Id = data.id;
             var url = $"{Constant.Host}/api/member/checkin/{Id}";
             var response = await HttpUtil.Request(url);
@@ -110,7 +117,8 @@ namespace test
             Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
         }
 
-        public static async void createNewMemberCheckInformation(MessageBody data) {
+        public static async void createNewMemberCheckInformation(MessageBody data)
+        {
             string Id = data.id;
             var url = $"{Constant.Host}/api/member/checkin/{Id}";
             var response = await HttpUtil.Request(url);
