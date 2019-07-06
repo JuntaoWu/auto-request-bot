@@ -24,7 +24,8 @@ namespace test
     public enum CheckInMode
     {
         Batch,
-        Single
+        Single,
+        Register,
     }
 
     public partial class Main : Form
@@ -57,6 +58,7 @@ namespace test
                 Console.WriteLine(DateTime.Now);
                 this.m_SyncContext.Post((data) =>
                 {
+                    this.member_list_grdaview.Refresh();
                     this.wait_checkin_datagrid.Refresh();
                     this.success_checkin_datagrid.Refresh();
                     this.error_checkin_datagrid.Refresh();
@@ -574,6 +576,14 @@ namespace test
                         Thread.Sleep(2000);
                         CheckInSingleMember();
                     }
+                    else if(CheckInMode == CheckInMode.Register)
+                    {
+                        MessageBox.Show("当前用户已注册过");
+                    }
+                    else
+                    {
+                        MessageBox.Show("当前打卡完成");
+                    }
                     break;
                 case SocketOp.CHECK_IN_UPDATED:
                     Task.Run(async () =>
@@ -651,6 +661,8 @@ namespace test
 
             if (resetCheckInItems.Count > 0)
             {
+                var currentCheckInType = this.getCheckInType();
+
                 Task.Run(async () =>
                 {
                     bool result = await MemberCheckInSingletonService.resetErrorCheckIn(resetCheckInItems);
@@ -661,12 +673,40 @@ namespace test
                         return;
                     }
 
-                    MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
+                    try
+                    {
+                        await MemberCheckInSingletonService.getAllMemberCheckInOnToday(currentCheckInType);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                        throw ex;
+                    }
+                    
                 });
             }
             else {
                 MessageBox.Show("请选择所需要重置打卡的人员");
             }
+        }
+
+        /// <summary>
+        /// 注册用户
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button4_Click(object sender, EventArgs e)
+        {
+            CheckInMode = CheckInMode.Register;
+
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "checkin.exe";
+            startInfo.Arguments = $"http://arb.hzsdgames.com/api/member/authorize 1";
+
+            process.StartInfo = startInfo;
+            process.Start();
         }
     }
 

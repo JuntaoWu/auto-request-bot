@@ -61,22 +61,29 @@ namespace test
             }
         }
 
-        public static async void getAllMemberCheckInOnToday(CheckInType type)
+        public static async Task getAllMemberCheckInOnToday(CheckInType type)
         {
-            var url = $"{Constant.Host}/api/member/checkin/?type={Convert.ToInt32(type)}";
-
-            var response = await HttpUtil.Request(url);
-
-            var obj = JsonConvert.DeserializeObject<ResponseResult<List<MemberCheckIn>>>(response);
-
-            Instance.membercheckinlist.Clear();
-
-            if (obj.code == 0)
+            try
             {
-                Instance.membercheckinlist = obj.data;
-            }
+                var url = $"{Constant.Host}/api/member/checkin/?type={Convert.ToInt32(type)}";
 
-            Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
+                var response = await HttpUtil.Request(url);
+
+                var obj = JsonConvert.DeserializeObject<ResponseResult<List<MemberCheckIn>>>(response);
+
+                Instance.membercheckinlist.Clear();
+
+                if (obj.code == 0)
+                {
+                    Instance.membercheckinlist = obj.data;
+                }
+
+                Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public static async void updateMemberCheckInInformation(string openId, CheckInStatus status, string result, string message, string requestUrl)
