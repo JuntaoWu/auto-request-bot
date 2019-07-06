@@ -615,6 +615,39 @@ namespace test
                 }
             }
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            List<string> resetCheckInItems = new List<string>();
+            for (int i = 0; i < this.error_checkin_datagrid.RowCount; i++)
+            {
+                if ((bool)this.error_checkin_datagrid.Rows[i].Cells[0].Value)
+                {
+                    Member member = (Member)this.error_checkin_datagrid.Rows[i].DataBoundItem;
+                    resetCheckInItems.Add(member.ID);
+
+                }
+            }
+
+            if (resetCheckInItems.Count > 0)
+            {
+                Task.Run(async () =>
+                {
+                    bool result = await MemberCheckInSingletonService.resetErrorCheckIn(resetCheckInItems);
+
+                    if (!result)
+                    {
+                        MessageBox.Show("重置打卡失败.");
+                        return;
+                    }
+
+                    MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
+                });
+            }
+            else {
+                MessageBox.Show("请选择所需要重置打卡的人员");
+            }
+        }
     }
 
 }

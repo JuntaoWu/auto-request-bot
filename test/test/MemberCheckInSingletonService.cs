@@ -117,6 +117,18 @@ namespace test
             return obj.code == 0;
         }
 
+        public static async Task<bool> resetErrorCheckIn(List<string> errorCheckInIds) {
+            var url = $"{Constant.Host}/api/member/resetCheckIn";
+            var response = await HttpUtil.Request(url, "POST", new
+            {
+                checkInIds = errorCheckInIds
+            });
+
+            var obj = JsonConvert.DeserializeObject<ResponseResult>(response);
+
+            return obj.code == 0;
+        }
+
         public static async Task updateMemberCheckInInformation(MessageBody data)
         {
             string Id = data.id;

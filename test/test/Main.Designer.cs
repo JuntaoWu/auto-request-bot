@@ -36,19 +36,22 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.checkin_type_combox = new System.Windows.Forms.ComboBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.wait_checkin_tabpage = new System.Windows.Forms.TabPage();
             this.wait_checkin_datagrid = new System.Windows.Forms.DataGridView();
+            this.IsChecked = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.successs_checkin_tabpage = new System.Windows.Forms.TabPage();
             this.success_checkin_datagrid = new System.Windows.Forms.DataGridView();
             this.message = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.error_checkin_page = new System.Windows.Forms.TabPage();
             this.error_checkin_datagrid = new System.Windows.Forms.DataGridView();
+            this.dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.checkin_type_combox = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.member_list_grdaview = new System.Windows.Forms.DataGridView();
@@ -56,7 +59,6 @@
             this.delete = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Titile_label = new System.Windows.Forms.Label();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.IsChecked = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.avatarDataGridViewImageColumn1 = new System.Windows.Forms.DataGridViewImageColumn();
             this.weixinuernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -91,6 +93,7 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.wait_checkin_tabpage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wait_checkin_datagrid)).BeginInit();
@@ -98,7 +101,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.success_checkin_datagrid)).BeginInit();
             this.error_checkin_page.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.error_checkin_datagrid)).BeginInit();
-            this.tableLayoutPanel4.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).BeginInit();
@@ -132,7 +134,7 @@
             this.tabPage1.Controls.Add(this.tableLayoutPanel3);
             this.tabPage1.Location = new System.Drawing.Point(124, 4);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(1261, 572);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "打卡管理";
@@ -142,8 +144,8 @@
             // 
             this.tableLayoutPanel3.ColumnCount = 1;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Controls.Add(this.tabControl2, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel4, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.tabControl2, 0, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(11, 10, 11, 10);
@@ -155,6 +157,70 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(1255, 566);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 4;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 111F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 221F));
+            this.tableLayoutPanel4.Controls.Add(this.checkin_type_combox, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.button1, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.button2, 2, 0);
+            this.tableLayoutPanel4.Controls.Add(this.button3, 3, 0);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(4, 3);
+            this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(538, 29);
+            this.tableLayoutPanel4.TabIndex = 3;
+            // 
+            // checkin_type_combox
+            // 
+            this.checkin_type_combox.Dock = System.Windows.Forms.DockStyle.Left;
+            this.checkin_type_combox.FormattingEnabled = true;
+            this.checkin_type_combox.Items.AddRange(new object[] {
+            "上班打卡",
+            "下班打卡"});
+            this.checkin_type_combox.Location = new System.Drawing.Point(3, 3);
+            this.checkin_type_combox.Name = "checkin_type_combox";
+            this.checkin_type_combox.Size = new System.Drawing.Size(97, 23);
+            this.checkin_type_combox.TabIndex = 3;
+            this.checkin_type_combox.Text = "打卡类型";
+            this.checkin_type_combox.SelectedIndexChanged += new System.EventHandler(this.checkin_type_combox_SelectedValueChanged);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(107, 3);
+            this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(95, 23);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "批量打卡";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(209, 3);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(98, 23);
+            this.button2.TabIndex = 4;
+            this.button2.Text = "单独打卡";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.Button2_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(320, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(103, 23);
+            this.button3.TabIndex = 5;
+            this.button3.Text = "重置打卡";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // tabControl2
             // 
             this.tabControl2.Controls.Add(this.wait_checkin_tabpage);
@@ -163,7 +229,7 @@
             this.tabControl2.Location = new System.Drawing.Point(3, 38);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(1249, 501);
+            this.tabControl2.Size = new System.Drawing.Size(1249, 437);
             this.tabControl2.TabIndex = 0;
             // 
             // wait_checkin_tabpage
@@ -172,8 +238,8 @@
             this.wait_checkin_tabpage.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.wait_checkin_tabpage.Location = new System.Drawing.Point(4, 25);
             this.wait_checkin_tabpage.Name = "wait_checkin_tabpage";
-            this.wait_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.wait_checkin_tabpage.Size = new System.Drawing.Size(1241, 472);
+            this.wait_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3);
+            this.wait_checkin_tabpage.Size = new System.Drawing.Size(1241, 408);
             this.wait_checkin_tabpage.TabIndex = 0;
             this.wait_checkin_tabpage.Text = "等待打卡";
             this.wait_checkin_tabpage.UseVisualStyleBackColor = true;
@@ -197,9 +263,15 @@
             this.wait_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
             this.wait_checkin_datagrid.Name = "wait_checkin_datagrid";
             this.wait_checkin_datagrid.RowTemplate.Height = 27;
-            this.wait_checkin_datagrid.Size = new System.Drawing.Size(1235, 466);
+            this.wait_checkin_datagrid.Size = new System.Drawing.Size(1235, 402);
             this.wait_checkin_datagrid.TabIndex = 0;
             this.wait_checkin_datagrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.wait_checkin_datagrid_CellClick);
+            // 
+            // IsChecked
+            // 
+            this.IsChecked.DataPropertyName = "IsChecked";
+            this.IsChecked.HeaderText = "全选";
+            this.IsChecked.Name = "IsChecked";
             // 
             // successs_checkin_tabpage
             // 
@@ -207,8 +279,8 @@
             this.successs_checkin_tabpage.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Italic);
             this.successs_checkin_tabpage.Location = new System.Drawing.Point(4, 25);
             this.successs_checkin_tabpage.Name = "successs_checkin_tabpage";
-            this.successs_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.successs_checkin_tabpage.Size = new System.Drawing.Size(1241, 472);
+            this.successs_checkin_tabpage.Padding = new System.Windows.Forms.Padding(3);
+            this.successs_checkin_tabpage.Size = new System.Drawing.Size(1241, 408);
             this.successs_checkin_tabpage.TabIndex = 1;
             this.successs_checkin_tabpage.Text = "已打卡";
             this.successs_checkin_tabpage.UseVisualStyleBackColor = true;
@@ -233,7 +305,7 @@
             this.success_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
             this.success_checkin_datagrid.Name = "success_checkin_datagrid";
             this.success_checkin_datagrid.RowTemplate.Height = 27;
-            this.success_checkin_datagrid.Size = new System.Drawing.Size(1235, 466);
+            this.success_checkin_datagrid.Size = new System.Drawing.Size(1235, 402);
             this.success_checkin_datagrid.TabIndex = 0;
             // 
             // message
@@ -249,8 +321,8 @@
             this.error_checkin_page.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Italic);
             this.error_checkin_page.Location = new System.Drawing.Point(4, 25);
             this.error_checkin_page.Name = "error_checkin_page";
-            this.error_checkin_page.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.error_checkin_page.Size = new System.Drawing.Size(1241, 472);
+            this.error_checkin_page.Padding = new System.Windows.Forms.Padding(3);
+            this.error_checkin_page.Size = new System.Drawing.Size(1241, 408);
             this.error_checkin_page.TabIndex = 2;
             this.error_checkin_page.Text = "异常打卡";
             this.error_checkin_page.UseVisualStyleBackColor = true;
@@ -262,6 +334,7 @@
             this.error_checkin_datagrid.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
             this.error_checkin_datagrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.error_checkin_datagrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewCheckBoxColumn1,
             this.avatarDataGridViewImageColumn3,
             this.weixinuernameDataGridViewTextBoxColumn3,
             this.usernameDataGridViewTextBoxColumn3,
@@ -275,8 +348,14 @@
             this.error_checkin_datagrid.Location = new System.Drawing.Point(3, 3);
             this.error_checkin_datagrid.Name = "error_checkin_datagrid";
             this.error_checkin_datagrid.RowTemplate.Height = 27;
-            this.error_checkin_datagrid.Size = new System.Drawing.Size(1235, 466);
+            this.error_checkin_datagrid.Size = new System.Drawing.Size(1235, 402);
             this.error_checkin_datagrid.TabIndex = 0;
+            // 
+            // dataGridViewCheckBoxColumn1
+            // 
+            this.dataGridViewCheckBoxColumn1.DataPropertyName = "IsChecked";
+            this.dataGridViewCheckBoxColumn1.HeaderText = "全选";
+            this.dataGridViewCheckBoxColumn1.Name = "dataGridViewCheckBoxColumn1";
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -287,58 +366,6 @@
             this.dataGridViewTextBoxColumn1.HeaderText = "返回结果";
             this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
             this.dataGridViewTextBoxColumn1.Width = 5;
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 3;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 312F));
-            this.tableLayoutPanel4.Controls.Add(this.checkin_type_combox, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.button1, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.button2, 2, 0);
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(4, 3);
-            this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 1;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(532, 29);
-            this.tableLayoutPanel4.TabIndex = 3;
-            // 
-            // checkin_type_combox
-            // 
-            this.checkin_type_combox.Dock = System.Windows.Forms.DockStyle.Left;
-            this.checkin_type_combox.FormattingEnabled = true;
-            this.checkin_type_combox.Items.AddRange(new object[] {
-            "上班打卡",
-            "下班打卡"});
-            this.checkin_type_combox.Location = new System.Drawing.Point(3, 3);
-            this.checkin_type_combox.Name = "checkin_type_combox";
-            this.checkin_type_combox.Size = new System.Drawing.Size(104, 23);
-            this.checkin_type_combox.TabIndex = 3;
-            this.checkin_type_combox.Text = "打卡类型";
-            this.checkin_type_combox.SelectedIndexChanged += new System.EventHandler(this.checkin_type_combox_SelectedValueChanged);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(114, 3);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(100, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "批量打卡";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(223, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "单独打卡";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
             // tabPage3
             // 
@@ -434,12 +461,6 @@
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.43028F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(1395, 633);
             this.tableLayoutPanel5.TabIndex = 8;
-            // 
-            // IsChecked
-            // 
-            this.IsChecked.DataPropertyName = "IsChecked";
-            this.IsChecked.HeaderText = "全选";
-            this.IsChecked.Name = "IsChecked";
             // 
             // avatarDataGridViewImageColumn1
             // 
@@ -640,6 +661,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.wait_checkin_tabpage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.wait_checkin_datagrid)).EndInit();
@@ -647,7 +669,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.success_checkin_datagrid)).EndInit();
             this.error_checkin_page.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.error_checkin_datagrid)).EndInit();
-            this.tableLayoutPanel4.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
@@ -701,14 +722,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn message;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
-        private System.Windows.Forms.DataGridViewImageColumn avatarDataGridViewImageColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn weixinuernameDataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn usernameDataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn telephoneDataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn weixinnumberDataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn checkintimeDataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.DataGridViewCheckBoxColumn IsChecked;
         private System.Windows.Forms.DataGridViewImageColumn avatarDataGridViewImageColumn1;
@@ -717,6 +730,16 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn telephoneDataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn weixinnumberDataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn1;
+        private System.Windows.Forms.DataGridViewImageColumn avatarDataGridViewImageColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn weixinuernameDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn usernameDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn telephoneDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn weixinnumberDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn checkintimeDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn statusDataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.Button button3;
     }
 }
 
