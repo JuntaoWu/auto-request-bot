@@ -211,9 +211,9 @@ export let checkIn = async (req, res, next) => {
         type: req.query.type
     });
 
-    if (!checkInList || checkInList.length == 0) {
+    let members = await MemberModel.find();
 
-        let members = await MemberModel.find();
+    if (!checkInList || checkInList.length == 0) {
 
         socket.broadcast(SocketOp.PLAIN, {
             message: `check-in total ${members.length} records initializing.`
@@ -242,7 +242,8 @@ export let checkIn = async (req, res, next) => {
             }
 
             let result = docs.map(item => {
-                let location = locations.find(loc => loc._id == item.locationId)
+                let location = locations.find(loc => loc._id == item.locationId);
+                let originMember = members.find(member => member.openId == item.openId);
                 return {
                     _id: item._id,
                     openId: item.openId,
@@ -257,8 +258,9 @@ export let checkIn = async (req, res, next) => {
                     checkInTime: item.checkInTime,
                     longitude: location.longitude,
                     latitude: location.latitude,
-                    message: item.message
-                }
+                    message: item.message,
+                    faceList: originMember.faceList,
+                };
             })
 
             return res.json({
@@ -270,7 +272,8 @@ export let checkIn = async (req, res, next) => {
     }
     else {
         let result = checkInList.map(item => {
-            let location = locations.find(loc => loc._id == item.locationId)
+            let location = locations.find(loc => loc._id == item.locationId);
+            let originMember = members.find(member => member.openId == item.openId);
             return {
                 _id: item._id,
                 openId: item.openId,
@@ -288,9 +291,10 @@ export let checkIn = async (req, res, next) => {
                 message: item.message,
                 result: item.result,
                 url: item.url,
-                signatureStr: item.signatureStr
+                signatureStr: item.signatureStr,
+                faceList: originMember.faceList,
             }
-        })
+        });
         return res.json({
             code: 0,
             message: "OK",

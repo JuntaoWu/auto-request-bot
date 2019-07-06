@@ -46,6 +46,8 @@ export class Member extends Typegoose {
     internalUnionId: String;
     @prop()
     userId:String;
+    @prop()
+    faceList: Array<String>;
 }
 
 const MemberModel = new Member().getModelForClass(Member, {

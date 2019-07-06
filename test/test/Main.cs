@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -34,6 +35,7 @@ namespace test
         private AddUserDAL user;
         public string base64Str;
         SynchronizationContext m_SyncContext = null;
+        private Random random = new Random();
 
         public event EventHandler OnImageLoaded = (object sender, EventArgs e) => { };
 
@@ -481,6 +483,7 @@ namespace test
             CheckInMode = CheckInMode.Batch;
             List<string> checkitems = new List<string>();
             MemberCheckInSingletonService.Instance.checkedInIds = new HashSet<string>();
+            MemberCheckInSingletonService.Instance.needFaceIds = new HashSet<string>();
 
             for (int i = 0; i < this.wait_checkin_datagrid.RowCount; i++)
             {
@@ -576,7 +579,7 @@ namespace test
                         Thread.Sleep(2000);
                         CheckInSingleMember();
                     }
-                    else if(CheckInMode == CheckInMode.Register)
+                    else if (CheckInMode == CheckInMode.Register)
                     {
                         MessageBox.Show("当前用户已注册过");
                     }
@@ -595,6 +598,11 @@ namespace test
                             Thread.Sleep(2000);
                             CheckInSingleMember();
                         }
+                        else if (NeedFace(e.Data.data.id))
+                        {
+                            MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == e.Data.data.id);
+                            MonitorFaceDialog(memberCheckIn.faceList);
+                        }
                         else
                         {
                             MessageBox.Show("当前打卡完成");
@@ -606,7 +614,7 @@ namespace test
 
         private bool IsCheckInAgain(string id)
         {
-            if(MemberCheckInSingletonService.Instance.checkedInIds.Contains(id))
+            if (MemberCheckInSingletonService.Instance.checkedInIds.Contains(id))
             {
                 MemberCheckInSingletonService.Instance.checkedInIds.Clear();
                 return true;
@@ -618,14 +626,59 @@ namespace test
             }
         }
 
+        private bool IsNeedFaceAgain(string id)
+        {
+            if (MemberCheckInSingletonService.Instance.needFaceIds.Contains(id))
+            {
+                MemberCheckInSingletonService.Instance.needFaceIds.Clear();
+                return true;
+            }
+            else
+            {
+                MemberCheckInSingletonService.Instance.needFaceIds.Add(id);
+                return false;
+            }
+        }
+
         private bool IsSomeoneWaiting(string id)
         {
-            if(IsCheckInAgain(id))
+            if (IsCheckInAgain(id))
             {
                 return false;
             }
             MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == id);
             return memberCheckIn.result != "needface" && MemberCheckInSingletonService.Instance.membercheckinlist.Count(m => m.status == CheckInStatus.Waiting && m.needChecked == NeeChecked.Need) > 0;
+        }
+
+        private bool NeedFace(string id)
+        {
+            if (IsNeedFaceAgain(id))
+            {
+                return false;
+            }
+            MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == id);
+            return memberCheckIn.result == "needface";
+        }
+
+        private void MonitorFaceDialog(List<string> uris)
+        {
+            if(uris == null)
+            {
+                return;
+            }
+
+            string uri = uris[random.Next(0, uris.Count - 1)];
+            uri = Regex.Replace(uri, "/", "\\");
+
+            var path = $"{Settings1.Default.RootFolder}{uri}";
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "file.exe";
+            startInfo.Arguments = path;
+
+            process.StartInfo = startInfo;
+            process.Start();
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -682,10 +735,11 @@ namespace test
                         MessageBox.Show(ex.Message);
                         throw ex;
                     }
-                    
+
                 });
             }
-            else {
+            else
+            {
                 MessageBox.Show("请选择所需要重置打卡的人员");
             }
         }

@@ -38,6 +38,7 @@ namespace test
         public event EventHandler OnReceiveCheckInResponse;
 
         public HashSet<string> checkedInIds;
+        public HashSet<string> needFaceIds;
 
         // Constructor
         protected MemberCheckInSingletonService()
@@ -55,6 +56,7 @@ namespace test
                     instance = new MemberCheckInSingletonService();
                     Instance.membercheckinlist = new List<MemberCheckIn>();
                     Instance.checkedInIds = new HashSet<string>();
+                    Instance.needFaceIds = new HashSet<string>();
                 }
 
                 return instance;
@@ -147,6 +149,7 @@ namespace test
             var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
 
             var member = Instance.membercheckinlist.Single(m => m.openId == obj.data.openId);
+            member.result = obj.data.result;
             member.status = obj.data.status;
             member.checkInTime = obj.data.checkInTime;
             member.message = obj.data.message;

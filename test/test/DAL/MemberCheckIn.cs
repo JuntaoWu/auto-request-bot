@@ -24,5 +24,6 @@ namespace test.DAL
         public string message { get; set; }
         public string result { get; set; }
         public NeeChecked? needChecked { get; set; }
+        public List<string> faceList { get; set; }
     }
 }
