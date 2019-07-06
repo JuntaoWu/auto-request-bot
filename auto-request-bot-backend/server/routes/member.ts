@@ -40,4 +40,6 @@ router.get('/locationList', memberCtrl.locationList);
 
 router.post('/updateNeedCheckIn', memberCtrl.updateNeedCheckIn);
 
+router.post('/resetCheckIn', memberCtrl.resetCheckIn);
+
 export default router;

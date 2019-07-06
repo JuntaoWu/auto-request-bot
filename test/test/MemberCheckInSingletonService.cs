@@ -37,6 +37,8 @@ namespace test
         public List<MemberCheckIn> membercheckinlist;
         public event EventHandler OnReceiveCheckInResponse;
 
+        public HashSet<string> checkedInIds;
+
         // Constructor
         protected MemberCheckInSingletonService()
         {
@@ -52,6 +54,7 @@ namespace test
                 {
                     instance = new MemberCheckInSingletonService();
                     Instance.membercheckinlist = new List<MemberCheckIn>();
+                    Instance.checkedInIds = new HashSet<string>();
                 }
 
                 return instance;

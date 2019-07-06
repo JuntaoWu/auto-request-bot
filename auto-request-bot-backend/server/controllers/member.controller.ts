@@ -524,7 +524,39 @@ export let updateNeedCheckIn = async (req, res, next) => {
             if (error) {
                 return res.json({
                     code: 500,
-                    message: "Load check in list error",
+                    message: "updateNeedCheckIn error",
+                });
+            }
+
+            return res.json({
+                code: 0,
+                message: 'OK'
+            });
+        });
+}
+
+export let resetCheckIn = async (req, res, next) => {
+    CheckInModel.updateMany(
+        {
+            _id: {
+                $in: req.body.checkInIds
+            }
+        },
+        {
+            $set: {
+                status: CheckInStatus.Waiting,
+                checkInTime: null,
+                message: null,
+                result: null,
+                url: null,
+                needChecked: NeedChecked.Initial,
+            }
+        },
+        (error, docs) => {
+            if (error) {
+                return res.json({
+                    code: 500,
+                    message: "resetCheckIn error",
                 });
             }
 

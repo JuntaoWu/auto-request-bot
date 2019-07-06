@@ -478,6 +478,8 @@ namespace test
 
             CheckInMode = CheckInMode.Batch;
             List<string> checkitems = new List<string>();
+            MemberCheckInSingletonService.Instance.checkedInIds = new HashSet<string>();
+
             for (int i = 0; i < this.wait_checkin_datagrid.RowCount; i++)
             {
                 if ((bool)this.wait_checkin_datagrid.Rows[i].Cells[0].Value)
@@ -592,8 +594,26 @@ namespace test
             }
         }
 
+        private bool IsCheckInAgain(string id)
+        {
+            if(MemberCheckInSingletonService.Instance.checkedInIds.Contains(id))
+            {
+                MemberCheckInSingletonService.Instance.checkedInIds.Clear();
+                return true;
+            }
+            else
+            {
+                MemberCheckInSingletonService.Instance.checkedInIds.Add(id);
+                return false;
+            }
+        }
+
         private bool IsSomeoneWaiting(string id)
         {
+            if(IsCheckInAgain(id))
+            {
+                return false;
+            }
             MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == id);
             return memberCheckIn.result != "needface" && MemberCheckInSingletonService.Instance.membercheckinlist.Count(m => m.status == CheckInStatus.Waiting && m.needChecked == NeeChecked.Need) > 0;
         }
