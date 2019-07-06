@@ -13,11 +13,13 @@ http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=15465238907
 蒋泽平: 17716131667        密码: fhs139807
 蒋亚:   17323249180        密码: fhs139807
 
+Step 0: 修改C:\Windows\System32\drivers\etc\hosts 添加一行映射: 
+119.23.181.152 tms.ihxlife.com
+
 Step 1: 拦截请求
 http://tms.ihxlife.com/tms/html/1_kqlr/sign.html?attach=00000000000000105723&agentCode=510129760&userid=510129760&openid=o43yZt-ax60RdEq2tRID2cKW7Mt4&timestamp=1555227896140&nonce=c502b8ff-6f45-4044-b660-b6549cd56013&trade_source=HXQYH&signature=513F6DF8FB855544E9AD022FFE2625B2
 
 http://tms.ihxlife.com/tms/html/1_kqlr/sign.html?attach=00000000000000105723&agentCode=510129760&userid=510129760&openid=o43yZt-ax60RdEq2tRID2cKW7Mt4&timestamp=1555230703033&nonce=b422fca3-6745-45fb-942e-3277e4c2872f&trade_source=HXQYH&signature=C5B39A04405C819AB045BD54A3376D59
-
 
 Step 2: 构造请求，修改
 openid, userid, timestamp, nonce, signature //attach
