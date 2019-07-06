@@ -23,6 +23,6 @@ namespace test.DAL
         public double latitude { get; set; }
         public string message { get; set; }
         public string result { get; set; }
-        public NeeChecked needChecked { get; set; }
+        public NeeChecked? needChecked { get; set; }
     }
 }

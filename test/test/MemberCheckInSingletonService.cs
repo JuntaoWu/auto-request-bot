@@ -21,6 +21,7 @@ namespace test
 
     public enum NeeChecked
     {
+        Initial,
         NoNeed,
         Need
     }
@@ -103,7 +104,20 @@ namespace test
             }
         }
 
-        public static async void updateMemberCheckInInformation(MessageBody data)
+        public static async Task<bool> updateNeedCheckIn(List<string> needCheckInIds)
+        {
+            var url = $"{Constant.Host}/api/member/updateNeedCheckIn";
+            var response = await HttpUtil.Request(url, "POST", new
+            {
+                needCheckInIds = needCheckInIds
+            });
+
+            var obj = JsonConvert.DeserializeObject<ResponseResult>(response);
+
+            return obj.code == 0;
+        }
+
+        public static async Task updateMemberCheckInInformation(MessageBody data)
         {
             string Id = data.id;
             var url = $"{Constant.Host}/api/member/checkin/{Id}";

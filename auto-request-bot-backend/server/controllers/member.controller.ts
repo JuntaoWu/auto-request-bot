@@ -7,7 +7,7 @@ import * as httpStatus from 'http-status';
 import { config } from '../config/config';
 import { APIError } from '../helpers/APIError';
 import MemberModel, { Member, CheckInStatus } from '../models/member.model';
-import CheckInModel, { CheckIn, CheckInType } from '../models/checkin.model';
+import CheckInModel, { CheckIn, CheckInType, NeedChecked } from '../models/checkin.model';
 
 import * as moment from 'moment';
 import * as path from 'path';
@@ -440,16 +440,42 @@ export let checkStatus = async (req, res, next) => {
         });
 
         if (!checkInModel) {
+            // todo: create checkInModel
+            let type = moment() > moment({ hour: 10, minute: 30 }) ? CheckInType.CheckOut : CheckInType.CheckIn;
+            checkInModel = new CheckInModel({
+                openId: existmember.openId,
+                nickName: existmember.nickName,
+                wechatId: existmember.wechatId,
+                contactName: existmember.contactName,
+                telephone: existmember.telephone,
+                locationId: existmember.locationId,
+                avatarUrl: existmember.avatarUrl,
+                status: CheckInStatus.Waiting,
+                needChecked: NeedChecked.Initial,
+                type: type,
+                createdAt: new Date(),
+                updateAt: new Date(),
+            });
+            await checkInModel.save();
+
             return res.json({
                 code: 404,
                 message: 'check-in record not found.'
             });
         }
 
-        socket.broadcast(SocketOp.CHECK_IN_STARTED, {
-            id: checkInModel._id,
-            message: `check-in ${checkInModel._id} started.`,
-        });
+        if (checkInModel.needChecked == NeedChecked.Need) {
+            socket.broadcast(SocketOp.CHECK_IN_STARTED, {
+                id: checkInModel._id,
+                message: `check-in ${checkInModel._id} started.`,
+            });
+        }
+        else {
+            socket.broadcast(SocketOp.CHECK_IN_SKIP, {
+                id: checkInModel._id,
+                message: `check-in ${checkInModel._id} skip.`,
+            });
+        }
 
         return res.json({
             code: 0,
@@ -473,13 +499,40 @@ export let locationList = async (req, res, next) => {
     });
 }
 
-export let getCheckIn = async (req,res,next) => {
+export let getCheckIn = async (req, res, next) => {
     const data = await CheckInModel.findById(req.params.id)
     return res.json({
-        code: data? 0:404,
+        code: data ? 0 : 404,
         message: "OK",
         data: data
     });
 }
 
-export default { list, load, create, update, remove, checkin: checkIn, updateCheckin: updateCheckIn, checkStatus, locationList,getCheckIn };
+export let updateNeedCheckIn = async (req, res, next) => {
+    CheckInModel.updateMany(
+        {
+            _id: {
+                $in: req.body.needCheckInIds
+            }
+        },
+        {
+            $set: {
+                needChecked: NeedChecked.Need
+            }
+        },
+        (error, docs) => {
+            if (error) {
+                return res.json({
+                    code: 500,
+                    message: "Load check in list error",
+                });
+            }
+
+            return res.json({
+                code: 0,
+                message: 'OK'
+            });
+        });
+}
+
+export default { list, load, create, update, remove, checkin: checkIn, updateCheckin: updateCheckIn, checkStatus, locationList, getCheckIn, updateNeedCheckIn };

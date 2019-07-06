@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Member, CheckInStatus } from './member.model';
+import { Member, CheckInStatus, NeedChecked } from './member.model';
 import { environment } from '../environments/environment';
 
 // import * as VConsole from 'vconsole';
@@ -270,7 +270,12 @@ export class AppComponent implements OnInit {
       }
 
       if (!this.checkInModel) {
+        alert(`用户未找到`);
         return;
+      }
+
+      if (this.checkInModel.needChecked !== NeedChecked.Need) {
+        return this.closeWindow();
       }
 
       if (this.checkInModel.result === 'needface') {
@@ -306,8 +311,8 @@ export class AppComponent implements OnInit {
       url: location.href.split('#')[0]
     }).toPromise();
 
-    if(response.result !== 'needface') {
-      WeixinJSBridge && WeixinJSBridge.call('closeWindow');
+    if (response.result !== 'needface') {
+      this.closeWindow();
     }
 
     // if (updateCheckInResult.code === 0) {
@@ -317,5 +322,9 @@ export class AppComponent implements OnInit {
 
   isAvailable(member: Member) {
     return member.result === 'needface' && member.url === location.href.split('#')[0];
+  }
+
+  closeWindow() {
+    WeixinJSBridge && WeixinJSBridge.call('closeWindow');
   }
 }

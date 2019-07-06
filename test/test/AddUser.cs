@@ -55,7 +55,7 @@ namespace test
             this.checkin_address_combox.SelectedValue = data.locationId;
             this.openId = data.openId;
 
-            this.image_picturebox.Image = await ImageLoader.LoadImage(Constant.Host + data.avatarUrl);
+            this.image_picturebox.Image = await ImageLoader.LoadImage(data.avatarUrl);
             this.base64Str = GetImageBase64(this.image_picturebox.Image);
         }
 

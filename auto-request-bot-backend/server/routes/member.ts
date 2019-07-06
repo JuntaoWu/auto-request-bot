@@ -38,4 +38,6 @@ router.post('/checkStatus',memberCtrl.checkStatus);
 
 router.get('/locationList', memberCtrl.locationList);
 
+router.post('/updateNeedCheckIn', memberCtrl.updateNeedCheckIn);
+
 export default router;

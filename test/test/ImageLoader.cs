@@ -23,6 +23,7 @@ namespace test
         {
             try
             {
+                url = url.StartsWith("http") ? url : Constant.Host + url;
                 HttpClient client = new HttpClient();
                 var responseMessage = await client.GetAsync(url);
                 responseMessage.EnsureSuccessStatusCode();

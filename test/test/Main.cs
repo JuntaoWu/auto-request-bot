@@ -283,7 +283,7 @@ namespace test
 
             memberlist.AsParallel().ForAll(async member =>
             {
-                member.avatar = await ImageLoader.LoadImage(Constant.Host + member.avatarUrl);
+                member.avatar = await ImageLoader.LoadImage(member.avatarUrl);
                 OnImageLoaded(this, new EventArgs());
             });
 
@@ -352,13 +352,14 @@ namespace test
                     weixin_number = m.wechatId,
                     status = MappingStatus(m.status),
                     checkintime = m.checkInTime?.ToString(),
-                    message = m.message
+                    message = m.message,
+                    IsChecked = m.needChecked != NeeChecked.NoNeed
                 };
             }).ToList();
 
             waiting.AsParallel().ForAll(async member =>
             {
-                member.avatar = await ImageLoader.LoadImage(Constant.Host + member.avatarUrl);
+                member.avatar = await ImageLoader.LoadImage(member.avatarUrl);
                 OnImageLoaded(this, new EventArgs());
             });
             return waiting;
@@ -463,35 +464,62 @@ namespace test
         /// <param name="e"></param>
         private void Button1_Click(object sender, EventArgs e)
         {
+            var todaySeparator = DateTime.Today;
+            todaySeparator.AddHours(10);
+            todaySeparator.AddMinutes(30);
+
+            var systemCheckInType = DateTime.Now >= todaySeparator ? CheckInType.CheckOut : CheckInType.CheckIn;
+
+            if (getCheckInType() != systemCheckInType)
+            {
+                MessageBox.Show($"请选择正确的打卡类型, 当前时间: {DateTime.Now}");
+                return;
+            }
+
             CheckInMode = CheckInMode.Batch;
             List<string> checkitems = new List<string>();
-            for (int i = 0; i < this.wait_checkin_datagrid.RowCount; i++) {
-                if ((bool)this.wait_checkin_datagrid.Rows[i].Cells[0].Value) {
+            for (int i = 0; i < this.wait_checkin_datagrid.RowCount; i++)
+            {
+                if ((bool)this.wait_checkin_datagrid.Rows[i].Cells[0].Value)
+                {
                     Member member = (Member)this.wait_checkin_datagrid.Rows[i].DataBoundItem;
                     checkitems.Add(member.ID);
                 }
             }
             if (checkitems.Count > 0)
             {
-                MemberCheckInSingletonService.Instance.membercheckinlist.ForEach((item) =>
+                Task.Run(async () =>
                 {
-                    if (checkitems.FirstOrDefault(a => a == item._id) != null)
+                    bool result = await MemberCheckInSingletonService.updateNeedCheckIn(checkitems);
+
+                    if (!result)
                     {
-                        item.needChecked = NeeChecked.Need;
+                        MessageBox.Show("updateNeedCheckIn failed.");
+                        return;
                     }
-                    else {
-                        item.needChecked = NeeChecked.NoNeed;
-                    }
+
+                    MemberCheckInSingletonService.Instance.membercheckinlist.ForEach((item) =>
+                    {
+                        if (checkitems.FirstOrDefault(a => a == item._id) != null)
+                        {
+                            item.needChecked = NeeChecked.Need;
+                        }
+                        else
+                        {
+                            item.needChecked = NeeChecked.NoNeed;
+                        }
+                    });
+
+                    CheckInSingleMember();
                 });
             }
-            else {
+            else
+            {
                 MemberCheckInSingletonService.Instance.membercheckinlist.ForEach((item) =>
                 {
                     item.needChecked = NeeChecked.NoNeed;
                 });
             }
-            
-            CheckInSingleMember();
         }
 
         private static void SwitchCheckInMember()
@@ -537,14 +565,29 @@ namespace test
                     break;
                 case SocketOp.CHECK_IN_STARTED:
                     break;
-                case SocketOp.CHECK_IN_UPDATED:
-                    MemberCheckInSingletonService.updateMemberCheckInInformation(e.Data.data);
+                case SocketOp.CHECK_IN_SKIP:
                     if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
                     {
                         SwitchCheckInMember();
                         Thread.Sleep(2000);
                         CheckInSingleMember();
                     }
+                    break;
+                case SocketOp.CHECK_IN_UPDATED:
+                    Task.Run(async () =>
+                    {
+                        await MemberCheckInSingletonService.updateMemberCheckInInformation(e.Data.data);
+                        if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
+                        {
+                            SwitchCheckInMember();
+                            Thread.Sleep(2000);
+                            CheckInSingleMember();
+                        }
+                        else
+                        {
+                            MessageBox.Show("当前打卡完成");
+                        }
+                    });
                     break;
             }
         }

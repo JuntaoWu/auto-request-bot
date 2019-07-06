@@ -7,6 +7,12 @@ export enum CheckInStatus {
     UnActive
 }
 
+export enum NeedChecked {
+    Initial,
+    NoNeed,
+    Need
+}
+
 export interface Member {
     _id: string;
     nickName: string;
@@ -20,4 +26,5 @@ export interface Member {
     url: string;
     signatureStr: string;
     locationId: string;
+    needChecked: NeedChecked;
 }

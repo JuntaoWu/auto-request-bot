@@ -15,6 +15,7 @@ export enum CheckInStatus {
 }
 
 export enum NeedChecked {
+    Initial,
     NoNeed,
     Need
 }
@@ -52,7 +53,7 @@ export class CheckIn extends Typegoose {
     createAt: Date;
     @prop()
     updatedAt: Date;
-    @prop({ default: NeedChecked.NoNeed })
+    @prop({ default: NeedChecked.Initial })
     needChecked: NeedChecked
 }
 
