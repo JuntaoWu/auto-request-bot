@@ -15,14 +15,20 @@ let cachedAccessToken = {
 let timerAccessToken: NodeJS.Timer;
 let timerTicket: NodeJS.Timer;
 
+export interface AccessTokenResult {
+    access_token?: string;
+    expires_in?: number;
+}
+
 async function getAccessTokenTimerHandler() {
     cachedAccessToken.expiresIn -= 1;
 
     if (cachedAccessToken.expiresIn <= 600) {
         clearInterval(timerAccessToken);
 
-        let accessTokenResult = await getAccessTokenAsync().catch(error => {
+        let accessTokenResult: AccessTokenResult = await getAccessTokenAsync().catch(error => {
             console.error(error);
+            return {};
         });
         cachedAccessToken.accessToken = accessTokenResult.access_token;
         cachedAccessToken.expiresIn = +accessTokenResult.expires_in;
@@ -126,7 +132,7 @@ export async function getJsApiTicketAsync(): Promise<any> {
     });
 }
 
-export async function getAccessTokenAsync(): Promise<any> {
+export async function getAccessTokenAsync(): Promise<AccessTokenResult> {
     // https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
     const hostname = "api.weixin.qq.com";
     const path = `/cgi-bin/token?grant_type=client_credential&appid=${config.wx.appId}&secret=${config.wx.appSecret}`;
@@ -148,6 +154,7 @@ export async function getAccessTokenAsync(): Promise<any> {
             wxRes.on("end", async () => {
                 // {"access_token":"ACCESS_TOKEN","expires_in":7200}
                 let result = JSON.parse(wxData) as any;
+                console.log(result);
 
                 let { access_token, expires_in, errcode, errmsg } = result;
                 if (access_token) {

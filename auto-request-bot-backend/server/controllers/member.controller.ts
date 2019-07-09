@@ -25,16 +25,19 @@ socket.onEvent.subscribe((data) => {
     console.log(`received socket event data`, data);
 });
 
-const secureSignType = 'HMAC-SHA256';
+const secureSignType = 'HMAC-256';
+const sha1 = "sha1";
 
 export let createWxConfig = async (req, res, next) => {
     const timestamp = Math.floor(+new Date() / 1000).toString();
     const nonceStr = uuid().replace(/-/g, "");
     const configParams = [];
-    configParams.push({ key: "appId", value: config.wx.appId });
+    // configParams.push({ key: "appId", value: config.wx.appId });
     configParams.push({ key: "timestamp", value: timestamp });
-    configParams.push({ key: "nonceStr", value: nonceStr });
-    configParams.push({ key: "signType", value: secureSignType });
+    // !!!!!!! use noncestr for general API signature.
+    configParams.push({ key: "noncestr", value: nonceStr });
+    // configParams.push({ key: "nonceStr", value: nonceStr });
+    //configParams.push({ key: "signType", value: secureSignType });
     configParams.push({ key: "url", value: decodeURIComponent(req.body.url) });
 
     const signature = await createWxSignatureAsync(configParams).catch(error => {
@@ -75,7 +78,7 @@ async function createWxSignatureAsync(payload) {
         payload[urlIndex].value = decodeURIComponent(payload[urlIndex].value);
     }
 
-    const signature = await getSignatureBasedOnEnv(payload, secureSignType);
+    const signature = await getSignatureBasedOnEnv(payload, sha1);
     return signature;
 }
 
@@ -88,22 +91,24 @@ async function getSignatureBasedOnEnv(data, signType?: string) {
 
 function getSignature(data: any[], apiKey: string, signType: string = secureSignType) {
 
+    console.log("signType:", signType);
     signType = signType.toUpperCase();
 
-    const dataToSign = data.filter(m => !!m && !!m.value).sort((l, r) => l.key < r.key ? -1 : 1).map(m => `${m.key}=${m.value}`).join('&');
+    const dataToSign = data.filter(m => !!m && !!m.value).sort((l, r) => l.key < r.key ? -1 : 1).map(m => `${m.key}=${m.value}`).join('&').toString();
     const dataToSignWithApiKey = dataToSign + `&key=${apiKey}`;
 
+    console.log('dataToSign:', dataToSign);
     console.log('dataToSignWithApiKey:', dataToSignWithApiKey);
 
     if (signType == secureSignType) {
         const hmac = createHmac('sha256', apiKey);
-        const signature = hmac.update(dataToSignWithApiKey).digest('hex').toUpperCase();
+        const signature = hmac.update(dataToSign, 'ascii').digest('hex').toLowerCase();
         console.log('signature:', signature);
         return signature;
     }
     else {
-        const hash = createHash(signType);
-        const signature = hash.update(dataToSignWithApiKey).digest('hex').toUpperCase();
+        console.log('Real dataToSign is:', dataToSign);
+        const signature = createHash('sha1').update(dataToSign).digest('hex').toLowerCase();
         console.log('signature:', signature);
         return signature;
     }
@@ -111,7 +116,7 @@ function getSignature(data: any[], apiKey: string, signType: string = secureSign
 
 export let register = async (req, res, next) => {
     console.log('register:', req.body);
-    const internalOpenId = req.params.internalOpenId;
+    const internalOpenId = req.body.internalOpenId;
 
     const member = await MemberModel.findOne({
         internalOpenId: internalOpenId
@@ -123,17 +128,25 @@ export let register = async (req, res, next) => {
         });
     }
 
-    const accessToken = await getAccessTokenAsync();
+    const accessTokenResult = await getAccessTokenAsync();
     const faceList = req.body.mediaIds.filter(mediaId => {
-        return !member.faceList || member.faceList.findIndex(mediaId) === -1;
+        return !member.faceList || member.faceList.indexOf(mediaId) === -1;
     }).map(mediaId => {
         return `/static/face/${internalOpenId}-${mediaId}.jpg`;
     });
     req.body.mediaIds.forEach(mediaId => {
-        const url = `http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=${accessToken}&media_id=${mediaId}`;
-        const stream = file.createWriteStream(path.join(__dirname), `../../static/face/${internalOpenId}-${mediaId}.jpg`);
-        const request = https.get(url, (response) => {
+        const url = `http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=${accessTokenResult.access_token}&media_id=${mediaId}`;
+        const filePath = path.join(__dirname, `../../../static/face/${internalOpenId}-${mediaId}.jpg`);
+        const stream = file.createWriteStream(filePath);
+        const request = http.get(url, (response) => {
             response.pipe(stream);
+            stream.on('finish', function () {
+                console.log('file write finish');
+                stream.close();  // close() is async, call cb after close completes.
+            });
+        }).on('error', function (err) { // Handle errors
+            console.error(err);
+            file.unlink(filePath, () => { }); // Delete the file async. (But we don't check the result)
         });
     });
 
@@ -141,7 +154,7 @@ export let register = async (req, res, next) => {
     member.contactName = req.body.contactName;
     member.telephone = req.body.telephone;
     member.locationId = req.body.locationId;
-    member.faceList = member.faceList.concat(faceList);
+    member.faceList = (member.faceList || []).concat(faceList);
     await member.save();
 
     return res.json({
@@ -628,7 +641,7 @@ export let bind = async (req, res, next) => {
         internalOpenId: data.internalOpenId,
     });
 
-    if(!updateMember) {
+    if (!updateMember) {
         return res.json({
             code: 404,
             message: '用户未找到',

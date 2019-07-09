@@ -66,7 +66,7 @@ export class AppComponent implements OnInit {
         }).subscribe((res: any) => {
             const signatureData = res.data;
             wx.config({
-                debug: false && !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                debug: !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
                 appId: signatureData.appId, // 必填，公众号的唯一标识
                 timestamp: signatureData.timestamp, // 必填，生成签名的时间戳
                 nonceStr: signatureData.nonceStr, // 必填，生成签名的随机串
@@ -105,6 +105,8 @@ export class AppComponent implements OnInit {
                 const imgLocalIds: string[] = res.localIds;
                 console.log(imgLocalIds);
 
+                this.uploadQueue = (this.uploadQueue || []).concat(imgLocalIds);
+
                 forkJoin(imgLocalIds.map(imgLocalId => {
                     return new Promise<string>((resolve, reject) => {
                         wx.uploadImage({
@@ -120,7 +122,7 @@ export class AppComponent implements OnInit {
                         });
                     });
                 })).subscribe(mediaIds => {
-                    this.mediaIds = mediaIds;
+                    this.mediaIds = (this.mediaIds || []).concat(mediaIds);
                 });
             }
         });
