@@ -16,10 +16,140 @@ import * as http from 'http';
 import * as file from 'fs';
 import LocationModel from '../models/location.model';
 import socket, { SocketOp } from '../config/socket-service';
+import * as uuid from 'uuid/v4';
+import { getJsApiTicket, getAccessTokenAsync } from '../helpers/ticket';
+import { createHmac, createHash } from 'crypto';
+import * as https from 'https';
 
 socket.onEvent.subscribe((data) => {
     console.log(`received socket event data`, data);
 });
+
+const secureSignType = 'HMAC-SHA256';
+
+export let createWxConfig = async (req, res, next) => {
+    const timestamp = Math.floor(+new Date() / 1000).toString();
+    const nonceStr = uuid().replace(/-/g, "");
+    const configParams = [];
+    configParams.push({ key: "appId", value: config.wx.appId });
+    configParams.push({ key: "timestamp", value: timestamp });
+    configParams.push({ key: "nonceStr", value: nonceStr });
+    configParams.push({ key: "signType", value: secureSignType });
+    configParams.push({ key: "url", value: decodeURIComponent(req.body.url) });
+
+    const signature = await createWxSignatureAsync(configParams).catch(error => {
+        console.error(error);
+    });
+
+    if (!signature) {
+        const err = new APIError("createWxSignature error", httpStatus.INTERNAL_SERVER_ERROR);
+        return next(err);
+    }
+
+    const result = {
+        appId: config.wx.appId,
+        timestamp: timestamp,
+        nonceStr: nonceStr,
+        signType: secureSignType,
+        signature: signature
+    };
+
+    return res.json({
+        code: 0,
+        message: 'OK',
+        data: result
+    });
+};
+
+async function createWxSignatureAsync(payload) {
+    const ticket = await getJsApiTicket().catch(error => {
+        console.error(error);
+    });
+    if (!ticket) {
+        return;
+    }
+
+    payload.push({ key: 'jsapi_ticket', value: ticket });
+    const urlIndex = (payload as any[]).findIndex(i => i.key == 'url');
+    if (urlIndex != -1) {
+        payload[urlIndex].value = decodeURIComponent(payload[urlIndex].value);
+    }
+
+    const signature = await getSignatureBasedOnEnv(payload, secureSignType);
+    return signature;
+}
+
+async function getSignatureBasedOnEnv(data, signType?: string) {
+    let signature: string;
+    // todo: for production use only.
+    signature = getSignature(data, config.wx.appSecret, signType);
+    return signature;
+}
+
+function getSignature(data: any[], apiKey: string, signType: string = secureSignType) {
+
+    signType = signType.toUpperCase();
+
+    const dataToSign = data.filter(m => !!m && !!m.value).sort((l, r) => l.key < r.key ? -1 : 1).map(m => `${m.key}=${m.value}`).join('&');
+    const dataToSignWithApiKey = dataToSign + `&key=${apiKey}`;
+
+    console.log('dataToSignWithApiKey:', dataToSignWithApiKey);
+
+    if (signType == secureSignType) {
+        const hmac = createHmac('sha256', apiKey);
+        const signature = hmac.update(dataToSignWithApiKey).digest('hex').toUpperCase();
+        console.log('signature:', signature);
+        return signature;
+    }
+    else {
+        const hash = createHash(signType);
+        const signature = hash.update(dataToSignWithApiKey).digest('hex').toUpperCase();
+        console.log('signature:', signature);
+        return signature;
+    }
+}
+
+export let register = async (req, res, next) => {
+    console.log('register:', req.body);
+    const internalOpenId = req.params.internalOpenId;
+
+    const member = await MemberModel.findOne({
+        internalOpenId: internalOpenId
+    });
+    if (!member) {
+        return res.json({
+            code: 404,
+            message: 'Member not found'
+        });
+    }
+
+    const accessToken = await getAccessTokenAsync();
+    const faceList = req.body.mediaIds.filter(mediaId => {
+        return !member.faceList || member.faceList.findIndex(mediaId) === -1;
+    }).map(mediaId => {
+        return `/static/face/${internalOpenId}-${mediaId}.jpg`;
+    });
+    req.body.mediaIds.forEach(mediaId => {
+        const url = `http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=${accessToken}&media_id=${mediaId}`;
+        const stream = file.createWriteStream(path.join(__dirname), `../../static/face/${internalOpenId}-${mediaId}.jpg`);
+        const request = https.get(url, (response) => {
+            response.pipe(stream);
+        });
+    });
+
+    member.wechatId = req.body.wechatId;
+    member.contactName = req.body.contactName;
+    member.telephone = req.body.telephone;
+    member.locationId = req.body.locationId;
+    member.faceList = member.faceList.concat(faceList);
+    await member.save();
+
+    return res.json({
+        code: 0,
+        message: 'OK',
+        data: member
+    });
+}
 
 export let authorize = (req, res, next) => {
     const scope = 'snsapi_userinfo';
@@ -61,31 +191,6 @@ export let login = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export let register = async (req: Request, res: Response, next: NextFunction) => {
-
-    console.log('register:', req.body);
-
-    const existingMember = await MemberModel.findOne({ internalOpenId: req.body.internalOpenId });
-
-    if (!existingMember) {
-        return res.json({
-            code: 404,
-            message: 'Member not found'
-        });
-    }
-
-    existingMember.locationId = req.body.locationId;
-    await existingMember.save();
-
-    return res.json({
-        code: 0,
-        message: "OK",
-        data: {
-            redirectUrl: config.wx.checkInUrl
-        }
-    });
-};
-
 export let list = async (req, res, next) => {
     const data = await MemberModel.find();
     return res.json({
@@ -97,6 +202,15 @@ export let list = async (req, res, next) => {
 
 export let load = async (req, res, next) => {
     const data = await MemberModel.findById(req.params.id);
+    return res.json({
+        code: 0,
+        message: "OK",
+        data: data
+    });
+};
+
+export let loadByInternalOpenId = async (req, res, next) => {
+    const data = await MemberModel.findOne({ internalOpenId: req.params.internalOpenId });
     return res.json({
         code: 0,
         message: "OK",
@@ -142,7 +256,6 @@ export let create = async (req, res, next) => {
     }
 
 };
-
 
 export let update = async (req, res, next) => {
 
@@ -571,4 +684,18 @@ export let resetCheckIn = async (req, res, next) => {
         });
 }
 
-export default { list, load, create, update, remove, checkin: checkIn, updateCheckin: updateCheckIn, checkStatus, locationList, getCheckIn, updateNeedCheckIn };
+export default {
+    list,
+    load,
+    loadByInternalOpenId,
+    create,
+    update,
+    remove,
+    checkin: checkIn,
+    updateCheckin: updateCheckIn,
+    checkStatus,
+    locationList,
+    getCheckIn,
+    updateNeedCheckIn,
+    createWxConfig,
+};

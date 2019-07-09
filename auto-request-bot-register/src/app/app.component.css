@@ -1,0 +1,82 @@
+
+.viewer-wrapper {
+    border: 1px solid rgba(0,0,0,.03);
+    box-shadow: 0 2px 2px rgba(0,0,0,.24), 0 0 2px rgba(0,0,0,.12);
+    margin: 4px;
+    /* height: 97vh; */
+}
+
+.viewer-title {
+    align-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    padding: 8px 20px;
+
+    color: rgba(0,0,0,.54);
+    background: rgba(0,0,0,.03);
+}
+
+.viewer-title-spacer {
+    -webkit-box-flex: 1;
+    flex: 1 1 auto;
+}
+
+.viewer-body {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.viewer-body > * {
+    width: 100%;
+}
+
+.viewer-body > .avatar-wrapper {
+    text-align: center;
+    width: 100px;
+    height: 100px;
+}
+
+.viewer-body > .avatar-wrapper img {
+    width: 100%;
+}
+
+.upload-area {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 10px;
+}
+
+.upload-area ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 60vw;
+    overflow: scroll;
+}
+
+.upload-area ul li img {
+    max-width: 80px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.action {
+    margin-top: 30px;
+}
+
+.upload-button input {
+    display: none;
+}

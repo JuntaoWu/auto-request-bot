@@ -18,6 +18,10 @@ router.route('/login')
 router.route('/register')
     .post(memberCtrl.register);
 
+router.get('/register/:internalOpenId', memberCtrl.loadByInternalOpenId);
+
+router.post('/createWxConfig', memberCtrl.createWxConfig);
+
 router.get('/', memberCtrl.list);
 
 router.get('/checkin', memberCtrl.checkIn);

@@ -8,4 +8,52 @@
   <option value="0">上班打卡</option>
   <option value="1">下班打卡</option>
 </select> -->
-<button mat-raised-button color="primary" (click)="register()">注册</button>
+<div class="viewer-wrapper">
+  <div class="viewer-title">
+    <div class="viewer-title-spacer">用户[{{data.nickName || '***'}}]的个人信息</div>
+  </div>
+  <form class="viewer-body" (ngSubmit)="register()">
+    <div class="avatar-wrapper mat-elevation-z10">
+      <img *ngIf="data.avatarUrl" [src]="data.avatarUrl" />
+    </div>
+    <mat-form-field class="full-width">
+      <input name="nickName" readonly matInput placeholder="昵称" [(ngModel)]="data.nickName">
+    </mat-form-field>
+    <mat-form-field class="full-width">
+      <input name="wechatId" matInput placeholder="微信号" [(ngModel)]="data.wechatId">
+    </mat-form-field>
+    <mat-form-field class="full-width">
+      <input name="contactName" matInput placeholder="姓名" [(ngModel)]="data.contactName">
+    </mat-form-field>
+    <mat-form-field class="full-width">
+      <input required name="telephone" matInput placeholder="手机号" [(ngModel)]="data.telephone">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>地点</mat-label>
+      <mat-select name="location" [(value)]="data.locationId">
+        <mat-option *ngFor="let location of locations;" [value]="location.value">{{location.text}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div>人脸区域</div>
+    <div class="upload-area mat-elevation-z1">
+      <ul>
+        <li *ngFor="let preview of data.faceList">
+          <img *ngIf="preview" [src]="preview" />
+        </li>
+        <li *ngFor="let preview of uploadQueue">
+          <img *ngIf="preview" [src]="preview" />
+        </li>
+      </ul>
+      <button *ngIf="isWxBrowser" (click)="chooseImage()" class="upload-button" type="button" mat-raised-button>
+        <label for="file-upload">上传</label>
+      </button>
+      <button *ngIf="!isWxBrowser" class="upload-button" type="button" mat-raised-button>
+        <label for="file-upload">上传</label>
+        <input (change)="nativeUpload($event)" id="file-upload" name="file" type="file" accept="image/*" />
+      </button>
+    </div>
+    <div class="action">
+      <button type="submit" class="full-width" mat-raised-button color="primary">更新</button>
+    </div>
+  </form>
+</div>

@@ -1,39 +1,129 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
+import { Member } from './member.model';
+import { LocationModel } from './location.model';
+import { Observable, from, forkJoin } from 'rxjs';
+import { zipAll, combineAll } from 'rxjs/operators';
+
+declare var wx;
+declare var $;
+declare var WeixinJSBridge;
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
 
-  constructor(private httpClient: HttpClient) {
+    internalOpenId: string;
+    data: Member = {};
+    locations: LocationModel[] = [];
+    uploadQueue: string[] = [];
+    mediaIds: string[] = [];
 
-  }
+    constructor(private httpClient: HttpClient) {
+    }
 
-  title = 'auto-request-bot-register';
+    title = 'auto-request-bot-register';
 
-  register() {
-    const internalOpenId = location.search.match(/internalOpenId=([^&#]*)/)[1];
-    const locationId = '5cc43f7bc290fb6154005242';
-    this.httpClient.post(`${environment.arbHost}/api/member/register`, {
-      internalOpenId,
-      locationId
-    }).subscribe((res: any) => {
-      if (res.code !== 0) {
-        alert(res.message);
-        return;
-      }
+    register() {
+        this.httpClient.post(`${environment.arbHost}/api/member/register`, {
+            ...this.data,
+            internalOpenId: this.internalOpenId,
+            mediaIds: this.mediaIds || [],
+        }).subscribe((res: any) => {
+            this.uploadQueue = [];
+            this.mediaIds = [];
+            if (res.code !== 0) {
+                alert(res.message);
+                return;
+            }
+            alert('数据保存成功');
+            this.data = res.data;
+            // tslint:disable-next-line:max-line-length
+            // location.href = res.data.redirectUrl;
+        });
+    }
 
-      // tslint:disable-next-line:max-line-length
-      location.href = res.data.redirectUrl;
-    });
-  }
+    ngOnInit(): void {
+        this.httpClient.get(`${environment.arbHost}/api/location`).subscribe((res: any) => {
+            if (res.code === 0) {
+                this.locations = res.data;
+            }
+        });
+        this.refresh();
 
-  ngOnInit(): void {
+        this.httpClient.post(`${environment.arbHost}/api/member/createWxConfig`, {
+            url: location.href.split('#')[0],
+        }).subscribe((res: any) => {
+            const signatureData = res.data;
+            wx.config({
+                debug: false && !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: signatureData.appId, // 必填，公众号的唯一标识
+                timestamp: signatureData.timestamp, // 必填，生成签名的时间戳
+                nonceStr: signatureData.nonceStr, // 必填，生成签名的随机串
+                signature: signatureData.signature, // 必填，签名
+                jsApiList: ['chooseImage', 'previewImage', 'uploadImage', 'downloadImage'] // 必填，需要使用的JS接口列表
+            });
+        });
+    }
 
-  }
+    refresh() {
+        if (!/internalOpenId=([^&#]*)/.test(location.search)) {
+            return;
+        }
 
+        this.internalOpenId = location.search.match(/internalOpenId=([^&#]*)/)[1];
+        if (this.internalOpenId) {
+            this.httpClient.get(`${environment.arbHost}/api/member/register/${this.internalOpenId}`).subscribe((res: any) => {
+                if (res.code === 0) {
+                    this.data = res.data;
+                    this.data.faceList = this.data.faceList || ['/static/face/1.jpg', '/static/face/2.jpg'];
+                }
+            });
+        }
+    }
+
+    nativeUpload($event) {
+        console.log($event);
+    }
+
+    chooseImage() {
+        if (!this.isWxBrowser) {
+            return;
+        }
+        wx.chooseImage({
+            count: 1, // 默认9
+            sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+            sourceType: ['camera', 'album'], // 可以指定来源是相册还是相机，默认二者都有
+            success: (res) => {
+                const imgLocalIds: string[] = res.localIds;
+                console.log(imgLocalIds);
+
+                forkJoin(imgLocalIds.map(imgLocalId => {
+                    return new Promise<string>((resolve, reject) => {
+                        wx.uploadImage({
+                            localId: imgLocalId, // 需要上传的图片的本地ID，由chooseImage接口获得
+                            isShowProgressTips: 1, // 默认为1，显示进度提示
+                            success: (uploadImageRes) => {
+                                if (uploadImageRes.serverId.indexOf('wxLocalResource://') >= 0) {
+                                    return reject(null);
+                                }
+                                const mediaId = uploadImageRes.serverId;
+                                return resolve(mediaId);
+                            }
+                        });
+                    });
+                })).subscribe(mediaIds => {
+                    this.mediaIds = mediaIds;
+                });
+            }
+        });
+    }
+
+    get isWxBrowser() {
+        return true;
+    }
 }
