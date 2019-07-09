@@ -63,10 +63,17 @@
     justify-content: left;
     width: 60vw;
     overflow: scroll;
+    
+}
+
+.upload-area ul li {
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .upload-area ul li img {
-    max-width: 80px;
+    max-width: 100px;
+    max-height: 100px;
 }
 
 .full-width {

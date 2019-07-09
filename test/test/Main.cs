@@ -707,6 +707,7 @@ namespace test
         private void Button2_Click(object sender, EventArgs e)
         {
             CheckInMode = CheckInMode.Single;
+
             CheckInSingleMember();
         }
 

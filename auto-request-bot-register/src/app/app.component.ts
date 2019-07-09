@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { Member } from './member.model';
 import { LocationModel } from './location.model';
-import { Observable, from, forkJoin } from 'rxjs';
-import { zipAll, combineAll } from 'rxjs/operators';
+import { Observable, from, forkJoin, of } from 'rxjs';
+import { zipAll, combineAll, switchMap } from 'rxjs/operators';
 
 declare var wx;
 declare var $;
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
     uploadQueue: string[] = [];
     mediaIds: string[] = [];
 
-    constructor(private httpClient: HttpClient) {
+    constructor(private httpClient: HttpClient, private zone: NgZone) {
     }
 
     title = 'auto-request-bot-register';
@@ -57,9 +57,11 @@ export class AppComponent implements OnInit {
         this.httpClient.get(`${environment.arbHost}/api/location`).subscribe((res: any) => {
             if (res.code === 0) {
                 this.locations = res.data;
+                this.refresh();
             }
-        });
-        this.refresh();
+        }, (error => {
+            console.error(error);
+        }));
 
         this.httpClient.post(`${environment.arbHost}/api/member/createWxConfig`, {
             url: location.href.split('#')[0],
@@ -71,7 +73,7 @@ export class AppComponent implements OnInit {
                 timestamp: signatureData.timestamp, // 必填，生成签名的时间戳
                 nonceStr: signatureData.nonceStr, // 必填，生成签名的随机串
                 signature: signatureData.signature, // 必填，签名
-                jsApiList: ['chooseImage', 'previewImage', 'uploadImage', 'downloadImage'] // 必填，需要使用的JS接口列表
+                jsApiList: ['chooseImage', 'previewImage', 'uploadImage', 'downloadImage', 'getLocalImgData'] // 必填，需要使用的JS接口列表
             });
         });
     }
@@ -98,14 +100,34 @@ export class AppComponent implements OnInit {
             return;
         }
         wx.chooseImage({
-            count: 1, // 默认9
+            count: 4, // 默认9
             sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
             sourceType: ['camera', 'album'], // 可以指定来源是相册还是相机，默认二者都有
             success: (res) => {
                 const imgLocalIds: string[] = res.localIds;
                 console.log(imgLocalIds);
 
-                this.uploadQueue = (this.uploadQueue || []).concat(imgLocalIds);
+                imgLocalIds.forEach(
+                    imgLocalId => {
+                        wx.getLocalImgData({ // 循环调用 getLocalImgData
+                            localId: imgLocalId,
+                            success: (localImageDataRes) => {
+                                let localData: string = localImageDataRes.localData; // localData是图片的base64数据，可以用img标签显示
+                                localData = localData.replace(/\r|\n/g, '')
+                                    .replace('data:image/jgp', 'data:image/jpeg'); // iOS 系统里面得到的数据，类型为 image/jpg,因此需要替换一下
+                                if (!localData.startsWith('data:image')) {
+                                    // 判断是否有这样的头部
+                                    // data:image/png;base64,
+                                    localData = 'data:image/png;base64,' + localData;
+                                }
+
+                                this.zone.run(() => {
+                                    this.uploadQueue.push(localData);
+                                });
+                            }
+                        });
+                    }
+                );
 
                 forkJoin(imgLocalIds.map(imgLocalId => {
                     return new Promise<string>((resolve, reject) => {

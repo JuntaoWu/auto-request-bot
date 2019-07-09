@@ -12,7 +12,7 @@
   <div class="viewer-title">
     <div class="viewer-title-spacer">用户[{{data.nickName || '***'}}]的个人信息</div>
   </div>
-  <form class="viewer-body" (ngSubmit)="register()">
+  <form #appForm="ngForm" class="viewer-body" (ngSubmit)="register()">
     <div class="avatar-wrapper mat-elevation-z10">
       <img *ngIf="data.avatarUrl" [src]="data.avatarUrl" />
     </div>
@@ -30,18 +30,18 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>地点</mat-label>
-      <mat-select name="location" [(value)]="data.locationId">
+      <mat-select required name="location" [(value)]="data.locationId">
         <mat-option *ngFor="let location of locations;" [value]="location.value">{{location.text}}</mat-option>
       </mat-select>
     </mat-form-field>
     <div>人脸区域</div>
     <div class="upload-area mat-elevation-z1">
       <ul>
-        <li *ngFor="let preview of data.faceList">
-          <img *ngIf="preview" [src]="preview" />
+        <li *ngFor="let face of data.faceList">
+          <img *ngIf="!!face" [src]="face" />
         </li>
         <li *ngFor="let preview of uploadQueue">
-          <img *ngIf="preview" [src]="preview" />
+          <img *ngIf="!!preview" [src]="preview" />
         </li>
       </ul>
       <button *ngIf="isWxBrowser" (click)="chooseImage()" class="upload-button" type="button" mat-raised-button>
@@ -53,7 +53,7 @@
       </button>
     </div>
     <div class="action">
-      <button type="submit" class="full-width" mat-raised-button color="primary">更新</button>
+      <button [disabled]="!appForm.form.valid" type="submit" class="full-width" mat-raised-button color="primary">更新</button>
     </div>
   </form>
 </div>

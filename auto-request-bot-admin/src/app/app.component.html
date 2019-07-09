@@ -13,7 +13,12 @@
         <button mat-raised-button color="primary" (click)="refresh()">刷新</button>
     </mat-toolbar>
 </div>
-<div style="position: absolute; width: 100%; top: 80px;">
+<div *ngIf="!!checkInModel">
+    <p>
+        用户[{{checkInModel?.nickName}}]正在打卡中...
+    </p>
+</div>
+<div *ngIf="members && members.length" style="position: absolute; width: 100%; top: 80px;">
     <div class="mat-elevation-z8 container">
         <table mat-table [dataSource]="members">
 
