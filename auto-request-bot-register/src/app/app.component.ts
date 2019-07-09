@@ -17,7 +17,8 @@ declare var WeixinJSBridge;
 })
 export class AppComponent implements OnInit {
 
-    internalOpenId: string;
+    // tslint:disable-next-line:variable-name
+    _internalOpenId: string;
     data: Member = {};
     locations: LocationModel[] = [];
     uploadQueue: string[] = [];
@@ -48,6 +49,11 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        if (!this.internalOpenId) {
+            location.href = `${environment.arbHost}/api/member/authorize`;
+            return;
+        }
+
         this.httpClient.get(`${environment.arbHost}/api/location`).subscribe((res: any) => {
             if (res.code === 0) {
                 this.locations = res.data;
@@ -71,19 +77,16 @@ export class AppComponent implements OnInit {
     }
 
     refresh() {
-        if (!/internalOpenId=([^&#]*)/.test(location.search)) {
+        if (!this.internalOpenId) {
             return;
         }
 
-        this.internalOpenId = location.search.match(/internalOpenId=([^&#]*)/)[1];
-        if (this.internalOpenId) {
-            this.httpClient.get(`${environment.arbHost}/api/member/register/${this.internalOpenId}`).subscribe((res: any) => {
-                if (res.code === 0) {
-                    this.data = res.data;
-                    this.data.faceList = this.data.faceList || ['/static/face/1.jpg', '/static/face/2.jpg'];
-                }
-            });
-        }
+        this.httpClient.get(`${environment.arbHost}/api/member/register/${this.internalOpenId}`).subscribe((res: any) => {
+            if (res.code === 0) {
+                this.data = res.data;
+                this.data.faceList = this.data.faceList || [];
+            }
+        });
     }
 
     nativeUpload($event) {
@@ -125,5 +128,12 @@ export class AppComponent implements OnInit {
 
     get isWxBrowser() {
         return true;
+    }
+
+    get internalOpenId() {
+        if (/internalOpenId=([^&#]*)/.test(location.search)) {
+            this._internalOpenId = location.search.match(/internalOpenId=([^&#]*)/)[1];
+        }
+        return this._internalOpenId;
     }
 }

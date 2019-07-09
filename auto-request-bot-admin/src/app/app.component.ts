@@ -271,7 +271,7 @@ export class AppComponent implements OnInit {
     async ngOnInit() {
         await this.getLocationList();
         await this.checkStatus();
-        await this.refresh();
+        // await this.refresh();
     }
 
     async getLocationList() {
@@ -313,21 +313,21 @@ export class AppComponent implements OnInit {
             openId: checkInParams.openid,
             userId: checkInParams.userid,
         }).subscribe(res => {
-            this.memberModel = res.data.member;
-            this.checkInModel = res.data.checkin;
-
-            if (res.code === 201) {
-                // todo: 成功注册用户
-                alert(`用户${this.checkInModel.nickName}注册完成`);
+            if (res.code === 200) {
+                // start binding:
+                this.members = res.data;
                 return;
             }
 
-            if (!this.checkInModel) {
+            if (res.code === 404 || !res.data.checkin) {
                 alert(`用户未找到`);
                 return;
             }
 
-            return this.testFace(this.checkInModel);
+            this.memberModel = res.data.member;
+            this.checkInModel = res.data.checkin;
+
+            // return this.testFace(this.checkInModel);
 
             if (this.checkInModel.needChecked !== NeedChecked.Need) {
                 return this.closeWindow();
@@ -339,6 +339,24 @@ export class AppComponent implements OnInit {
                 // todo: checkIn
                 const location = this.locations.find(item => this.checkInModel.locationId === item.value);
                 this.checkIn(this.checkInModel, location);
+            }
+        });
+    }
+
+    bindUser(user: Member) {
+        this.httpClient.post(`${environment.arbHost}/api/member/bind`, {
+            internalOpenId: user.internalOpenId,
+            openId: this.checkInParams.openid,
+        }).subscribe((res: any) => {
+            if (res.code === 404) {
+                alert(res.message || '用户未找到');
+            }
+            else if (res.code === 201) {
+                alert('用户绑定完成');
+                this.closeWindow();
+            }
+            else {
+                alert(res.message || '用户绑定失败');
             }
         });
     }
@@ -380,6 +398,6 @@ export class AppComponent implements OnInit {
     }
 
     closeWindow() {
-        window["WeixinJSBridge"] && window["WeixinJSBridge"].call('closeWindow');
+        window['WeixinJSBridge'] && window['WeixinJSBridge'].call('closeWindow');
     }
 }

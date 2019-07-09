@@ -101,6 +101,7 @@
     <Compile Include="DAL\Member.cs" />
     <Compile Include="DAL\MemberCheckIn.cs" />
     <Compile Include="DAL\RegisterDAL.cs" />
+    <Compile Include="FaceSyncService.cs" />
     <Compile Include="HttpUtil.cs" />
     <Compile Include="ImageLoader.cs" />
     <Compile Include="Login.cs">

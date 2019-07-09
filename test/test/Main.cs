@@ -45,7 +45,7 @@ namespace test
         {
             InitializeComponent();
             m_SyncContext = SynchronizationContext.Current;
-            user = new AddUserDAL();
+
             //开始启动监听服务，并注册事件响应函数
             SingletonProxyServer.OperationType = OperationType.Stopped;
 
@@ -54,6 +54,8 @@ namespace test
             MemberCheckInSingletonService.Instance.OnReceiveCheckInResponse += Instance_OnReceiveCheckInResponse;
 
             SocketService.Instance.OnMessage += Instance_OnMessage;
+
+            FaceSyncService.Instance.OnSynced += Instance_OnSynced;
 
             this.OnImageLoaded += (object sender, EventArgs e) =>
             {
@@ -68,13 +70,34 @@ namespace test
             };
         }
 
+        private void Instance_OnSynced(object sender, CustomEventArgs e)
+        {
+            this.m_SyncContext.Post((data) =>
+            {
+                MessageBox.Show("用户脸同步完成");
+                this.button1.Enabled = true;
+                this.button2.Enabled = true;
+            }, e.Data);
+        }
+
         //窗体加载事件
         private void Main_Load(object sender, EventArgs e)
         {
             Login loginform = new Login();
             loginform.StartPosition = FormStartPosition.CenterScreen;
-            loginform.ShowDialog();
-            MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
+            DialogResult dialogResult = loginform.ShowDialog();
+
+            if (dialogResult == DialogResult.OK)
+            {
+                this.Init();
+            }
+        }
+
+        private async void Init()
+        {
+            user = new AddUserDAL();
+            await MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
+            await FaceSyncService.Instance.Run();
         }
 
 
@@ -662,7 +685,7 @@ namespace test
 
         private void MonitorFaceDialog(List<string> uris)
         {
-            if(uris == null)
+            if (uris == null)
             {
                 return;
             }
@@ -757,7 +780,7 @@ namespace test
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "checkin.exe";
-            startInfo.Arguments = $"http://arb.hzsdgames.com/api/member/authorize 1";
+            startInfo.Arguments = $"{Constant.Host}/api/member/authorize?state=admin 1";
 
             process.StartInfo = startInfo;
             process.Start();

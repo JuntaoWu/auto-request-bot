@@ -27,4 +27,8 @@ export interface Member {
     signatureStr: string;
     locationId: string;
     needChecked: NeedChecked;
+
+    // combine member properties.
+    internalOpenId: string;
+    openId: string;
 }

@@ -120,6 +120,7 @@ export const config = {
     uri: envVars.REDIS_URI,
   },
   rootUrl: envVars.ROOT_URI,
+  checkInUrl: envVars.CHECK_IN_URI,
   im: {
     host: envVars.IM_HOST,
     appKey: envVars.IM_APP_KEY,

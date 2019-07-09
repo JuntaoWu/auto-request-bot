@@ -19,7 +19,15 @@ namespace test
             var url = $"{Constant.Host}/api/usermanage/login";
             HttpClient client = new HttpClient();
             HttpResponseMessage result;
-            result = await client.PostAsJsonAsync(url, data);
+            try
+            {
+                result = await client.PostAsJsonAsync(url, data);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
             if (result == null)
             {
                 return null;

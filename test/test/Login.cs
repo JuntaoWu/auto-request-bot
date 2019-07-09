@@ -27,6 +27,7 @@ namespace test
             ResponseResult result = await login.Login(this.user_name_txtbox.Text, this.password_txtbox.Text);
             if (result.code == 0)
             {
+                this.DialogResult = DialogResult.OK;
                 this.exit = false;
                 this.Dispose();
             }

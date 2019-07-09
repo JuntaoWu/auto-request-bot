@@ -18,6 +18,7 @@ export interface Member {
     nickName?: string;
     wechatId?: string;
     contactName?: string;
+    telephone?: string;
     avatarUrl?: string;
     status?: CheckInStatus;
     checkInTime?: string;

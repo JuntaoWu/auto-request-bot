@@ -169,20 +169,24 @@ export let login = async (req: Request, res: Response, next: NextFunction) => {
             await dbUser.save();
         }
 
-        res.cookie('internalOpenId', req.user.internalOpenId);
-        let redirectUrl = decodeURIComponent(req.query.state || config.rootUrl);
-        console.log('state:', redirectUrl);
-        if (/\?/.test(redirectUrl)) {
-            redirectUrl += `&internalOpenId=${req.user.internalOpenId}`;
-        }
-        else if (/#/.test(redirectUrl)) {
-            redirectUrl = redirectUrl.replace(/(.*)#([^#]*)/, `$1?internalOpenId=${req.user.internalOpenId}#$2`);
-        }
-        else {
-            redirectUrl += `?internalOpenId=${req.user.internalOpenId}`;
-        }
+        let redirectUrl = req.query.state ? config.checkInUrl : config.rootUrl;
 
+        if (!req.query.state) {
+            res.cookie('internalOpenId', req.user.internalOpenId);
+
+            console.log('state:', redirectUrl);
+            if (/\?/.test(redirectUrl)) {
+                redirectUrl += `&internalOpenId=${req.user.internalOpenId}`;
+            }
+            else if (/#/.test(redirectUrl)) {
+                redirectUrl = redirectUrl.replace(/(.*)#([^#]*)/, `$1?internalOpenId=${req.user.internalOpenId}#$2`);
+            }
+            else {
+                redirectUrl += `?internalOpenId=${req.user.internalOpenId}`;
+            }
+        }
         console.log('redirectTo:', redirectUrl);
+
         return res.redirect(redirectUrl);
     }
     catch (err) {
@@ -369,10 +373,10 @@ export let checkIn = async (req, res, next) => {
                     status: item.status,
                     type: item.type,
                     checkInTime: item.checkInTime,
-                    longitude: location.longitude,
-                    latitude: location.latitude,
+                    longitude: location && location.longitude,
+                    latitude: location && location.latitude,
                     message: item.message,
-                    faceList: originMember.faceList,
+                    faceList: originMember && originMember.faceList,
                 };
             })
 
@@ -386,6 +390,9 @@ export let checkIn = async (req, res, next) => {
     else {
         let result = checkInList.map(item => {
             let location = locations.find(loc => loc._id == item.locationId);
+            if (!location) {
+                location = locations[0];
+            }
             let originMember = members.find(member => member.openId == item.openId);
             return {
                 _id: item._id,
@@ -399,13 +406,13 @@ export let checkIn = async (req, res, next) => {
                 status: item.status,
                 type: item.type,
                 checkInTime: item.checkInTime,
-                longitude: location.longitude,
-                latitude: location.latitude,
+                longitude: location && location.longitude,
+                latitude: location && location.latitude,
                 message: item.message,
                 result: item.result,
                 url: item.url,
                 signatureStr: item.signatureStr,
-                faceList: originMember.faceList,
+                faceList: originMember && originMember.faceList,
             }
         });
         return res.json({
@@ -485,6 +492,13 @@ export let checkStatus = async (req, res, next) => {
     if (!existmember) {
         let updateMembers = await MemberModel.find({ openId: null }).sort({ createdAt: -1 });
         if (updateMembers && updateMembers.length > 0) {
+
+            return res.json({
+                code: 200,
+                message: 'binding',
+                data: updateMembers
+            });
+
             let updateMember = updateMembers[0];
 
             console.log('updateMember before:', updateMember);
@@ -606,6 +620,72 @@ export let checkStatus = async (req, res, next) => {
 
 }
 
+export let bind = async (req, res, next) => {
+
+    let data = req.body;
+
+    let updateMember = await MemberModel.findOne({
+        internalOpenId: data.internalOpenId,
+    });
+
+    if(!updateMember) {
+        return res.json({
+            code: 404,
+            message: '用户未找到',
+        })
+    }
+
+    console.log('updateMember before:', updateMember);
+
+    updateMember.openId = data.openId;
+    updateMember.userId = data.userId;
+
+    console.log('updateMember after:', updateMember);
+
+    await updateMember.save();
+
+    let checkinList = await CheckInModel.find({
+        openId: updateMember.openId
+    });
+
+    let checkInModel: any;
+
+    if (!checkinList || checkinList.length == 0) {
+        let type = moment() > moment({ hour: 10, minute: 30 }) ? CheckInType.CheckOut : CheckInType.CheckIn;
+        checkInModel = new CheckInModel({
+            openId: updateMember.openId,
+            nickName: updateMember.nickName,
+            wechatId: updateMember.wechatId,
+            contactName: updateMember.contactName,
+            telephone: updateMember.telephone,
+            locationId: updateMember.locationId,
+            avatarUrl: updateMember.avatarUrl,
+            status: CheckInStatus.Waiting,
+            type: type,
+            createdAt: new Date(),
+            updateAt: new Date(),
+        });
+        await checkInModel.save()
+    }
+    else {
+        checkInModel = checkinList[0];
+    }
+
+    socket.broadcast(SocketOp.CHECK_IN_CREATED, {
+        id: checkInModel._id,
+        message: `check-in ${checkInModel._id} created.`
+    });
+
+    return res.json({
+        code: 201,
+        message: "created",
+        data: {
+            member: updateMember,
+            checkin: checkInModel
+        }
+    });
+}
+
 export let locationList = async (req, res, next) => {
     const locations = await LocationModel.find();
 
@@ -698,4 +778,5 @@ export default {
     getCheckIn,
     updateNeedCheckIn,
     createWxConfig,
+    bind,
 };
