@@ -96,7 +96,8 @@ namespace test
         private async void Init()
         {
             user = new AddUserDAL();
-            await MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
+            await this.BindCheckInAddressDataMember();
+            await MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
             await FaceSyncService.Instance.Run();
         }
 
@@ -281,9 +282,20 @@ namespace test
             }*/
             else if (e.TabPage.Text == "打卡管理")
             {
-                MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
+                MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
             }
         }
+
+        private async Task BindCheckInAddressDataMember()
+        {
+            this.checkin_address_combox.DataSource = await user.getCheckInAddressList();
+            this.checkin_address_combox.DisplayMember = "text";
+            this.checkin_address_combox.ValueMember = "value";
+
+            this.checkin_address_combox.SelectedIndex = 0;
+        }
+
+
 
         /// <summary>
         /// 绑定会员列表数据数据
@@ -473,6 +485,20 @@ namespace test
             }
         }
 
+        private CheckInAddress GetCheckInLocation()
+        {
+            if (this.checkin_address_combox.SelectedValue is CheckInAddress)
+            {
+                var checkInAddress = this.checkin_address_combox.SelectedValue as CheckInAddress;
+                return checkInAddress;
+            }
+            else if (this.checkin_address_combox.SelectedValue is string)
+            {
+                return AddUserDAL.AddressList.FirstOrDefault(item => item.value == this.checkin_address_combox.SelectedValue.ToString());
+            }
+            return null;
+        }
+
         /// <summary>
         /// 打卡类型变化事件
         /// </summary>
@@ -480,7 +506,7 @@ namespace test
         /// <param name="e"></param>
         private void checkin_type_combox_SelectedValueChanged(object sender, EventArgs e)
         {
-            MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType());
+            MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
 
         }
 
@@ -492,8 +518,8 @@ namespace test
         private void Button1_Click(object sender, EventArgs e)
         {
             var todaySeparator = DateTime.Today;
-            todaySeparator.AddHours(10);
-            todaySeparator.AddMinutes(30);
+            todaySeparator = todaySeparator.AddHours(10);
+            todaySeparator = todaySeparator.AddMinutes(30);
 
             var systemCheckInType = DateTime.Now >= todaySeparator ? CheckInType.CheckOut : CheckInType.CheckIn;
 
@@ -502,6 +528,8 @@ namespace test
                 MessageBox.Show($"请选择正确的打卡类型, 当前时间: {DateTime.Now}");
                 return;
             }
+
+            var checkInUrl = GetCheckInLocation()?.url;
 
             CheckInMode = CheckInMode.Batch;
             List<string> checkitems = new List<string>();
@@ -540,7 +568,7 @@ namespace test
                         }
                     });
 
-                    CheckInSingleMember();
+                    CheckInSingleMember(checkInUrl);
                 });
             }
             else
@@ -563,13 +591,19 @@ namespace test
             process.Start();
         }
 
-        private static void CheckInSingleMember()
+        private void CheckInSingleMember(string checkInUrl)
         {
+            if (string.IsNullOrWhiteSpace(checkInUrl))
+            {
+                MessageBox.Show("请选择打卡地址");
+                return;
+            }
+
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "checkin.exe";
-            startInfo.Arguments = $"http://qyhgateway.ihxlife.com/api/v1/other/query/authorize?timestamp=1546523890746&nonce=7150788195ff4a4fa0ae73d56a4245d0&trade_source=TMS&signature=D5CE85CD68327998A7C78EB0D48B806F&data=%7B%22redirectURL%22%3A%22http%3A%2F%2Ftms.ihxlife.com%2Ftms%2Fhtml%2F1_kqlr%2Fsign.html%22%2C%22attach%22%3A%2200000000000000105723%22%7D 1";
+            startInfo.Arguments = $"{checkInUrl} 1";
 
             process.StartInfo = startInfo;
             process.Start();
@@ -585,54 +619,63 @@ namespace test
             //    MessageBox.Show(e.Data.op.ToString());
             //}, null);
 
-            switch (e.Data.op)
+            this.m_SyncContext.Post((data) =>
             {
-                case SocketOp.ACK:
-                case SocketOp.PLAIN:
-                    break;
-                case SocketOp.CHECK_IN_CREATED:
-                    MemberCheckInSingletonService.createNewMemberCheckInformation(e.Data.data);
-                    break;
-                case SocketOp.CHECK_IN_STARTED:
-                    break;
-                case SocketOp.CHECK_IN_SKIP:
-                    if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
-                    {
-                        SwitchCheckInMember();
-                        Thread.Sleep(2000);
-                        CheckInSingleMember();
-                    }
-                    else if (CheckInMode == CheckInMode.Register)
-                    {
-                        MessageBox.Show("当前用户已注册过");
-                    }
-                    else
-                    {
-                        MessageBox.Show("当前打卡完成");
-                    }
-                    break;
-                case SocketOp.CHECK_IN_UPDATED:
-                    Task.Run(async () =>
-                    {
-                        await MemberCheckInSingletonService.updateMemberCheckInInformation(e.Data.data);
+                var checkInUrl = GetCheckInLocation()?.url;
+
+                switch (e.Data.op)
+                {
+                    case SocketOp.ACK:
+                    case SocketOp.PLAIN:
+                        break;
+                    case SocketOp.CHECK_IN_CREATED:
+                        MemberCheckInSingletonService.createNewMemberCheckInformation(e.Data.data);
+                        break;
+                    case SocketOp.CHECK_IN_STARTED:
+                        break;
+                    case SocketOp.CHECK_IN_SKIP:
                         if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
                         {
                             SwitchCheckInMember();
                             Thread.Sleep(2000);
-                            CheckInSingleMember();
+                            CheckInSingleMember(checkInUrl);
                         }
-                        else if (NeedFace(e.Data.data.id))
+                        else if (CheckInMode == CheckInMode.Register)
                         {
-                            MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == e.Data.data.id);
-                            MonitorFaceDialog(memberCheckIn.faceList);
+                            MessageBox.Show("当前用户已注册过");
                         }
                         else
                         {
                             MessageBox.Show("当前打卡完成");
                         }
-                    });
-                    break;
-            }
+                        break;
+                    case SocketOp.CHECK_IN_UPDATED:
+                        Task.Run(async () =>
+                        {
+                            await MemberCheckInSingletonService.updateMemberCheckInInformation(e.Data.data);
+                            if (CheckInMode == CheckInMode.Register)
+                            {
+                                MessageBox.Show("当前用户已注册过");
+                            }
+                            else if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
+                            {
+                                SwitchCheckInMember();
+                                Thread.Sleep(2000);
+                                CheckInSingleMember(checkInUrl);
+                            }
+                            else if (NeedFace(e.Data.data.id))
+                            {
+                                MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == e.Data.data.id);
+                                MonitorFaceDialog(memberCheckIn.faceList);
+                            }
+                            else
+                            {
+                                MessageBox.Show("当前打卡完成");
+                            }
+                        });
+                        break;
+                }
+            }, this);
         }
 
         private bool IsCheckInAgain(string id)
@@ -707,8 +750,8 @@ namespace test
         private void Button2_Click(object sender, EventArgs e)
         {
             CheckInMode = CheckInMode.Single;
-
-            CheckInSingleMember();
+            var checkInUrl = this.GetCheckInLocation()?.url;
+            CheckInSingleMember(checkInUrl);
         }
 
         private void wait_checkin_datagrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -739,6 +782,7 @@ namespace test
             if (resetCheckInItems.Count > 0)
             {
                 var currentCheckInType = this.getCheckInType();
+                var checkInAddress = this.GetCheckInLocation();
 
                 Task.Run(async () =>
                 {
@@ -752,7 +796,7 @@ namespace test
 
                     try
                     {
-                        await MemberCheckInSingletonService.getAllMemberCheckInOnToday(currentCheckInType);
+                        await MemberCheckInSingletonService.getAllMemberCheckInOnToday(currentCheckInType, checkInAddress);
                     }
                     catch (Exception ex)
                     {
@@ -785,6 +829,11 @@ namespace test
 
             process.StartInfo = startInfo;
             process.Start();
+        }
+
+        private void Checkin_address_combox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
         }
     }
 

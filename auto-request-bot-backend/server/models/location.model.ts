@@ -11,6 +11,8 @@ export class Location extends Typegoose {
     longitude: Number;
     @prop()
     latitude: Number;
+    @prop()
+    url: String;
 }
 
 const LocationModel = new Location().getModelForClass(Location, {

@@ -14,6 +14,8 @@ namespace test.DAL
 {
     public class AddUserDAL
     {
+        public static List<CheckInAddress> AddressList { get; set; }
+
         public async Task<List<CheckInAddress>> getCheckInAddressList()
         {
             string url = $"{Constant.Host}/api/location";
@@ -24,6 +26,7 @@ namespace test.DAL
 
             if (obj.code == 0)
             {
+                AddressList = obj.data;
                 return obj.data;
             }
             else
@@ -147,6 +150,7 @@ namespace test.DAL
     {
         public string text { get; set; }
         public string value { get; set; }
+        public string url { get; set; }
         public CheckInAddress(string text, string value)
         {
             this.text = text;
@@ -162,6 +166,7 @@ namespace test.DAL
 
     public class Location
     {
+        public string _id { get; set; }
         public float lng { get; set; }
         public float lat { get; set; }
     }

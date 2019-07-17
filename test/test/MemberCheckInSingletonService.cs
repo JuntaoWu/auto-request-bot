@@ -63,11 +63,11 @@ namespace test
             }
         }
 
-        public static async Task getAllMemberCheckInOnToday(CheckInType type)
+        public static async Task getAllMemberCheckInOnToday(CheckInType type, CheckInAddress address)
         {
             try
             {
-                var url = $"{Constant.Host}/api/member/checkin/?type={Convert.ToInt32(type)}";
+                var url = $"{Constant.Host}/api/member/checkin/?type={Convert.ToInt32(type)}&locationId={address?.value}";
 
                 var response = await HttpUtil.Request(url);
 
@@ -129,7 +129,8 @@ namespace test
             return obj.code == 0;
         }
 
-        public static async Task<bool> resetErrorCheckIn(List<string> errorCheckInIds) {
+        public static async Task<bool> resetErrorCheckIn(List<string> errorCheckInIds)
+        {
             var url = $"{Constant.Host}/api/member/resetCheckIn";
             var response = await HttpUtil.Request(url, "POST", new
             {
@@ -148,7 +149,11 @@ namespace test
             var response = await HttpUtil.Request(url);
             var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
 
-            var member = Instance.membercheckinlist.Single(m => m.openId == obj.data.openId);
+            var member = Instance.membercheckinlist.SingleOrDefault(m => m.openId == obj.data.openId);
+            if (member == null)
+            {
+                return;
+            }
             member.result = obj.data.result;
             member.status = obj.data.status;
             member.checkInTime = obj.data.checkInTime;

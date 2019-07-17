@@ -333,6 +333,8 @@ export let checkIn = async (req, res, next) => {
         req.query.type = 0;
     }
 
+    const locationId = req.query.locationId;
+
     let locations = await LocationModel.find();
     let checkInList = await CheckInModel.find({
         createdAt: {
@@ -349,7 +351,7 @@ export let checkIn = async (req, res, next) => {
             message: `check-in total ${members.length} records initializing.`
         });
 
-        CheckInModel.insertMany(members.map(member => {
+        CheckInModel.insertMany(members.filter(member => member.status == CheckInStatus.Activated).map(member => {
             return {
                 openId: member.openId,
                 nickName: member.nickName,
@@ -371,7 +373,7 @@ export let checkIn = async (req, res, next) => {
                 });
             }
 
-            let result = docs.map(item => {
+            let result = docs.filter(item => !locationId || item.locationId == locationId).map(item => {
                 let location = locations.find(loc => loc._id == item.locationId);
                 let originMember = members.find(member => member.openId == item.openId);
                 return {
@@ -401,7 +403,7 @@ export let checkIn = async (req, res, next) => {
         });
     }
     else {
-        let result = checkInList.map(item => {
+        let result = checkInList.filter(item => !locationId || item.locationId == locationId).map(item => {
             let location = locations.find(loc => loc._id == item.locationId);
             if (!location) {
                 location = locations[0];
@@ -652,6 +654,7 @@ export let bind = async (req, res, next) => {
 
     updateMember.openId = data.openId;
     updateMember.userId = data.userId;
+    updateMember.status = CheckInStatus.Activated;
 
     console.log('updateMember after:', updateMember);
 

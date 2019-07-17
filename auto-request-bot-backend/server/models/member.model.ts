@@ -36,7 +36,7 @@ export class Member extends Typegoose {
     locationId: String;
     @prop()
     avatarUrl: String;
-    @prop({ default: CheckInStatus.Activated })
+    @prop({ default: CheckInStatus.UnActive })
     status: CheckInStatus;
     @prop()
     registerTime: String;
