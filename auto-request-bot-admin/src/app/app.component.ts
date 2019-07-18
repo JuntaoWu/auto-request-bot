@@ -3,7 +3,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Member, CheckInStatus, NeedChecked } from './member.model';
 import { environment } from '../environments/environment';
 
-// import * as VConsole from 'vconsole';
+import * as VConsole from 'vconsole';
 
 declare var wx;
 declare var $;
@@ -90,6 +90,7 @@ export class AppComponent implements OnInit {
     }
 
     async checkInRequest(url, params): Promise<any> {
+        console.log(url, params);
         return $.ajax({
             url,
             // data: {pageUrl: location.href.split('#')[0]},

@@ -713,7 +713,8 @@ namespace test
                 return false;
             }
             MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == id);
-            return memberCheckIn.result != "needface" && MemberCheckInSingletonService.Instance.membercheckinlist.Count(m => m.status == CheckInStatus.Waiting && m.needChecked == NeeChecked.Need) > 0;
+
+            return (memberCheckIn == null || memberCheckIn.result != "needface") && MemberCheckInSingletonService.Instance.membercheckinlist.Count(m => m.status == CheckInStatus.Waiting && m.needChecked == NeeChecked.Need) > 0;
         }
 
         private bool NeedFace(string id)
