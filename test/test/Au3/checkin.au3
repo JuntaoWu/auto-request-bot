@@ -27,6 +27,7 @@ Global $dpiFactor = _GetDPI()[2]
 ;~ _DebugOut("dpiFactor: " & $dpiFactor & _GetDPI()[2])
 
 Global $hWnd = openMainWindow($titleDuoliao)
+WinSetOnTop($hWnd, '', 1)
 Global $aWindowPosition = WinGetPos($titleDuoliao)
 
 ; Main process
@@ -93,7 +94,10 @@ Func checkin($sessionArea, $url)
       MouseClick("left")
       Sleep(200)
 
-      WinWaitActive($titleFileTransfer)
+      If Not WinActivate($titleFileTransfer) Then _
+         WinActivate($titleFileTransfer)
+      Local $hWndFileTransfer = WinWaitActive($titleFileTransfer)
+      WinSetOnTop($hWndFileTransfer, '', 1)
 
       ; todo: Ensure Textbox had been auto-focused
       openUrl($url)

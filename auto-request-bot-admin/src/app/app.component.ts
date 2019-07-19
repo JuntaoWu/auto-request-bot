@@ -18,7 +18,7 @@ export interface CheckInServerResponse { result: string; message: string; reason
     styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-    // vConsole = new VConsole();
+    vConsole = new VConsole();
 
     public title = 'auto-request-bot-admin';
 
@@ -78,6 +78,8 @@ export class AppComponent implements OnInit {
         };
         const url = `http://kqapi.hxlife.com/tms/api/QRcodeSign`;
         const checkInResult: CheckInServerResponse = await this.checkInRequest(url, customParams);
+
+        console.log(checkInResult);
 
         await this.updateCheckInStatus(checkInModel._id, checkInResult);
 
@@ -152,7 +154,9 @@ export class AppComponent implements OnInit {
                                 return;
                             }
                             const mediaId = uploadImageRes.serverId;
-                            alert(mediaId);
+                            setTimeout(() => {
+                                this.closeWindow();
+                            }, 3000);
                         }
                     });
                 }

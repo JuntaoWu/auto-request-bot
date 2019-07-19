@@ -665,6 +665,10 @@ namespace test
                             }
                             else if (NeedFace(e.Data.data.id))
                             {
+                                if (MemberCheckInSingletonService.Instance.checkedInIds.Contains(e.Data.data.id))
+                                {
+                                    MemberCheckInSingletonService.Instance.checkedInIds.Remove(e.Data.data.id);
+                                }
                                 MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == e.Data.data.id);
                                 MonitorFaceDialog(memberCheckIn.faceList);
                             }
