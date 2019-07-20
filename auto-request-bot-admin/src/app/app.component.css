@@ -35,3 +35,8 @@ td {
 tr.highlight td {
     background: #cecece;
 }
+
+.face {
+    max-width: 30px;
+    margin: 5px;
+}

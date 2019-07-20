@@ -11,6 +11,7 @@ namespace test
 {
     public class CustomEventArgs : EventArgs
     {
+        public string Message { get; set; }
         public MessageBlock Data { get; set; }
     }
 
@@ -25,11 +26,12 @@ namespace test
         private static SocketService instance;
 
         public event EventHandler<CustomEventArgs> OnMessage;
+        public event EventHandler<CustomEventArgs> OnError;
 
         // Constructor
         protected SocketService()
         {
-            
+
         }
 
         // Methods
@@ -129,6 +131,7 @@ namespace test
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
+                        instance.OnError(instance, new CustomEventArgs { Message = ex.Message });
                     }
 
                 }

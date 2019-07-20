@@ -30,7 +30,7 @@ router.get('/checkin/:id',memberCtrl.getCheckIn);
 
 router.put('/checkin/:id', memberCtrl.updateCheckIn);
 
-router.post('/checkStatus',memberCtrl.checkStatus);
+router.post('/checkStatus', validate(paramValidation.checkStatus), memberCtrl.checkStatus);
 
 router.get('/locationList', memberCtrl.locationList);
 

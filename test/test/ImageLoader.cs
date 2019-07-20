@@ -23,6 +23,10 @@ namespace test
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    return new Bitmap(@"Resources\default.jpg");
+                }
                 url = url.StartsWith("http") ? url : Constant.Host + url;
                 HttpClient client = new HttpClient();
                 var responseMessage = await client.GetAsync(url);

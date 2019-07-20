@@ -1,6 +1,6 @@
 {
     "/api/*": {
-        "target": "http://localhost:8103",
+        "target": "http://arb.hzsdgames.com",
         "secure": false,
         "logLevel": "debug",
         "changeOrigin": true

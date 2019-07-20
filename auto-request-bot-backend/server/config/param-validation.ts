@@ -29,5 +29,10 @@ export default {
         params: {
             platform: Joi.string().required()
         }
+    },
+    checkStatus: {
+        body: {
+            openId: Joi.string().required()
+        }
     }
 };

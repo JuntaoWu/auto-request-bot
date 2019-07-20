@@ -4,12 +4,14 @@ import { Member, CheckInStatus, NeedChecked } from './member.model';
 import { environment } from '../environments/environment';
 
 import * as VConsole from 'vconsole';
+import { MatDialog } from '@angular/material';
+import { MemberDetailComponent } from './member-detail/member-detail.component';
+import { LocationModel } from './location-model.interface';
 
 declare var wx;
 declare var $;
 declare var WeixinJSBridge;
 
-export interface Location { text: string; value: string; longitude: number; latitude: number; }
 export interface CheckInServerResponse { result: string; message: string; reason: string; }
 
 @Component({
@@ -20,15 +22,44 @@ export interface CheckInServerResponse { result: string; message: string; reason
 export class AppComponent implements OnInit {
     vConsole = new VConsole();
 
+    public CheckInStatus = CheckInStatus;
+
     public title = 'auto-request-bot-admin';
 
+    public loggedIn = false;
+    public username = '';
+    public password = '';
+
     public checkInType = '0';
+    public filterStatus = CheckInStatus.Activated;
 
-    public displayedColumns: string[] = ['nickName', 'contactName', 'avatarUrl', 'checkInTime', 'result', 'message', 'url', 'signatureStr',
-        'operation'];
+    public displayedColumns: string[] = [
+        'wechatId',
+        'nickName',
+        'contactName',
+        'avatarUrl',
+        'telephone',
+        'locationId',
+        'status',
+        'createdAt',
+        'faceList',
+        'operation'
+    ];
 
-    public locations: Location[];
-    public members: Member[];
+    public locations: LocationModel[];
+
+    private _members: Member[];
+    public get members() {
+        return this._members;
+    }
+    public set members(value: Member[]) {
+        this._members = value;
+        this.filteredMembers = this._members.filter(m => {
+            return !this.loggedIn || !this.filterStatus || m.status == this.filterStatus;
+        });
+    }
+
+    public filteredMembers: Member[];
 
     public memberModel: Member;
     public checkInModel: Member;
@@ -41,13 +72,42 @@ export class AppComponent implements OnInit {
         trade_source: string,
         signature: string,
         attach: string,
+        access_token: string,
     };
 
-    constructor(private httpClient: HttpClient) {
+    constructor(private httpClient: HttpClient, public dialog: MatDialog) {
 
     }
 
-    async checkIn(checkInModel: Member, location: Location) {
+    reFilterMembers() {
+        this.filteredMembers = this._members.filter(m => {
+            return !this.loggedIn || !this.filterStatus || m.status == this.filterStatus;
+        });
+    }
+
+    login() {
+        this.loggedIn = true;
+        return this.refresh();
+    }
+
+    openDialog(event, internalOpenId) {
+        event && event.preventDefault();
+        const dialogRef = this.dialog.open(MemberDetailComponent, {
+            width: '480px',
+            height: '100vh',
+            data: { url: `${environment.arbHost}?internalOpenId=${internalOpenId}` }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('The dialog was closed');
+        });
+    }
+
+    getFaceUrl(face) {
+        return face ? `${environment.arbHost}${face}` : '';
+    }
+
+    async checkIn(checkInModel: Member, location: LocationModel) {
         const {
             openid,
             userid,
@@ -170,6 +230,8 @@ export class AppComponent implements OnInit {
             return;
         }
 
+        console.log('Begin checkFace');
+
         const paramStrs = checkInModel.message.split('#'); // 'f8c2dcd8f86a49c6a451b899a08469cb#廖星程#0#510823199308040017#T001140703#86510201';
 
         const traceno = paramStrs[0];
@@ -189,6 +251,8 @@ export class AppComponent implements OnInit {
 
         // const signatureData = JSON.parse(member.signatureStr);
 
+        console.log('Begin wx.config');
+
         wx.config({
             debug: !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
             appId: signatureData.appid, // 必填，公众号的唯一标识
@@ -205,11 +269,15 @@ export class AppComponent implements OnInit {
                 sourceType: ['album'], // 可以指定来源是相册还是相机，默认二者都有
                 success: (res) => {
                     const imgLocalId = res.localIds;
+
+                    console.log('Begin wx.uploadImage');
+
                     wx.uploadImage({
                         localId: imgLocalId[0], // 需要上传的图片的本地ID，由chooseImage接口获得
                         isShowProgressTips: 1, // 默认为1，显示进度提示
                         success: (uploadImageRes) => {
                             if (uploadImageRes.serverId.indexOf('wxLocalResource://') >= 0) {
+                                console.error('serverId contains wxLocalResource://');;
                                 return;
                             }
                             const mediaId = uploadImageRes.serverId;
@@ -224,6 +292,8 @@ export class AppComponent implements OnInit {
                                 managecom
                             };
 
+                            console.log('Begin submit face to faceSignEndpoint.');
+
                             $.ajax({
                                 url: environment.faceSignEndpoint,
                                 type: 'get',
@@ -236,13 +306,12 @@ export class AppComponent implements OnInit {
                                 jsonpCallback: 'success_jsonpCallback_select',
                                 // 传递给请求处理程序或页面的,用以获得jsonp回调函数名的参数名(默认为callback)
                                 jsonp: 'callbackparam',
+                                timeout: 60000,
                                 // 访问成功时的回调函数
                                 success: async (response) => {
+                                    console.log('End receiving faceSignEndpoint response');
                                     console.log(response);
-                                    if (response.result === 'fail') {
-                                    } else {
-                                        await this.updateCheckInStatus(checkInModel._id, response);
-                                    }
+                                    await this.updateCheckInStatus(checkInModel._id, response);
                                 },
                                 error: (data) => {
                                     alert('服务器连接失败2');
@@ -273,7 +342,12 @@ export class AppComponent implements OnInit {
         });
     }
 
+    get needLogin() {
+        return /honeypot/.test(location.pathname) && !this.loggedIn;
+    }
+
     async ngOnInit() {
+
         await this.getLocationList();
         await this.checkStatus();
         // await this.refresh();
@@ -301,6 +375,7 @@ export class AppComponent implements OnInit {
      */
 
     async checkStatus() {
+
         const checkInParams: any = {};
         location.search.slice(1).split('&')
             .map(i => {
@@ -313,6 +388,15 @@ export class AppComponent implements OnInit {
             });
 
         this.checkInParams = checkInParams;
+
+        if (this.checkInParams && this.checkInParams.access_token) {
+            this.loggedIn = true;
+            return this.refresh();
+        }
+
+        if (this.needLogin) {
+            return;
+        }
 
         this.httpClient.post<any>(`${environment.arbHost}/api/member/checkStatus`, {
             openId: checkInParams.openid,
@@ -334,17 +418,18 @@ export class AppComponent implements OnInit {
 
             // return this.testFace(this.checkInModel);
 
-            if (this.checkInModel.needChecked !== NeedChecked.Need) {
+            if (this.checkInModel.needChecked !== NeedChecked.Need
+                || this.checkInModel.status === CheckInStatus.Success) {
                 return this.closeWindow();
             }
 
-            if (this.checkInModel.result === 'needface') {
-                this.checkFace(this.checkInModel);
-            } else {
-                // todo: checkIn
-                const location = this.locations.find(item => this.checkInModel.locationId === item.value);
-                this.checkIn(this.checkInModel, location);
-            }
+            // if (this.checkInModel.result === 'needface') {
+            //     this.checkFace(this.checkInModel);
+            // } else {
+            // todo: checkIn
+            const location = this.locations.find(item => this.checkInModel.locationId === item.value);
+            this.checkIn(this.checkInModel, location);
+            // }
         });
     }
 
@@ -367,7 +452,7 @@ export class AppComponent implements OnInit {
     }
 
     async refresh() {
-        const response = await this.httpClient.get<any>(`${environment.arbHost}/api/member/checkin?type=${this.checkInType}`).toPromise();
+        const response = await this.httpClient.get<any>(`${environment.arbHost}/api/member`).toPromise();
 
         if (!response || !response.data) {
             return;
@@ -376,7 +461,8 @@ export class AppComponent implements OnInit {
         this.members = (response.data as Member[]).map(member => {
             return {
                 ...member,
-                avatarUrl: member.avatarUrl.startsWith('http') ? member.avatarUrl : `${environment.arbHost}${member.avatarUrl}`
+                avatarUrl: member.avatarUrl
+                    && (member.avatarUrl.startsWith('http') ? member.avatarUrl : `${environment.arbHost}${member.avatarUrl}`)
             };
         });
     }
@@ -388,6 +474,8 @@ export class AppComponent implements OnInit {
             message: response.message,
             url: location.href.split('#')[0]
         }).toPromise();
+
+        console.log('End updateCheckInResult');
 
         if (response.result !== 'needface') {
             this.closeWindow();

@@ -55,6 +55,7 @@ namespace test
             MemberCheckInSingletonService.Instance.OnReceiveCheckInResponse += Instance_OnReceiveCheckInResponse;
 
             SocketService.Instance.OnMessage += Instance_OnMessage;
+            SocketService.Instance.OnError += Instance_OnError;
 
             FaceSyncService.Instance.OnSynced += Instance_OnSynced;
 
@@ -69,6 +70,14 @@ namespace test
                     this.error_checkin_datagrid.Refresh();
                 }, null);
             };
+        }
+
+        private void Instance_OnError(object sender, CustomEventArgs e)
+        {
+            this.m_SyncContext.Post((context) =>
+            {
+                this.toolStripStatusLabel1.Text = e.Message;
+            }, this);
         }
 
         private void Instance_OnSynced(object sender, CustomEventArgs e)
@@ -804,8 +813,12 @@ namespace test
 
         private void MonitorFaceDialog(List<string> uris)
         {
-            if (uris == null)
+            if (uris == null || uris.Count == 0)
             {
+                this.m_SyncContext.Post(context =>
+                {
+                    this.toolStripStatusLabel1.Text = "人脸列表为空, 打卡终止";
+                }, this);
                 return;
             }
 

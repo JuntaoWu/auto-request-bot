@@ -6,16 +6,23 @@ import {
   MatFormFieldModule,
   MatInputModule,
   MatDividerModule,
-  MatSelectModule
+  MatSelectModule,
+  MatDialogModule
 } from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { MemberDetailComponent } from './member-detail/member-detail.component';
+import { DescribeStatusPipe } from './describe-status.pipe';
+import { DescribeLocationPipe } from './describe-location.pipe';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MemberDetailComponent,
+    DescribeStatusPipe,
+    DescribeLocationPipe
   ],
   imports: [
     FormsModule,
@@ -33,8 +40,12 @@ import { FormsModule } from '@angular/forms';
     MatSelectModule,
     MatFormFieldModule,
     BrowserAnimationsModule,
+    MatDialogModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    MemberDetailComponent,
+  ]
 })
 export class AppModule { }

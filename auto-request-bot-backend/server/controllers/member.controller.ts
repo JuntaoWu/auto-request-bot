@@ -182,7 +182,13 @@ export let login = async (req: Request, res: Response, next: NextFunction) => {
             await dbUser.save();
         }
 
-        let redirectUrl = req.query.state ? config.checkInUrl : config.rootUrl;
+        const userLocation = dbUser.locationId ? await LocationModel.findById(dbUser.locationId) : null;
+
+        let redirectUrl = config.rootUrl;
+
+        if (req.query.state) {
+            redirectUrl = userLocation ? userLocation.url.toString() : config.checkInUrl;
+        }
 
         if (!req.query.state) {
             res.cookie('internalOpenId', req.user.internalOpenId);
@@ -492,9 +498,10 @@ export let updateCheckIn = async (req, res, next) => {
 
     const checkInTime = new Date();
     let signatureStr = '';
-    if (req.body.result === "needface") {
-        signatureStr = await needFace(req.body.url);
-    }
+    // if (req.body.result === "needface") {
+    //     signatureStr = await needFace(req.body.url);
+    // }
+    console.log(`update check-in status: ${req.body.result}`);
 
     await CheckInModel.findByIdAndUpdate(req.params.id, {
         status: req.body.status,
@@ -614,7 +621,7 @@ export let checkStatus = async (req, res, next) => {
             });
         }
 
-        if (checkInModel.needChecked == NeedChecked.Need) {
+        if (checkInModel.needChecked == NeedChecked.Need && checkInModel.status != CheckInStatus.Success) {
             socket.broadcast(SocketOp.CHECK_IN_STARTED, {
                 id: checkInModel._id,
                 name: checkInModel.nickName || checkInModel.contactName,

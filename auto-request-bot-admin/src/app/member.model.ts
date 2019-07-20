@@ -3,8 +3,8 @@ export enum CheckInStatus {
     Waiting,
     Success,
     Error,
-    Actived,
-    UnActive
+    Activated,
+    InActivated,
 }
 
 export enum NeedChecked {
@@ -15,20 +15,25 @@ export enum NeedChecked {
 
 export interface Member {
     _id: string;
-    nickName: string;
-    wechatId: string;
-    contactName: string;
-    avatarUrl: string;
-    status: CheckInStatus;
+
     checkInTime: string;
     result: string;
     message: string;
     url: string;
     signatureStr: string;
-    locationId: string;
     needChecked: NeedChecked;
 
     // combine member properties.
     internalOpenId: string;
     openId: string;
+
+    wechatId: string;
+    nickName: string;
+    contactName: string;
+    avatarUrl: string;
+    telephone: string;
+    locationId: string;
+    status: CheckInStatus;
+    createdAt: Date;
+    faceList: string[];
 }

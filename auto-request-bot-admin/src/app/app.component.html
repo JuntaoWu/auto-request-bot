@@ -1,11 +1,11 @@
 <div style="position: fixed; top: 0; width: 100%">
-    <mat-toolbar class="toolbar">
-        <!-- <mat-form-field>
-            <mat-select [(value)]="checkInType" (selectionChange)="refresh()">
-                <mat-option value="0">上班打卡</mat-option>
-                <mat-option value="1">下班打卡</mat-option>
+    <mat-toolbar *ngIf="loggedIn" class="toolbar">
+        <mat-form-field>
+            <mat-select [(value)]="filterStatus" (selectionChange)="reFilterMembers()">
+                <mat-option [value]="CheckInStatus.Activated">已激活</mat-option>
+                <mat-option [value]="CheckInStatus.InActivated">未激活</mat-option>
             </mat-select>
-        </mat-form-field> -->
+        </mat-form-field>
         <!-- <select [(ngModel)]="checkInType" (change)="refresh()">
             <option value="0">上班打卡</option>
             <option value="1">下班打卡</option>
@@ -13,14 +13,34 @@
         <button mat-raised-button color="primary" (click)="refresh()">刷新</button>
     </mat-toolbar>
 </div>
-<div *ngIf="!!checkInModel">
-    <p>
-        用户[{{checkInModel?.nickName}}]正在打卡中...
-    </p>
+<div *ngIf="!loggedIn">
+    <div *ngIf="needLogin">
+        <p>Need Login</p>
+        <form #appForm="ngForm" class="viewer-body" (ngSubmit)="login()">
+            <mat-form-field class="full-width">
+                <input name="username" type="text" matInput placeholder="username" [(ngModel)]="username">
+            </mat-form-field>
+            <mat-form-field class="full-width">
+                <input name="password" type="password" matInput placeholder="password" [(ngModel)]="password">
+            </mat-form-field>
+            <button type="submit" mat-raised-button>Login</button>
+        </form>
+    </div>
+    <div *ngIf="!!checkInModel">
+        <p>
+            用户[{{checkInModel?.nickName}}]正在打卡中...
+        </p>
+    </div>
 </div>
-<div *ngIf="members && members.length" style="position: absolute; width: 100%; top: 80px;">
+
+<div *ngIf="filteredMembers && filteredMembers.length" style="position: absolute; width: 100%; top: 80px;">
     <div class="mat-elevation-z8 container">
-        <table mat-table [dataSource]="members">
+        <table mat-table [dataSource]="filteredMembers">
+            <!-- wechatId Column -->
+            <ng-container matColumnDef="wechatId">
+                <th mat-header-cell *matHeaderCellDef> 微信号. </th>
+                <td mat-cell *matCellDef="let element"> {{element.wechatId}} </td>
+            </ng-container>
 
             <!-- nickName Column -->
             <ng-container matColumnDef="nickName">
@@ -37,50 +57,59 @@
             <!-- avatarUrl Column -->
             <ng-container matColumnDef="avatarUrl">
                 <th mat-header-cell *matHeaderCellDef> 头像 </th>
-                <td mat-cell *matCellDef="let element"> <img class="avatar" [src]="element.avatarUrl" alt="avatar"></td>
+                <td mat-cell *matCellDef="let element"> <img *ngIf="element.avatarUrl" class="avatar"
+                        [src]="element.avatarUrl" alt="avatar">
+                </td>
             </ng-container>
 
-            <!-- checkInTime Column -->
-            <ng-container matColumnDef="checkInTime">
-                <th mat-header-cell *matHeaderCellDef> 打卡时间 </th>
-                <td mat-cell *matCellDef="let element"> {{element.checkInTime}} </td>
+            <!-- telephone Column -->
+            <ng-container matColumnDef="telephone">
+                <th mat-header-cell *matHeaderCellDef> 电话 </th>
+                <td mat-cell *matCellDef="let element"> {{element.telephone}} </td>
             </ng-container>
 
-            <!-- result Column -->
-            <ng-container matColumnDef="result">
-                <th mat-header-cell *matHeaderCellDef> 结果 </th>
-                <td mat-cell *matCellDef="let element"> {{element.result}} </td>
-            </ng-container>
-            <!-- message Column -->
-            <ng-container matColumnDef="message">
-                <th mat-header-cell *matHeaderCellDef> 消息 </th>
-                <td mat-cell *matCellDef="let element" title="{{element.message}}"> {{element.message}} </td>
-            </ng-container>
-            <!-- url Column -->
-            <ng-container matColumnDef="url">
-                <th mat-header-cell *matHeaderCellDef> 页面 </th>
-                <td mat-cell *matCellDef="let element"><a target="blank" *ngIf="!!element.url"
-                        [href]="element.url">查看</a> </td>
+            <!-- locationId Column -->
+            <ng-container matColumnDef="locationId">
+                <th mat-header-cell *matHeaderCellDef> 地址 </th>
+                <td mat-cell *matCellDef="let element"> {{element.locationId | describeLocation : locations}} </td>
             </ng-container>
 
-            <!-- signatureStr Column -->
-            <ng-container matColumnDef="signatureStr">
-                <th mat-header-cell *matHeaderCellDef> 人脸签名 </th>
-                <td mat-cell *matCellDef="let element"> {{element.signatureStr}} </td>
+            <!-- status Column -->
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef> 状态 </th>
+                <td mat-cell *matCellDef="let element"> {{element.status | describeStatus}} </td>
+            </ng-container>
+
+            <!-- createdAt Column -->
+            <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef> 注册日期 </th>
+                <td mat-cell *matCellDef="let element"> {{element.createdAt | date }} </td>
+            </ng-container>
+
+            <!-- faceList Column -->
+            <ng-container matColumnDef="faceList">
+                <th mat-header-cell *matHeaderCellDef> 脸照 </th>
+                <td mat-cell *matCellDef="let element">
+                    <ng-container *ngFor="let face of element.faceList">
+                        <img class="face" *ngIf="!!face" [src]="getFaceUrl(face)" />
+                    </ng-container>
+                </td>
             </ng-container>
 
             <!-- operation Column -->
             <ng-container matColumnDef="operation">
                 <th mat-header-cell *matHeaderCellDef> 操作 </th>
                 <td mat-cell *matCellDef="let element">
-                    <button mat-raised-button (click)="bindUser(element)">绑定为该用户</button>
-                    <button mat-raised-button *ngIf="isAvailable(element)" (click)="checkFace(element)">打脸</button>
+                    <button *ngIf="!loggedIn" mat-raised-button (click)="bindUser(element)">绑定为该用户</button>
+                    <button *ngIf="!loggedIn && isAvailable(element)" mat-raised-button
+                        (click)="checkFace(element)">打脸</button>
+                    <a (click)="openDialog($event, element.internalOpenId)" href="javascript:void()">Detail</a>
                 </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns, sticky: true"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                [class.highlight]="row?.openId === checkInModel?.openId"></tr>
+                [class.highlight]="row?.openId && row?.openId === checkInModel?.openId"></tr>
         </table>
 
     </div>

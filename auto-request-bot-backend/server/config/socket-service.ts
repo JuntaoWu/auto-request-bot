@@ -51,12 +51,16 @@ const socketService = {
             return;
         }
 
+        const messageBlock = JSON.stringify({
+            op,
+            data
+        });
+
+        console.log(`broadcast message to ${webSocketServer.clients && webSocketServer.clients.size} clients: ${messageBlock}`);
+
         webSocketServer.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({
-                    op,
-                    data
-                }));
+                client.send(messageBlock);
             }
         });
     },
