@@ -1,7 +1,10 @@
 Global $argc = $CmdLine[0]
-Global $argPath = $argc > 0 ? $CmdLine[1] : "D:\arb\static\face"
+Global $argPath = $argc > 0 ? $CmdLine[1] : ""
 
 $title = "[REGEXPTITLE:(Open|打开)]"
+
+If Not $argPath Then _
+    MsgBox("Error", "Error", "No face image provided")
 
 If Not WinActivate($title) Then _
     WinActivate($title)

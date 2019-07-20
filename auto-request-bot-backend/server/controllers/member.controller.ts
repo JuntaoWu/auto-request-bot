@@ -343,15 +343,58 @@ export let checkIn = async (req, res, next) => {
         type: req.query.type
     });
 
-    let members = await MemberModel.find();
+    let members = await MemberModel.find({
+        status: CheckInStatus.Activated
+    });
 
     if (!checkInList || checkInList.length == 0) {
 
         socket.broadcast(SocketOp.PLAIN, {
-            message: `check-in total ${members.length} records initializing.`
+            message: `check-in total ${members.length} activated records initializing.`
         });
 
-        CheckInModel.insertMany(members.filter(member => member.status == CheckInStatus.Activated).map(member => {
+        checkInList = await CheckInModel.find({
+            createdAt: {
+                $gte: moment({ hour: 0 })
+            },
+            type: req.query.type
+        });
+
+        if (checkInList && checkInList.length) {
+            let result = checkInList.filter(item => !locationId || item.locationId == locationId).map(item => {
+                let location = locations.find(loc => loc._id == item.locationId);
+                let originMember = members.find(member => member.openId == item.openId);
+                return {
+                    _id: item._id,
+                    openId: item.openId,
+                    nickName: item.nickName,
+                    wechatId: item.wechatId,
+                    contactName: item.contactName,
+                    telephone: item.telephone,
+                    locationId: item.locationId,
+                    avatarUrl: item.avatarUrl,
+                    status: item.status,
+                    type: item.type,
+                    checkInTime: item.checkInTime,
+                    longitude: location && location.longitude,
+                    latitude: location && location.latitude,
+                    message: item.message,
+                    faceList: originMember && originMember.faceList,
+                };
+            });
+
+            socket.broadcast(SocketOp.PLAIN, {
+                message: `check-in total ${members.length} activated records initialized successfully.`
+            });
+
+            return res.json({
+                code: 0,
+                message: "OK",
+                data: result
+            });
+        }
+
+        CheckInModel.insertMany(members.map(member => {
             return {
                 openId: member.openId,
                 nickName: member.nickName,
@@ -367,9 +410,12 @@ export let checkIn = async (req, res, next) => {
             }
         }), (error, docs) => {
             if (error) {
+                socket.broadcast(SocketOp.PLAIN, {
+                    message: `check-in total ${members.length} activated records initializing failed.`
+                });
                 return res.json({
                     code: 500,
-                    message: "Load check in list error",
+                    message: "insertMany check-in records error",
                 });
             }
 
@@ -393,7 +439,11 @@ export let checkIn = async (req, res, next) => {
                     message: item.message,
                     faceList: originMember && originMember.faceList,
                 };
-            })
+            });
+
+            socket.broadcast(SocketOp.PLAIN, {
+                message: `check-in total ${members.length} activated records initialized successfully.`
+            });
 
             return res.json({
                 code: 0,
@@ -455,6 +505,11 @@ export let updateCheckIn = async (req, res, next) => {
         signatureStr: signatureStr
     }, (error, updatedCheckIn) => {
         if (error) {
+            socket.broadcast(SocketOp.PLAIN, {
+                id: req.params.id,
+                message: `check-in ${req.params.id} updating failed.`
+            });
+
             return res.json({
                 code: 500,
                 message: "update check-in error.",
@@ -463,6 +518,7 @@ export let updateCheckIn = async (req, res, next) => {
 
         socket.broadcast(SocketOp.CHECK_IN_UPDATED, {
             id: req.params.id,
+            name: updatedCheckIn.nickName || updatedCheckIn.contactName,
             message: `check-in ${updatedCheckIn._id} updated.`
         });
 
@@ -513,58 +569,6 @@ export let checkStatus = async (req, res, next) => {
                 message: 'binding',
                 data: updateMembers
             });
-
-            let updateMember = updateMembers[0];
-
-            console.log('updateMember before:', updateMember);
-
-            updateMember.openId = data.openId;
-            updateMember.userId = data.userId;
-
-            console.log('updateMember after:', updateMember);
-
-            await updateMember.save();
-
-            let checkinList = await CheckInModel.find({
-                openId: updateMember.openId
-            });
-
-            let checkInModel: any;
-
-            if (!checkinList || checkinList.length == 0) {
-                let type = moment() > moment({ hour: 10, minute: 30 }) ? CheckInType.CheckOut : CheckInType.CheckIn;
-                checkInModel = new CheckInModel({
-                    openId: updateMember.openId,
-                    nickName: updateMember.nickName,
-                    wechatId: updateMember.wechatId,
-                    contactName: updateMember.contactName,
-                    telephone: updateMember.telephone,
-                    locationId: updateMember.locationId,
-                    avatarUrl: updateMember.avatarUrl,
-                    status: CheckInStatus.Waiting,
-                    type: type,
-                    createdAt: new Date(),
-                    updateAt: new Date(),
-                });
-                await checkInModel.save()
-            }
-            else {
-                checkInModel = checkinList[0];
-            }
-
-            socket.broadcast(SocketOp.CHECK_IN_CREATED, {
-                id: checkInModel._id,
-                message: `check-in ${checkInModel._id} created.`
-            });
-
-            return res.json({
-                code: 201,
-                message: "created",
-                data: {
-                    member: updateMember,
-                    checkin: checkInModel
-                }
-            });
         }
         else {
             return res.json({
@@ -613,12 +617,14 @@ export let checkStatus = async (req, res, next) => {
         if (checkInModel.needChecked == NeedChecked.Need) {
             socket.broadcast(SocketOp.CHECK_IN_STARTED, {
                 id: checkInModel._id,
+                name: checkInModel.nickName || checkInModel.contactName,
                 message: `check-in ${checkInModel._id} started.`,
             });
         }
         else {
             socket.broadcast(SocketOp.CHECK_IN_SKIP, {
                 id: checkInModel._id,
+                name: checkInModel.nickName || checkInModel.contactName,
                 message: `check-in ${checkInModel._id} skip.`,
             });
         }
@@ -689,6 +695,7 @@ export let bind = async (req, res, next) => {
 
     socket.broadcast(SocketOp.CHECK_IN_CREATED, {
         id: checkInModel._id,
+        name: checkInModel.nickName || checkInModel.contactName,
         message: `check-in ${checkInModel._id} created.`
     });
 

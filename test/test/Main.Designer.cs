@@ -38,10 +38,11 @@
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.checkin_type_combox = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.checkin_address_combox = new System.Windows.Forms.ComboBox();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.wait_checkin_tabpage = new System.Windows.Forms.TabPage();
             this.wait_checkin_datagrid = new System.Windows.Forms.DataGridView();
@@ -60,8 +61,10 @@
             this.delete = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Titile_label = new System.Windows.Forms.Label();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.checkin_address_combox = new System.Windows.Forms.ComboBox();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.avatarDataGridViewImageColumn1 = new System.Windows.Forms.DataGridViewImageColumn();
             this.weixinuernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -93,6 +96,7 @@
             this.statusDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.registertiemDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.memberBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.toolStripStatusLabelPercent = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -109,6 +113,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).BeginInit();
             this.tableLayoutPanel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).BeginInit();
@@ -152,6 +157,7 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.Controls.Add(this.tableLayoutPanel4, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.tabControl2, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.statusStrip1, 0, 2);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(4, 5);
             this.tableLayoutPanel3.Margin = new System.Windows.Forms.Padding(16, 17, 16, 17);
@@ -202,17 +208,26 @@
             this.checkin_type_combox.Text = "打卡类型";
             this.checkin_type_combox.SelectedIndexChanged += new System.EventHandler(this.checkin_type_combox_SelectedValueChanged);
             // 
-            // button1
+            // button4
             // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(662, 5);
-            this.button1.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(142, 38);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "批量打卡";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            this.button4.Location = new System.Drawing.Point(1625, 3);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(196, 47);
+            this.button4.TabIndex = 6;
+            this.button4.Text = "注册用户";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.Button4_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(1304, 5);
+            this.button3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(154, 38);
+            this.button3.TabIndex = 5;
+            this.button3.Text = "重置打卡";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
@@ -226,26 +241,27 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.Button2_Click);
             // 
-            // button3
+            // button1
             // 
-            this.button3.Location = new System.Drawing.Point(1304, 5);
-            this.button3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(154, 38);
-            this.button3.TabIndex = 5;
-            this.button3.Text = "重置打卡";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button1.Enabled = false;
+            this.button1.Location = new System.Drawing.Point(662, 5);
+            this.button1.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(142, 38);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "批量打卡";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
-            // button4
+            // checkin_address_combox
             // 
-            this.button4.Location = new System.Drawing.Point(1625, 3);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(196, 47);
-            this.button4.TabIndex = 6;
-            this.button4.Text = "注册用户";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.Button4_Click);
+            this.checkin_address_combox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.checkin_address_combox.FormattingEnabled = true;
+            this.checkin_address_combox.Location = new System.Drawing.Point(337, 3);
+            this.checkin_address_combox.Name = "checkin_address_combox";
+            this.checkin_address_combox.Size = new System.Drawing.Size(316, 33);
+            this.checkin_address_combox.TabIndex = 7;
+            this.checkin_address_combox.SelectedValueChanged += new System.EventHandler(this.Checkin_address_combox_SelectedValueChanged);
             // 
             // tabControl2
             // 
@@ -504,15 +520,30 @@
             this.tableLayoutPanel5.Size = new System.Drawing.Size(2092, 1055);
             this.tableLayoutPanel5.TabIndex = 8;
             // 
-            // checkin_address_combox
+            // statusStrip1
             // 
-            this.checkin_address_combox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.checkin_address_combox.FormattingEnabled = true;
-            this.checkin_address_combox.Location = new System.Drawing.Point(337, 3);
-            this.checkin_address_combox.Name = "checkin_address_combox";
-            this.checkin_address_combox.Size = new System.Drawing.Size(316, 33);
-            this.checkin_address_combox.TabIndex = 7;
-            this.checkin_address_combox.SelectedValueChanged += new System.EventHandler(this.Checkin_address_combox_SelectedValueChanged);
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripProgressBar1,
+            this.toolStripStatusLabelPercent,
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 910);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1948, 38);
+            this.statusStrip1.TabIndex = 4;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.AutoToolTip = true;
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(600, 32);
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(47, 33);
+            this.toolStripStatusLabel1.Text = "OK";
             // 
             // avatarDataGridViewImageColumn1
             // 
@@ -719,6 +750,12 @@
             // 
             this.memberBindingSource.DataSource = typeof(test.DAL.Member);
             // 
+            // toolStripStatusLabelPercent
+            // 
+            this.toolStripStatusLabelPercent.Name = "toolStripStatusLabelPercent";
+            this.toolStripStatusLabelPercent.Size = new System.Drawing.Size(48, 33);
+            this.toolStripStatusLabelPercent.Text = "0%";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
@@ -732,6 +769,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.wait_checkin_tabpage.ResumeLayout(false);
@@ -746,6 +784,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).EndInit();
             this.tableLayoutPanel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).EndInit();
@@ -815,6 +855,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.ComboBox checkin_address_combox;
         private System.Windows.Forms.BindingSource bindingSource1;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelPercent;
     }
 }
 

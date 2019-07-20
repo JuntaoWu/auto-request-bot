@@ -36,6 +36,7 @@ namespace test
         public string base64Str;
         SynchronizationContext m_SyncContext = null;
         private Random random = new Random();
+        public bool Initialized { get; set; }
 
         public event EventHandler OnImageLoaded = (object sender, EventArgs e) => { };
 
@@ -74,7 +75,10 @@ namespace test
         {
             this.m_SyncContext.Post((data) =>
             {
-                MessageBox.Show("用户脸同步完成");
+                this.toolStripProgressBar1.Value = 100;
+                this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                this.toolStripStatusLabel1.Text = "用户脸同步完成";
+
                 this.button1.Enabled = true;
                 this.button2.Enabled = true;
             }, e.Data);
@@ -99,6 +103,7 @@ namespace test
             await this.BindCheckInAddressDataMember();
             await MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
             await FaceSyncService.Instance.Run();
+            this.Initialized = true;
         }
 
 
@@ -267,6 +272,10 @@ namespace test
         //左导航栏选择
         private async void tabControl1_Selected(object sender, TabControlEventArgs e)
         {
+            if (!this.Initialized)
+            {
+                return;
+            }
             if (e.TabPage.Text == "会员列表")
             {
                 await this.BindDataMemberList();
@@ -276,13 +285,11 @@ namespace test
                 this.checkin_address_combox.DataSource = await user.getCheckInAddressList();
                 this.checkin_address_combox.DisplayMember = "text";
                 this.checkin_address_combox.ValueMember = "value";
-
-
                 this.checkin_address_combox.SelectedIndex = 0;
             }*/
             else if (e.TabPage.Text == "打卡管理")
             {
-                MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
+                await MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
             }
         }
 
@@ -504,10 +511,14 @@ namespace test
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void checkin_type_combox_SelectedValueChanged(object sender, EventArgs e)
+        private async void checkin_type_combox_SelectedValueChanged(object sender, EventArgs e)
         {
-            MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
+            if (!this.Initialized)
+            {
+                return;
+            }
 
+            await MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
         }
 
         /// <summary>
@@ -548,11 +559,26 @@ namespace test
             {
                 Task.Run(async () =>
                 {
+                    this.m_SyncContext.Post((context) =>
+                    {
+                        this.toolStripStatusLabel1.Text = "正在更新需要打卡人员...";
+                        this.toolStripProgressBar1.Value = 0;
+                    }, this);
+
                     bool result = await MemberCheckInSingletonService.updateNeedCheckIn(checkitems);
+
+                    this.m_SyncContext.Post((context) =>
+                    {
+                        this.toolStripProgressBar1.Value = 100;
+                    }, this);
 
                     if (!result)
                     {
-                        MessageBox.Show("updateNeedCheckIn failed.");
+                        this.m_SyncContext.Post((context) =>
+                        {
+                            this.toolStripStatusLabel1.Text = "更新需要打卡人员失败";
+                        }, this);
+
                         return;
                     }
 
@@ -567,6 +593,15 @@ namespace test
                             item.needChecked = NeeChecked.NoNeed;
                         }
                     });
+
+                    this.m_SyncContext.Post((context) =>
+                    {
+                        List<MemberCheckIn> data = context as List<MemberCheckIn>;
+                        var total = data.Count(item => item.status == CheckInStatus.Waiting);
+                        this.toolStripProgressBar1.Step = 100 / total;
+                        this.toolStripProgressBar1.Value = 0;
+                        this.toolStripStatusLabel1.Text = $"[{total}条记录]准备中...";
+                    }, MemberCheckInSingletonService.Instance.membercheckinlist);
 
                     CheckInSingleMember(checkInUrl);
                 });
@@ -627,26 +662,41 @@ namespace test
                 {
                     case SocketOp.ACK:
                     case SocketOp.PLAIN:
+                        this.toolStripProgressBar1.Value = 0;
+                        this.toolStripStatusLabelPercent.Text = "";
+                        this.toolStripStatusLabel1.Text = $"[{e.Data.data.message}]";
                         break;
                     case SocketOp.CHECK_IN_CREATED:
                         MemberCheckInSingletonService.createNewMemberCheckInformation(e.Data.data);
+                        this.toolStripProgressBar1.Value = 100;
+                        this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                        this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]绑定完成";
                         break;
                     case SocketOp.CHECK_IN_STARTED:
+                        this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                        this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]开始打卡";
                         break;
                     case SocketOp.CHECK_IN_SKIP:
                         if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
                         {
+                            this.toolStripProgressBar1.ProgressBar.PerformStep();
+                            this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                            this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]跳过";
                             SwitchCheckInMember();
                             Thread.Sleep(2000);
                             CheckInSingleMember(checkInUrl);
                         }
                         else if (CheckInMode == CheckInMode.Register)
                         {
-                            MessageBox.Show("当前用户已注册过");
+                            this.toolStripProgressBar1.Value = 100;
+                            this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                            this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]重复绑定";
                         }
                         else
                         {
-                            MessageBox.Show("当前打卡完成");
+                            this.toolStripProgressBar1.Value = 100;
+                            this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                            this.toolStripStatusLabel1.Text = "当前打卡完成";
                         }
                         break;
                     case SocketOp.CHECK_IN_UPDATED:
@@ -655,16 +705,32 @@ namespace test
                             await MemberCheckInSingletonService.updateMemberCheckInInformation(e.Data.data);
                             if (CheckInMode == CheckInMode.Register)
                             {
-                                MessageBox.Show("当前用户已注册过");
+                                this.m_SyncContext.Post(context =>
+                                {
+                                    this.toolStripProgressBar1.Value = 100;
+                                    this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                                    this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]完成注册";
+                                }, this);
                             }
                             else if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
                             {
+                                this.m_SyncContext.Post(context =>
+                                {
+                                    this.toolStripProgressBar1.PerformStep();
+                                    this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                                    this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]完成打卡";
+                                }, this);
                                 SwitchCheckInMember();
                                 Thread.Sleep(2000);
                                 CheckInSingleMember(checkInUrl);
                             }
                             else if (NeedFace(e.Data.data.id))
                             {
+                                this.m_SyncContext.Post(context =>
+                                {
+                                    this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                                    this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]开始打脸";
+                                }, this);
                                 if (MemberCheckInSingletonService.Instance.checkedInIds.Contains(e.Data.data.id))
                                 {
                                     MemberCheckInSingletonService.Instance.checkedInIds.Remove(e.Data.data.id);
@@ -674,7 +740,12 @@ namespace test
                             }
                             else
                             {
-                                MessageBox.Show("当前打卡完成");
+                                this.m_SyncContext.Post(context =>
+                                {
+                                    this.toolStripProgressBar1.Value = 100;
+                                    this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                                    this.toolStripStatusLabel1.Text = $"当前打卡完成";
+                                }, this);
                             }
                         });
                         break;
@@ -746,7 +817,7 @@ namespace test
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "file.exe";
-            startInfo.Arguments = path;
+            startInfo.Arguments = path.ToLower();
 
             process.StartInfo = startInfo;
             process.Start();
@@ -771,8 +842,14 @@ namespace test
             }
         }
 
+        // 重置打卡
         private void button3_Click(object sender, EventArgs e)
         {
+            if (!this.Initialized)
+            {
+                return;
+            }
+
             List<string> resetCheckInItems = new List<string>();
             for (int i = 0; i < this.error_checkin_datagrid.RowCount; i++)
             {
@@ -836,9 +913,14 @@ namespace test
             process.Start();
         }
 
-        private void Checkin_address_combox_SelectedValueChanged(object sender, EventArgs e)
+        private async void Checkin_address_combox_SelectedValueChanged(object sender, EventArgs e)
         {
-            MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
+            if (!this.Initialized)
+            {
+                return;
+            }
+
+            await MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
         }
     }
 

@@ -19,23 +19,9 @@ namespace test
             InitializeComponent();
         }
 
-        private async void login_btn_click(object sender, EventArgs e)
+        private void login_btn_click(object sender, EventArgs e)
         {
-            string username = this.user_name_txtbox.Text;
-            string password = this.password_txtbox.Text;
-            LoginDAL login = new LoginDAL();
-            ResponseResult result = await login.Login(this.user_name_txtbox.Text, this.password_txtbox.Text);
-            if (result.code == 0)
-            {
-                this.DialogResult = DialogResult.OK;
-                this.exit = false;
-                this.Dispose();
-            }
-            else {
-                 MessageBox.Show(result.message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //this.display_message.Text = "登录失败";
-                //this.display_message.ForeColor = Color.Red;
-            }
+            this.ProcessLogin();
         }
 
         private void register_btn_click(object sender, EventArgs e)
@@ -52,6 +38,34 @@ namespace test
                 System.Environment.Exit(0);
             }
             
+        }
+
+        private void Password_txtbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                this.ProcessLogin();
+            }
+        }
+
+        private async void ProcessLogin()
+        {
+            string username = this.user_name_txtbox.Text;
+            string password = this.password_txtbox.Text;
+            LoginDAL login = new LoginDAL();
+            ResponseResult result = await login.Login(this.user_name_txtbox.Text, this.password_txtbox.Text);
+            if (result.code == 0)
+            {
+                this.DialogResult = DialogResult.OK;
+                this.exit = false;
+                this.Dispose();
+            }
+            else
+            {
+                MessageBox.Show(result.message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //this.display_message.Text = "登录失败";
+                //this.display_message.ForeColor = Color.Red;
+            }
         }
     }
 }
