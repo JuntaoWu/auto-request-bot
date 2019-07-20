@@ -20,6 +20,7 @@ import * as uuid from 'uuid/v4';
 import { getJsApiTicket, getAccessTokenAsync } from '../helpers/ticket';
 import { createHmac, createHash } from 'crypto';
 import * as https from 'https';
+import * as sharp from 'sharp';
 
 socket.onEvent.subscribe((data) => {
     console.log(`received socket event data`, data);
@@ -139,7 +140,8 @@ export let register = async (req, res, next) => {
         const filePath = path.join(__dirname, `../../../static/face/${internalOpenId}-${mediaId}.jpg`);
         const stream = file.createWriteStream(filePath);
         const request = http.get(url, (response) => {
-            response.pipe(stream);
+            const resizer = sharp().resize(360).jpeg();
+            response.pipe(resizer).pipe(stream);
             stream.on('finish', function () {
                 console.log('file write finish');
                 stream.close();  // close() is async, call cb after close completes.

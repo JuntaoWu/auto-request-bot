@@ -116,7 +116,7 @@ export class AppComponent implements OnInit {
         event && event.preventDefault();
         const dialogRef = this.dialog.open(MemberDetailComponent, {
             width: '480px',
-            height: '100vh',
+            height: '98vh',
             data: { url: `${environment.arbHost}?internalOpenId=${internalOpenId}` }
         });
 
