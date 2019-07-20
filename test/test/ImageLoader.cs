@@ -28,6 +28,13 @@ namespace test
                     return new Bitmap(@"Resources\default.jpg");
                 }
                 url = url.StartsWith("http") ? url : Constant.Host + url;
+
+                Image cachedImage = await AvatarManager.GetImageAsync(url);
+                if (cachedImage != null)
+                {
+                    return new Bitmap(cachedImage, 30, 30);
+                }
+
                 HttpClient client = new HttpClient();
                 var responseMessage = await client.GetAsync(url);
                 responseMessage.EnsureSuccessStatusCode();
@@ -41,7 +48,11 @@ namespace test
                 //var SigBase64 = Convert.ToBase64String(byteImage); // Get Base64
                 responseStream.Dispose();
 
-                return new Bitmap(bmp, 30, 30);
+                Bitmap bitmap = new Bitmap(bmp, 30, 30);
+
+                AvatarManager.SaveImageAsync(url, bmp);
+
+                return bitmap;
             }
             catch (Exception)
             {

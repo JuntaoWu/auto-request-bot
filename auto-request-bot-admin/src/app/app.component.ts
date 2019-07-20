@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Member, CheckInStatus, NeedChecked } from './member.model';
 import { environment } from '../environments/environment';
 
 import * as VConsole from 'vconsole';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar } from '@angular/material';
 import { MemberDetailComponent } from './member-detail/member-detail.component';
 import { LocationModel } from './location-model.interface';
+import { Preference } from './preference.interface';
+import { AuthStoreService } from './auth-store.service';
 
 declare var wx;
 declare var $;
@@ -47,6 +49,10 @@ export class AppComponent implements OnInit {
     ];
 
     public locations: LocationModel[];
+    public preference: Preference = {
+        manualMode: false,
+        faceTest: false,
+    };
 
     private _members: Member[];
     public get members() {
@@ -72,10 +78,15 @@ export class AppComponent implements OnInit {
         trade_source: string,
         signature: string,
         attach: string,
-        access_token: string,
+        token: string,
     };
 
-    constructor(private httpClient: HttpClient, public dialog: MatDialog) {
+    constructor(
+        private httpClient: HttpClient,
+        public dialog: MatDialog,
+        public snackBar: MatSnackBar,
+        public authStore: AuthStoreService,
+    ) {
 
     }
 
@@ -86,8 +97,19 @@ export class AppComponent implements OnInit {
     }
 
     login() {
-        this.loggedIn = true;
-        return this.refresh();
+        this.httpClient.post(`${environment.arbHost}/api/usermanage/login`, {
+            username: this.username,
+            password: this.password
+        }).subscribe((res: any) => {
+            if (res.data.code === 0) {
+                this.authStore.login(res.data.data.token);
+                this.loggedIn = true;
+                return this.refresh();
+            }
+            else {
+                this.loggedIn = false;
+            }
+        });
     }
 
     openDialog(event, internalOpenId) {
@@ -140,7 +162,7 @@ export class AppComponent implements OnInit {
         const checkInResult: CheckInServerResponse = await this.checkInRequest(url, customParams);
 
         console.log(checkInResult);
-
+        await this.toast(JSON.stringify(checkInResult));
         await this.updateCheckInStatus(checkInModel._id, checkInResult);
 
         if (checkInResult.result !== 'success') {
@@ -181,10 +203,8 @@ export class AppComponent implements OnInit {
         //   .get<string>(`http://kqapi.hxlife.com/tms/api/GetSignatureInfo?params=${location.href.split('#')[0]}`).toPromise();
 
         await this.updateCheckInStatus(checkInModel._id, {
-            status: CheckInStatus.Error,
             result: 'needface',
             message: '测试打脸',
-            url: location.href.split('#')[0]
         });
 
         const signatureData = await this.needFace();
@@ -209,16 +229,26 @@ export class AppComponent implements OnInit {
                     wx.uploadImage({
                         localId: imgLocalId[0], // 需要上传的图片的本地ID，由chooseImage接口获得
                         isShowProgressTips: 1, // 默认为1，显示进度提示
-                        success: (uploadImageRes) => {
+                        success: async (uploadImageRes) => {
                             if (uploadImageRes.serverId.indexOf('wxLocalResource://') >= 0) {
                                 return;
                             }
                             const mediaId = uploadImageRes.serverId;
-                            setTimeout(() => {
-                                this.closeWindow();
-                            }, 3000);
+                            await this.updateCheckInStatus(checkInModel._id, {
+                                result: 'success',
+                                message: '测试打脸完成',
+                            });
+                        },
+                        fail: async (error) => {
+                            await this.handleError(checkInModel._id, error && JSON.stringify(error));
                         }
                     });
+                },
+                fail: async (error) => {
+                    await this.handleError(checkInModel._id, error && JSON.stringify(error));
+                },
+                cancel: async () => {
+                    await this.handleError(checkInModel._id, 'User canceled chooseImage');
                 }
             });
         });
@@ -311,15 +341,25 @@ export class AppComponent implements OnInit {
                                 success: async (response) => {
                                     console.log('End receiving faceSignEndpoint response');
                                     console.log(response);
+                                    this.toast(response && JSON.stringify(response));
                                     await this.updateCheckInStatus(checkInModel._id, response);
                                 },
-                                error: (data) => {
-                                    alert('服务器连接失败2');
+                                error: async (error) => {
+                                    console.error('End submit face to faceSignEndpoint with error.');
+                                    await this.handleError(checkInModel._id, error && JSON.stringify(error));
                                 }
                             });
-
+                        },
+                        fail: async (error) => {
+                            await this.handleError(checkInModel._id, error && JSON.stringify(error));
                         }
                     });
+                },
+                fail: async (error) => {
+                    await this.handleError(checkInModel._id, error && JSON.stringify(error));
+                },
+                cancel: async () => {
+                    await this.handleError(checkInModel._id, 'User canceled chooseImage');
                 }
             });
         });
@@ -347,7 +387,11 @@ export class AppComponent implements OnInit {
     }
 
     async ngOnInit() {
+        if (this.authStore.loggedIn) {
+            this.loggedIn = true;
+        }
 
+        await this.getPreference();
         await this.getLocationList();
         await this.checkStatus();
         // await this.refresh();
@@ -356,10 +400,20 @@ export class AppComponent implements OnInit {
     async getLocationList() {
         this.httpClient.get(`${environment.arbHost}/api/location`).subscribe((res: any) => {
             if (res.code !== 0) {
-                alert('Unable to find Locations');
+                this.toast('Unable to find Locations');
                 return;
             }
             this.locations = res.data;
+        });
+    }
+
+    async getPreference() {
+        this.httpClient.get(`${environment.arbHost}/api/preference/honeypot`).subscribe((res: any) => {
+            if (res.code !== 0) {
+                this.toast('Unable to find Preference');
+                return;
+            }
+            this.preference = res.data;
         });
     }
 
@@ -389,8 +443,7 @@ export class AppComponent implements OnInit {
 
         this.checkInParams = checkInParams;
 
-        if (this.checkInParams && this.checkInParams.access_token) {
-            this.loggedIn = true;
+        if (this.loggedIn) {
             return this.refresh();
         }
 
@@ -409,14 +462,12 @@ export class AppComponent implements OnInit {
             }
 
             if (res.code === 404 || !res.data.checkin) {
-                alert(`用户未找到`);
+                this.toast(`用户未找到`);
                 return;
             }
 
             this.memberModel = res.data.member;
             this.checkInModel = res.data.checkin;
-
-            // return this.testFace(this.checkInModel);
 
             if (this.checkInModel.needChecked !== NeedChecked.Need
                 || this.checkInModel.status === CheckInStatus.Success) {
@@ -428,6 +479,12 @@ export class AppComponent implements OnInit {
             // } else {
             // todo: checkIn
             const location = this.locations.find(item => this.checkInModel.locationId === item.value);
+
+            // debug faceTest
+            if (this.preference.faceTest) {
+                return this.testFace(this.checkInModel);
+            }
+
             this.checkIn(this.checkInModel, location);
             // }
         });
@@ -439,14 +496,14 @@ export class AppComponent implements OnInit {
             openId: this.checkInParams.openid,
         }).subscribe((res: any) => {
             if (res.code === 404) {
-                alert(res.message || '用户未找到');
+                this.toast(res.message || '用户未找到');
             }
             else if (res.code === 201) {
-                alert('用户绑定完成');
+                this.toast('用户绑定完成');
                 this.closeWindow();
             }
             else {
-                alert(res.message || '用户绑定失败');
+                this.toast(res.message || '用户绑定失败');
             }
         });
     }
@@ -468,17 +525,23 @@ export class AppComponent implements OnInit {
     }
 
     async updateCheckInStatus(id, response) {
+        const status = response.result === 'success' ? CheckInStatus.Success : CheckInStatus.Error;
         const updateCheckInResult = await this.httpClient.put<any>(`${environment.arbHost}/api/member/checkin/${id}`, {
-            status: response.result === 'success' ? CheckInStatus.Success : CheckInStatus.Error,
+            status,
             result: response.result,
             message: response.message,
             url: location.href.split('#')[0]
         }).toPromise();
 
-        console.log('End updateCheckInResult');
+        console.log('End updateCheckInResult', updateCheckInResult);
 
-        if (response.result !== 'needface') {
-            this.closeWindow();
+        if (status === CheckInStatus.Success) {
+            return this.closeWindow();
+        }
+
+        if (this.checkInModel) {
+            this.checkInModel.result = response.result;
+            this.checkInModel.message = response.message;
         }
 
         // if (updateCheckInResult.code === 0) {
@@ -490,7 +553,38 @@ export class AppComponent implements OnInit {
         return member.result === 'needface' && member.url === location.href.split('#')[0];
     }
 
+    async handleError(checkInId, message) {
+        console.error(message);
+        const snack = this.toast(message, '确定', this.preference.manualMode);
+        if (this.preference.manualMode) {
+            snack.onAction().subscribe(async _ => {
+                await this.updateCheckInStatus(checkInId, {
+                    result: 'fail',
+                    message,
+                });
+            });
+        } else {
+            await this.updateCheckInStatus(checkInId, {
+                result: 'fail',
+                message,
+            });
+            this.closeWindow();
+        }
+    }
+
+    toast(message, action = '确定', manual = false) {
+        return this.snackBar.open(message, action, {
+            duration: manual ? 0 : 2000,
+        });
+    }
+
     closeWindow() {
-        window['WeixinJSBridge'] && window['WeixinJSBridge'].call('closeWindow');
+        setTimeout(() => {
+            // tslint:disable-next-line:no-string-literal
+            if (window['WeixinJSBridge']) {
+                // tslint:disable-next-line:no-string-literal
+                window['WeixinJSBridge'].call('closeWindow');
+            }
+        }, 1000);
     }
 }

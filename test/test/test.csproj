@@ -95,6 +95,8 @@
     <Compile Include="AddUser.Designer.cs">
       <DependentUpon>AddUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="AuthStore.cs" />
+    <Compile Include="AvatarManager.cs" />
     <Compile Include="CheckInServerResponse.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="DAL\AddUserDAL.cs" />
@@ -111,9 +113,7 @@
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
     <Compile Include="DAL\LoginDAL.cs" />
-    <Compile Include="Main.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Main.cs" />
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
@@ -135,6 +135,7 @@
     </Compile>
     <Compile Include="SingletonProxyServer.cs" />
     <Compile Include="SocketService.cs" />
+    <Compile Include="TokenResponse.cs" />
     <EmbeddedResource Include="AddUser.resx">
       <DependentUpon>AddUser.cs</DependentUpon>
     </EmbeddedResource>

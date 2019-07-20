@@ -10,7 +10,7 @@ namespace test
 {
     public class LoginDAL
     {
-        public async Task<ResponseResult> Login(string username, string password) {
+        public async Task<ResponseResult<TokenResponse>> Login(string username, string password) {
             var data = new
             {
                 username = username,
@@ -35,7 +35,7 @@ namespace test
 
             result.EnsureSuccessStatusCode();
             var response = await result.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<ResponseResult>(response);
+            return JsonConvert.DeserializeObject<ResponseResult<TokenResponse>>(response);
         }
     }
 }

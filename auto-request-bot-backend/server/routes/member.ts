@@ -24,9 +24,9 @@ router.get('/register/:internalOpenId', memberCtrl.loadByInternalOpenId);
 
 router.post('/createWxConfig', memberCtrl.createWxConfig);
 
-router.get('/checkin', memberCtrl.checkIn);
+router.get('/checkin', passport.authenticate("jwt", { failWithError: true }), memberCtrl.checkIn);
 
-router.get('/checkin/:id',memberCtrl.getCheckIn);
+router.get('/checkin/:id', memberCtrl.getCheckIn);
 
 router.put('/checkin/:id', memberCtrl.updateCheckIn);
 

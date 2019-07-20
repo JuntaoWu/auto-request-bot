@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
@@ -47,24 +47,6 @@
             this.wait_checkin_tabpage = new System.Windows.Forms.TabPage();
             this.wait_checkin_datagrid = new System.Windows.Forms.DataGridView();
             this.IsChecked = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.successs_checkin_tabpage = new System.Windows.Forms.TabPage();
-            this.success_checkin_datagrid = new System.Windows.Forms.DataGridView();
-            this.message = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.error_checkin_page = new System.Windows.Forms.TabPage();
-            this.error_checkin_datagrid = new System.Windows.Forms.DataGridView();
-            this.dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.member_list_grdaview = new System.Windows.Forms.DataGridView();
-            this.update = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.delete = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Titile_label = new System.Windows.Forms.Label();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.avatarDataGridViewImageColumn1 = new System.Windows.Forms.DataGridViewImageColumn();
             this.weixinuernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usernameDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -72,6 +54,8 @@
             this.weixinnumberDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.memberBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.successs_checkin_tabpage = new System.Windows.Forms.TabPage();
+            this.success_checkin_datagrid = new System.Windows.Forms.DataGridView();
             this.avatarDataGridViewImageColumn2 = new System.Windows.Forms.DataGridViewImageColumn();
             this.weixinuernameDataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usernameDataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -79,7 +63,11 @@
             this.weixinnumberDataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.checkintimeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusDataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.message = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.memberBindingSource2 = new System.Windows.Forms.BindingSource(this.components);
+            this.error_checkin_page = new System.Windows.Forms.TabPage();
+            this.error_checkin_datagrid = new System.Windows.Forms.DataGridView();
+            this.dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.avatarDataGridViewImageColumn3 = new System.Windows.Forms.DataGridViewImageColumn();
             this.weixinuernameDataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usernameDataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -87,7 +75,15 @@
             this.weixinnumberDataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.checkintimeDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusDataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.memberBindingSource3 = new System.Windows.Forms.BindingSource(this.components);
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripStatusLabelPercent = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.member_list_grdaview = new System.Windows.Forms.DataGridView();
             this.avatarDataGridViewImageColumn = new System.Windows.Forms.DataGridViewImageColumn();
             this.weixinuernameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usernameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -95,8 +91,12 @@
             this.weixinnumberDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.registertiemDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.update = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.delete = new System.Windows.Forms.DataGridViewButtonColumn();
             this.memberBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.toolStripStatusLabelPercent = new System.Windows.Forms.ToolStripStatusLabel();
+            this.Titile_label = new System.Windows.Forms.Label();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -104,20 +104,20 @@
             this.tabControl2.SuspendLayout();
             this.wait_checkin_tabpage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wait_checkin_datagrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).BeginInit();
             this.successs_checkin_tabpage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.success_checkin_datagrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).BeginInit();
             this.error_checkin_page.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.error_checkin_datagrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource)).BeginInit();
             this.tableLayoutPanel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
-            this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -321,6 +321,57 @@
             this.IsChecked.Name = "IsChecked";
             this.IsChecked.Width = 77;
             // 
+            // avatarDataGridViewImageColumn1
+            // 
+            this.avatarDataGridViewImageColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.avatarDataGridViewImageColumn1.DataPropertyName = "avatar";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("KaiTi", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.NullValue = null;
+            this.avatarDataGridViewImageColumn1.DefaultCellStyle = dataGridViewCellStyle1;
+            this.avatarDataGridViewImageColumn1.HeaderText = "头像";
+            this.avatarDataGridViewImageColumn1.Name = "avatarDataGridViewImageColumn1";
+            this.avatarDataGridViewImageColumn1.Width = 77;
+            // 
+            // weixinuernameDataGridViewTextBoxColumn1
+            // 
+            this.weixinuernameDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.weixinuernameDataGridViewTextBoxColumn1.DataPropertyName = "weixin_uername";
+            this.weixinuernameDataGridViewTextBoxColumn1.HeaderText = "微信用户名";
+            this.weixinuernameDataGridViewTextBoxColumn1.Name = "weixinuernameDataGridViewTextBoxColumn1";
+            // 
+            // usernameDataGridViewTextBoxColumn1
+            // 
+            this.usernameDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.usernameDataGridViewTextBoxColumn1.DataPropertyName = "username";
+            this.usernameDataGridViewTextBoxColumn1.HeaderText = "姓名";
+            this.usernameDataGridViewTextBoxColumn1.Name = "usernameDataGridViewTextBoxColumn1";
+            // 
+            // telephoneDataGridViewTextBoxColumn1
+            // 
+            this.telephoneDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.telephoneDataGridViewTextBoxColumn1.DataPropertyName = "telephone";
+            this.telephoneDataGridViewTextBoxColumn1.HeaderText = "电话";
+            this.telephoneDataGridViewTextBoxColumn1.Name = "telephoneDataGridViewTextBoxColumn1";
+            // 
+            // weixinnumberDataGridViewTextBoxColumn1
+            // 
+            this.weixinnumberDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.weixinnumberDataGridViewTextBoxColumn1.DataPropertyName = "weixin_number";
+            this.weixinnumberDataGridViewTextBoxColumn1.HeaderText = "微信号";
+            this.weixinnumberDataGridViewTextBoxColumn1.Name = "weixinnumberDataGridViewTextBoxColumn1";
+            // 
+            // statusDataGridViewTextBoxColumn1
+            // 
+            this.statusDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.statusDataGridViewTextBoxColumn1.DataPropertyName = "status";
+            this.statusDataGridViewTextBoxColumn1.HeaderText = "状态";
+            this.statusDataGridViewTextBoxColumn1.Name = "statusDataGridViewTextBoxColumn1";
+            // 
+            // memberBindingSource1
+            // 
+            this.memberBindingSource1.DataSource = typeof(test.DAL.Member);
+            // 
             // successs_checkin_tabpage
             // 
             this.successs_checkin_tabpage.Controls.Add(this.success_checkin_datagrid);
@@ -358,12 +409,66 @@
             this.success_checkin_datagrid.Size = new System.Drawing.Size(1916, 746);
             this.success_checkin_datagrid.TabIndex = 0;
             // 
+            // avatarDataGridViewImageColumn2
+            // 
+            this.avatarDataGridViewImageColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.avatarDataGridViewImageColumn2.DataPropertyName = "avatar";
+            this.avatarDataGridViewImageColumn2.HeaderText = "头像";
+            this.avatarDataGridViewImageColumn2.Name = "avatarDataGridViewImageColumn2";
+            this.avatarDataGridViewImageColumn2.Width = 77;
+            // 
+            // weixinuernameDataGridViewTextBoxColumn2
+            // 
+            this.weixinuernameDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.weixinuernameDataGridViewTextBoxColumn2.DataPropertyName = "weixin_uername";
+            this.weixinuernameDataGridViewTextBoxColumn2.HeaderText = "微信用户名";
+            this.weixinuernameDataGridViewTextBoxColumn2.Name = "weixinuernameDataGridViewTextBoxColumn2";
+            // 
+            // usernameDataGridViewTextBoxColumn2
+            // 
+            this.usernameDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.usernameDataGridViewTextBoxColumn2.DataPropertyName = "username";
+            this.usernameDataGridViewTextBoxColumn2.HeaderText = "姓名";
+            this.usernameDataGridViewTextBoxColumn2.Name = "usernameDataGridViewTextBoxColumn2";
+            // 
+            // telephoneDataGridViewTextBoxColumn2
+            // 
+            this.telephoneDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.telephoneDataGridViewTextBoxColumn2.DataPropertyName = "telephone";
+            this.telephoneDataGridViewTextBoxColumn2.HeaderText = "电话";
+            this.telephoneDataGridViewTextBoxColumn2.Name = "telephoneDataGridViewTextBoxColumn2";
+            // 
+            // weixinnumberDataGridViewTextBoxColumn2
+            // 
+            this.weixinnumberDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.weixinnumberDataGridViewTextBoxColumn2.DataPropertyName = "weixin_number";
+            this.weixinnumberDataGridViewTextBoxColumn2.HeaderText = "微信号";
+            this.weixinnumberDataGridViewTextBoxColumn2.Name = "weixinnumberDataGridViewTextBoxColumn2";
+            // 
+            // checkintimeDataGridViewTextBoxColumn
+            // 
+            this.checkintimeDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.checkintimeDataGridViewTextBoxColumn.DataPropertyName = "checkintime";
+            this.checkintimeDataGridViewTextBoxColumn.HeaderText = "打开时间";
+            this.checkintimeDataGridViewTextBoxColumn.Name = "checkintimeDataGridViewTextBoxColumn";
+            // 
+            // statusDataGridViewTextBoxColumn2
+            // 
+            this.statusDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.statusDataGridViewTextBoxColumn2.DataPropertyName = "status";
+            this.statusDataGridViewTextBoxColumn2.HeaderText = "状态";
+            this.statusDataGridViewTextBoxColumn2.Name = "statusDataGridViewTextBoxColumn2";
+            // 
             // message
             // 
             this.message.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.message.DataPropertyName = "message";
             this.message.HeaderText = "返回结果";
             this.message.Name = "message";
+            // 
+            // memberBindingSource2
+            // 
+            this.memberBindingSource2.DataSource = typeof(test.DAL.Member);
             // 
             // error_checkin_page
             // 
@@ -411,6 +516,56 @@
             this.dataGridViewCheckBoxColumn1.Name = "dataGridViewCheckBoxColumn1";
             this.dataGridViewCheckBoxColumn1.Width = 77;
             // 
+            // avatarDataGridViewImageColumn3
+            // 
+            this.avatarDataGridViewImageColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.avatarDataGridViewImageColumn3.DataPropertyName = "avatar";
+            this.avatarDataGridViewImageColumn3.HeaderText = "头像";
+            this.avatarDataGridViewImageColumn3.Name = "avatarDataGridViewImageColumn3";
+            this.avatarDataGridViewImageColumn3.Width = 77;
+            // 
+            // weixinuernameDataGridViewTextBoxColumn3
+            // 
+            this.weixinuernameDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.weixinuernameDataGridViewTextBoxColumn3.DataPropertyName = "weixin_uername";
+            this.weixinuernameDataGridViewTextBoxColumn3.HeaderText = "微信用户名";
+            this.weixinuernameDataGridViewTextBoxColumn3.Name = "weixinuernameDataGridViewTextBoxColumn3";
+            // 
+            // usernameDataGridViewTextBoxColumn3
+            // 
+            this.usernameDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.usernameDataGridViewTextBoxColumn3.DataPropertyName = "username";
+            this.usernameDataGridViewTextBoxColumn3.HeaderText = "姓名";
+            this.usernameDataGridViewTextBoxColumn3.Name = "usernameDataGridViewTextBoxColumn3";
+            // 
+            // telephoneDataGridViewTextBoxColumn3
+            // 
+            this.telephoneDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.telephoneDataGridViewTextBoxColumn3.DataPropertyName = "telephone";
+            this.telephoneDataGridViewTextBoxColumn3.HeaderText = "电话";
+            this.telephoneDataGridViewTextBoxColumn3.Name = "telephoneDataGridViewTextBoxColumn3";
+            // 
+            // weixinnumberDataGridViewTextBoxColumn3
+            // 
+            this.weixinnumberDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.weixinnumberDataGridViewTextBoxColumn3.DataPropertyName = "weixin_number";
+            this.weixinnumberDataGridViewTextBoxColumn3.HeaderText = "微信号";
+            this.weixinnumberDataGridViewTextBoxColumn3.Name = "weixinnumberDataGridViewTextBoxColumn3";
+            // 
+            // checkintimeDataGridViewTextBoxColumn1
+            // 
+            this.checkintimeDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.checkintimeDataGridViewTextBoxColumn1.DataPropertyName = "checkintime";
+            this.checkintimeDataGridViewTextBoxColumn1.HeaderText = "打开时间";
+            this.checkintimeDataGridViewTextBoxColumn1.Name = "checkintimeDataGridViewTextBoxColumn1";
+            // 
+            // statusDataGridViewTextBoxColumn3
+            // 
+            this.statusDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.statusDataGridViewTextBoxColumn3.DataPropertyName = "status";
+            this.statusDataGridViewTextBoxColumn3.HeaderText = "状态";
+            this.statusDataGridViewTextBoxColumn3.Name = "statusDataGridViewTextBoxColumn3";
+            // 
             // dataGridViewTextBoxColumn1
             // 
             this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
@@ -419,6 +574,41 @@
             this.dataGridViewTextBoxColumn1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridViewTextBoxColumn1.HeaderText = "返回结果";
             this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            // 
+            // memberBindingSource3
+            // 
+            this.memberBindingSource3.DataSource = typeof(test.DAL.Member);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripProgressBar1,
+            this.toolStripStatusLabelPercent,
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 910);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1948, 38);
+            this.statusStrip1.TabIndex = 4;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.AutoToolTip = true;
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(600, 32);
+            // 
+            // toolStripStatusLabelPercent
+            // 
+            this.toolStripStatusLabelPercent.Name = "toolStripStatusLabelPercent";
+            this.toolStripStatusLabelPercent.Size = new System.Drawing.Size(48, 33);
+            this.toolStripStatusLabelPercent.Text = "0%";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(47, 33);
+            this.toolStripStatusLabel1.Text = "OK";
             // 
             // tabPage3
             // 
@@ -473,237 +663,6 @@
             this.member_list_grdaview.TabIndex = 1;
             this.member_list_grdaview.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.member_list_grdaview_CellClick);
             // 
-            // update
-            // 
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.Aqua;
-            this.update.DefaultCellStyle = dataGridViewCellStyle3;
-            this.update.HeaderText = "";
-            this.update.Name = "update";
-            this.update.Text = "编辑";
-            this.update.UseColumnTextForButtonValue = true;
-            // 
-            // delete
-            // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.Red;
-            this.delete.DefaultCellStyle = dataGridViewCellStyle4;
-            this.delete.HeaderText = "";
-            this.delete.Name = "delete";
-            this.delete.Text = "删除";
-            this.delete.UseColumnTextForButtonValue = true;
-            // 
-            // Titile_label
-            // 
-            this.Titile_label.AutoSize = true;
-            this.Titile_label.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Titile_label.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Titile_label.Location = new System.Drawing.Point(4, 23);
-            this.Titile_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.Titile_label.Name = "Titile_label";
-            this.Titile_label.Size = new System.Drawing.Size(1948, 29);
-            this.Titile_label.TabIndex = 0;
-            this.Titile_label.Text = "会员列表";
-            // 
-            // tableLayoutPanel5
-            // 
-            this.tableLayoutPanel5.ColumnCount = 1;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.Controls.Add(this.tabControl1, 0, 1);
-            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 2;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.569721F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.43028F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(2092, 1055);
-            this.tableLayoutPanel5.TabIndex = 8;
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripProgressBar1,
-            this.toolStripStatusLabelPercent,
-            this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 910);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1948, 38);
-            this.statusStrip1.TabIndex = 4;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // toolStripProgressBar1
-            // 
-            this.toolStripProgressBar1.AutoToolTip = true;
-            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(600, 32);
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(47, 33);
-            this.toolStripStatusLabel1.Text = "OK";
-            // 
-            // avatarDataGridViewImageColumn1
-            // 
-            this.avatarDataGridViewImageColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.avatarDataGridViewImageColumn1.DataPropertyName = "avatar";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("KaiTi", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            dataGridViewCellStyle1.NullValue = null;
-            this.avatarDataGridViewImageColumn1.DefaultCellStyle = dataGridViewCellStyle1;
-            this.avatarDataGridViewImageColumn1.HeaderText = "头像";
-            this.avatarDataGridViewImageColumn1.Name = "avatarDataGridViewImageColumn1";
-            this.avatarDataGridViewImageColumn1.Width = 77;
-            // 
-            // weixinuernameDataGridViewTextBoxColumn1
-            // 
-            this.weixinuernameDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.weixinuernameDataGridViewTextBoxColumn1.DataPropertyName = "weixin_uername";
-            this.weixinuernameDataGridViewTextBoxColumn1.HeaderText = "微信用户名";
-            this.weixinuernameDataGridViewTextBoxColumn1.Name = "weixinuernameDataGridViewTextBoxColumn1";
-            // 
-            // usernameDataGridViewTextBoxColumn1
-            // 
-            this.usernameDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.usernameDataGridViewTextBoxColumn1.DataPropertyName = "username";
-            this.usernameDataGridViewTextBoxColumn1.HeaderText = "姓名";
-            this.usernameDataGridViewTextBoxColumn1.Name = "usernameDataGridViewTextBoxColumn1";
-            // 
-            // telephoneDataGridViewTextBoxColumn1
-            // 
-            this.telephoneDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.telephoneDataGridViewTextBoxColumn1.DataPropertyName = "telephone";
-            this.telephoneDataGridViewTextBoxColumn1.HeaderText = "电话";
-            this.telephoneDataGridViewTextBoxColumn1.Name = "telephoneDataGridViewTextBoxColumn1";
-            // 
-            // weixinnumberDataGridViewTextBoxColumn1
-            // 
-            this.weixinnumberDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.weixinnumberDataGridViewTextBoxColumn1.DataPropertyName = "weixin_number";
-            this.weixinnumberDataGridViewTextBoxColumn1.HeaderText = "微信号";
-            this.weixinnumberDataGridViewTextBoxColumn1.Name = "weixinnumberDataGridViewTextBoxColumn1";
-            // 
-            // statusDataGridViewTextBoxColumn1
-            // 
-            this.statusDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.statusDataGridViewTextBoxColumn1.DataPropertyName = "status";
-            this.statusDataGridViewTextBoxColumn1.HeaderText = "状态";
-            this.statusDataGridViewTextBoxColumn1.Name = "statusDataGridViewTextBoxColumn1";
-            // 
-            // memberBindingSource1
-            // 
-            this.memberBindingSource1.DataSource = typeof(test.DAL.Member);
-            // 
-            // avatarDataGridViewImageColumn2
-            // 
-            this.avatarDataGridViewImageColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.avatarDataGridViewImageColumn2.DataPropertyName = "avatar";
-            this.avatarDataGridViewImageColumn2.HeaderText = "头像";
-            this.avatarDataGridViewImageColumn2.Name = "avatarDataGridViewImageColumn2";
-            this.avatarDataGridViewImageColumn2.Width = 77;
-            // 
-            // weixinuernameDataGridViewTextBoxColumn2
-            // 
-            this.weixinuernameDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.weixinuernameDataGridViewTextBoxColumn2.DataPropertyName = "weixin_uername";
-            this.weixinuernameDataGridViewTextBoxColumn2.HeaderText = "微信用户名";
-            this.weixinuernameDataGridViewTextBoxColumn2.Name = "weixinuernameDataGridViewTextBoxColumn2";
-            // 
-            // usernameDataGridViewTextBoxColumn2
-            // 
-            this.usernameDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.usernameDataGridViewTextBoxColumn2.DataPropertyName = "username";
-            this.usernameDataGridViewTextBoxColumn2.HeaderText = "姓名";
-            this.usernameDataGridViewTextBoxColumn2.Name = "usernameDataGridViewTextBoxColumn2";
-            // 
-            // telephoneDataGridViewTextBoxColumn2
-            // 
-            this.telephoneDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.telephoneDataGridViewTextBoxColumn2.DataPropertyName = "telephone";
-            this.telephoneDataGridViewTextBoxColumn2.HeaderText = "电话";
-            this.telephoneDataGridViewTextBoxColumn2.Name = "telephoneDataGridViewTextBoxColumn2";
-            // 
-            // weixinnumberDataGridViewTextBoxColumn2
-            // 
-            this.weixinnumberDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.weixinnumberDataGridViewTextBoxColumn2.DataPropertyName = "weixin_number";
-            this.weixinnumberDataGridViewTextBoxColumn2.HeaderText = "微信号";
-            this.weixinnumberDataGridViewTextBoxColumn2.Name = "weixinnumberDataGridViewTextBoxColumn2";
-            // 
-            // checkintimeDataGridViewTextBoxColumn
-            // 
-            this.checkintimeDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.checkintimeDataGridViewTextBoxColumn.DataPropertyName = "checkintime";
-            this.checkintimeDataGridViewTextBoxColumn.HeaderText = "打开时间";
-            this.checkintimeDataGridViewTextBoxColumn.Name = "checkintimeDataGridViewTextBoxColumn";
-            // 
-            // statusDataGridViewTextBoxColumn2
-            // 
-            this.statusDataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.statusDataGridViewTextBoxColumn2.DataPropertyName = "status";
-            this.statusDataGridViewTextBoxColumn2.HeaderText = "状态";
-            this.statusDataGridViewTextBoxColumn2.Name = "statusDataGridViewTextBoxColumn2";
-            // 
-            // memberBindingSource2
-            // 
-            this.memberBindingSource2.DataSource = typeof(test.DAL.Member);
-            // 
-            // avatarDataGridViewImageColumn3
-            // 
-            this.avatarDataGridViewImageColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.avatarDataGridViewImageColumn3.DataPropertyName = "avatar";
-            this.avatarDataGridViewImageColumn3.HeaderText = "头像";
-            this.avatarDataGridViewImageColumn3.Name = "avatarDataGridViewImageColumn3";
-            this.avatarDataGridViewImageColumn3.Width = 77;
-            // 
-            // weixinuernameDataGridViewTextBoxColumn3
-            // 
-            this.weixinuernameDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.weixinuernameDataGridViewTextBoxColumn3.DataPropertyName = "weixin_uername";
-            this.weixinuernameDataGridViewTextBoxColumn3.HeaderText = "微信用户名";
-            this.weixinuernameDataGridViewTextBoxColumn3.Name = "weixinuernameDataGridViewTextBoxColumn3";
-            // 
-            // usernameDataGridViewTextBoxColumn3
-            // 
-            this.usernameDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.usernameDataGridViewTextBoxColumn3.DataPropertyName = "username";
-            this.usernameDataGridViewTextBoxColumn3.HeaderText = "姓名";
-            this.usernameDataGridViewTextBoxColumn3.Name = "usernameDataGridViewTextBoxColumn3";
-            // 
-            // telephoneDataGridViewTextBoxColumn3
-            // 
-            this.telephoneDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.telephoneDataGridViewTextBoxColumn3.DataPropertyName = "telephone";
-            this.telephoneDataGridViewTextBoxColumn3.HeaderText = "电话";
-            this.telephoneDataGridViewTextBoxColumn3.Name = "telephoneDataGridViewTextBoxColumn3";
-            // 
-            // weixinnumberDataGridViewTextBoxColumn3
-            // 
-            this.weixinnumberDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.weixinnumberDataGridViewTextBoxColumn3.DataPropertyName = "weixin_number";
-            this.weixinnumberDataGridViewTextBoxColumn3.HeaderText = "微信号";
-            this.weixinnumberDataGridViewTextBoxColumn3.Name = "weixinnumberDataGridViewTextBoxColumn3";
-            // 
-            // checkintimeDataGridViewTextBoxColumn1
-            // 
-            this.checkintimeDataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.checkintimeDataGridViewTextBoxColumn1.DataPropertyName = "checkintime";
-            this.checkintimeDataGridViewTextBoxColumn1.HeaderText = "打开时间";
-            this.checkintimeDataGridViewTextBoxColumn1.Name = "checkintimeDataGridViewTextBoxColumn1";
-            // 
-            // statusDataGridViewTextBoxColumn3
-            // 
-            this.statusDataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.statusDataGridViewTextBoxColumn3.DataPropertyName = "status";
-            this.statusDataGridViewTextBoxColumn3.HeaderText = "状态";
-            this.statusDataGridViewTextBoxColumn3.Name = "statusDataGridViewTextBoxColumn3";
-            // 
-            // memberBindingSource3
-            // 
-            this.memberBindingSource3.DataSource = typeof(test.DAL.Member);
-            // 
             // avatarDataGridViewImageColumn
             // 
             this.avatarDataGridViewImageColumn.DataPropertyName = "avatar";
@@ -746,15 +705,56 @@
             this.registertiemDataGridViewTextBoxColumn.HeaderText = "注册时间";
             this.registertiemDataGridViewTextBoxColumn.Name = "registertiemDataGridViewTextBoxColumn";
             // 
+            // update
+            // 
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.Aqua;
+            this.update.DefaultCellStyle = dataGridViewCellStyle3;
+            this.update.HeaderText = "";
+            this.update.Name = "update";
+            this.update.Text = "编辑";
+            this.update.UseColumnTextForButtonValue = true;
+            // 
+            // delete
+            // 
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.Red;
+            this.delete.DefaultCellStyle = dataGridViewCellStyle4;
+            this.delete.HeaderText = "";
+            this.delete.Name = "delete";
+            this.delete.Text = "删除";
+            this.delete.UseColumnTextForButtonValue = true;
+            // 
             // memberBindingSource
             // 
             this.memberBindingSource.DataSource = typeof(test.DAL.Member);
             // 
-            // toolStripStatusLabelPercent
+            // Titile_label
             // 
-            this.toolStripStatusLabelPercent.Name = "toolStripStatusLabelPercent";
-            this.toolStripStatusLabelPercent.Size = new System.Drawing.Size(48, 33);
-            this.toolStripStatusLabelPercent.Text = "0%";
+            this.Titile_label.AutoSize = true;
+            this.Titile_label.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.Titile_label.Font = new System.Drawing.Font("SimSun", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Titile_label.Location = new System.Drawing.Point(4, 23);
+            this.Titile_label.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.Titile_label.Name = "Titile_label";
+            this.Titile_label.Size = new System.Drawing.Size(1948, 29);
+            this.Titile_label.TabIndex = 0;
+            this.Titile_label.Text = "会员列表";
+            // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.ColumnCount = 1;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.Controls.Add(this.tabControl1, 0, 1);
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel5.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 2;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 7.569721F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 92.43028F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(2092, 1055);
+            this.tableLayoutPanel5.TabIndex = 8;
             // 
             // Main
             // 
@@ -774,22 +774,22 @@
             this.tabControl2.ResumeLayout(false);
             this.wait_checkin_tabpage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.wait_checkin_datagrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).EndInit();
             this.successs_checkin_tabpage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.success_checkin_datagrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).EndInit();
             this.error_checkin_page.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.error_checkin_datagrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.member_list_grdaview)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource)).EndInit();
             this.tableLayoutPanel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.memberBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }

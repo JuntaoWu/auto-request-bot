@@ -13,6 +13,20 @@ namespace test
         {
             HttpClient client = new HttpClient();
             HttpResponseMessage result;
+
+            if (url.Contains("?"))
+            {
+                url += $"&token={AuthStore.Token}";
+            }
+            else if (url.Contains("#"))
+            {
+                url = url.Replace("(.*)#([^#]*)", $"$1?internalOpenId={AuthStore.Token}#$2");
+            }
+            else
+            {
+                url += $"?token={AuthStore.Token}";
+            }
+
             switch (method)
             {
                 case "GET":

@@ -12,6 +12,6 @@ import * as userCtrl from '../controllers/user.controller';
 
 router.post('/register', userCtrl.register);
 
-router.post('/login', userCtrl.login);
+router.post('/login', passport.authenticate('local'), userCtrl.login);
 
 export default router;

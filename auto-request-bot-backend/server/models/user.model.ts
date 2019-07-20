@@ -8,7 +8,9 @@ export class User extends Typegoose {
     @prop()
     telephone: String;
     @prop()
-    password:String;
+    password: String;
+    @prop({ default: false })
+    enabled: Boolean;
 }
 
 const UserModel = new User().getModelForClass(User, {

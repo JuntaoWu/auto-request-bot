@@ -8,15 +8,9 @@ export class Preference extends Typegoose {
     @prop()
     platform: String;
     @prop()
-    showGuide: Boolean;
+    autoMode: Boolean;
     @prop()
-    showClub?: Boolean;
-    @prop()
-    showMore?: Boolean;
-    @prop()
-    showWeChatLogin?: Boolean;
-    @prop()
-    showAnonymousLogin?: Boolean;
+    faceTest?: Boolean;
 }
 
 const PreferenceModel = new Preference().getModelForClass(Preference, {

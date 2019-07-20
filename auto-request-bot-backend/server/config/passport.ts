@@ -7,7 +7,35 @@ import config from './config';
 import WxUserModel, { WxUser } from '../models/wxuser.model';
 
 import * as https from 'https';
-import { compareSync } from 'bcrypt-nodejs';
+import { compareSync, hashSync } from 'bcrypt-nodejs';
+import UserModel from '../models/user.model';
+
+const localLoginOptions = {
+    usernameField: 'username',
+    passwordField: 'password',
+};
+const localLogin = new LocalStrategy(localLoginOptions, async (username, password, done) => {
+    if (!username) {
+        return done(null, false, {
+            message: "Your login details could not be verified. Please try again."
+        });
+    }
+
+    let existingUser = await UserModel.findOne({ username: username });
+
+    if (!existingUser || !existingUser.enabled) {
+        return done(null, false);
+    }
+
+    // const passwordHash = hashSync(password, existingUser.salt.toString());
+    const result = compareSync(password, existingUser.password.toString());
+
+    if (result) {
+        return done(null, existingUser);
+    }
+
+    return done(null, false);
+});
 
 const localWxOptions = {
     usernameField: 'code',
@@ -142,6 +170,23 @@ const jwtOptions = {
     // TO-DO: Add issuer and audience checks
 };
 
+const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
+    console.log('jwt payload', payload);
+    if (!payload.username) {
+        return done(null, false);
+    }
+
+    UserModel.findOne({ username: payload.username }).then(user => {
+        if (!user) {
+            return done(null, false);
+        }
+        return done(null, user);
+    }).catch(error => {
+        console.error(error);
+        return done(null, false);
+    });
+});
+
 const jwtWxLogin = new JwtStrategy(jwtOptions, (payload, done) => {
     console.log('jwt payload', payload);
 
@@ -228,5 +273,7 @@ const jwtAdminLogin = new JwtStrategy(jwtAdminOptions, (payload, done) => {
 (passport).use('localWx', localWxLogin);
 (passport).use('jwtService', jwtServiceLogin);  // for internal api use only, protected by pre-shared service jwt secret.
 (passport).use('jwtAdmin', jwtAdminLogin);
+(passport).use('local', localLogin);
+(passport).use('jwt', jwtLogin);
 
 export default passport;

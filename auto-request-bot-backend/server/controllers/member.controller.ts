@@ -501,7 +501,7 @@ export let updateCheckIn = async (req, res, next) => {
     // if (req.body.result === "needface") {
     //     signatureStr = await needFace(req.body.url);
     // }
-    console.log(`update check-in status: ${req.body.result}`);
+    console.log(`update check-in status: ${req.body.result}, message: ${req.body.message}`);
 
     await CheckInModel.findByIdAndUpdate(req.params.id, {
         status: req.body.status,
@@ -525,7 +525,7 @@ export let updateCheckIn = async (req, res, next) => {
 
         socket.broadcast(SocketOp.CHECK_IN_UPDATED, {
             id: req.params.id,
-            name: updatedCheckIn.nickName || updatedCheckIn.contactName,
+            name: updatedCheckIn.contactName || updatedCheckIn.nickName,
             message: `check-in ${updatedCheckIn._id} updated.`
         });
 
@@ -565,8 +565,6 @@ export let checkStatus = async (req, res, next) => {
 
     let existmember = await MemberModel.findOne({ openId: data.openId });
 
-    console.log('existingMember:', existmember);
-
     if (!existmember) {
         let updateMembers = await MemberModel.find({ openId: null }).sort({ createdAt: -1 });
         if (updateMembers && updateMembers.length > 0) {
@@ -586,6 +584,7 @@ export let checkStatus = async (req, res, next) => {
         }
     }
     else {
+        console.log(`${existmember.openId}: contactName[${existmember.contactName}] faceList[${existmember.faceList && existmember.faceList.length}]`);
         let type = moment() > moment({ hour: 10, minute: 30 }) ? CheckInType.CheckOut : CheckInType.CheckIn;
 
         let checkInModel = await CheckInModel.findOne({
@@ -624,14 +623,14 @@ export let checkStatus = async (req, res, next) => {
         if (checkInModel.needChecked == NeedChecked.Need && checkInModel.status != CheckInStatus.Success) {
             socket.broadcast(SocketOp.CHECK_IN_STARTED, {
                 id: checkInModel._id,
-                name: checkInModel.nickName || checkInModel.contactName,
+                name: checkInModel.contactName || checkInModel.nickName,
                 message: `check-in ${checkInModel._id} started.`,
             });
         }
         else {
             socket.broadcast(SocketOp.CHECK_IN_SKIP, {
                 id: checkInModel._id,
-                name: checkInModel.nickName || checkInModel.contactName,
+                name: checkInModel.contactName || checkInModel.nickName,
                 message: `check-in ${checkInModel._id} skip.`,
             });
         }
@@ -663,13 +662,13 @@ export let bind = async (req, res, next) => {
         })
     }
 
-    console.log('updateMember before:', updateMember);
+    // console.log('updateMember before:', updateMember);
 
     updateMember.openId = data.openId;
     updateMember.userId = data.userId;
     updateMember.status = CheckInStatus.Activated;
 
-    console.log('updateMember after:', updateMember);
+    // console.log('updateMember after:', updateMember);
 
     await updateMember.save();
 
@@ -702,7 +701,7 @@ export let bind = async (req, res, next) => {
 
     socket.broadcast(SocketOp.CHECK_IN_CREATED, {
         id: checkInModel._id,
-        name: checkInModel.nickName || checkInModel.contactName,
+        name: checkInModel.contactName || checkInModel.nickName,
         message: `check-in ${checkInModel._id} created.`
     });
 

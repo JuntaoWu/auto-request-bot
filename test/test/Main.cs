@@ -29,6 +29,12 @@ namespace test
         Register,
     }
 
+    public class CustomGridViewImageEventArgs : EventArgs
+    {
+        public DataGridView DataGridView { get; set; }
+    }
+
+
     public partial class Main : Form
     {
 
@@ -38,7 +44,7 @@ namespace test
         private Random random = new Random();
         public bool Initialized { get; set; }
 
-        public event EventHandler OnImageLoaded = (object sender, EventArgs e) => { };
+        public event EventHandler<CustomGridViewImageEventArgs> OnImageLoaded = (object sender, CustomGridViewImageEventArgs e) => { };
 
         public CheckInMode CheckInMode { get; set; }
 
@@ -59,15 +65,22 @@ namespace test
 
             FaceSyncService.Instance.OnSynced += Instance_OnSynced;
 
-            this.OnImageLoaded += (object sender, EventArgs e) =>
+            this.OnImageLoaded += (object sender, CustomGridViewImageEventArgs e) =>
             {
                 Console.WriteLine(DateTime.Now);
                 this.m_SyncContext.Post((data) =>
                 {
-                    this.member_list_grdaview.Refresh();
-                    this.wait_checkin_datagrid.Refresh();
-                    this.success_checkin_datagrid.Refresh();
-                    this.error_checkin_datagrid.Refresh();
+                    if (e.DataGridView != null)
+                    {
+                        e.DataGridView.Refresh();
+                    }
+                    else
+                    {
+                        this.member_list_grdaview.Refresh();
+                        this.wait_checkin_datagrid.Refresh();
+                        this.success_checkin_datagrid.Refresh();
+                        this.error_checkin_datagrid.Refresh();
+                    }
                 }, null);
             };
         }
@@ -108,6 +121,7 @@ namespace test
 
         private async void Init()
         {
+            this.checkin_type_combox.SelectedIndex = 0;
             user = new AddUserDAL();
             await this.BindCheckInAddressDataMember();
             await MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
@@ -164,18 +178,12 @@ namespace test
         }
 
         //根据用户地址获取经纬度
-        private Location getAddressLocation(string address)
+        private async Task<Location> getAddressLocation(string address)
         {
             Location currentLocation = new Location();
             string url = $"http://api.map.baidu.com/geocoder/v2/?address={address}&output=json&ak=oLrWGIzoPEusmDqQrmG37OuUC7UE60uo";
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = "GET";
-            request.ContentType = "text/html;charset=UTF-8";
+            string retString = await HttpUtil.Request(url);
 
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            Stream myResponseStream = response.GetResponseStream();
-            StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
-            string retString = myStreamReader.ReadToEnd();
             AddressUnity addressUnity = JsonConvert.DeserializeObject<AddressUnity>(retString);
             if (addressUnity.status == 0)
             {
@@ -189,8 +197,6 @@ namespace test
                 currentLocation.lng = 0;
                 currentLocation.lat = 0;
             }
-            myStreamReader.Close();
-            myResponseStream.Close();
             return currentLocation;
         }
 
@@ -318,6 +324,8 @@ namespace test
         /// </summary>
         private async Task BindDataMemberList()
         {
+            var defaultImage = await ImageLoader.LoadImage("");
+
             var result = await user.getAllMemberList();
 
             List<Member> memberlist = result.AsParallel().Select((m) =>
@@ -326,7 +334,7 @@ namespace test
                 {
                     ID = m._id,
                     avatarUrl = m.avatarUrl,
-                    avatar = null,
+                    avatar = defaultImage,
                     weixin_uername = m.nickName,
                     username = m.contactName,
                     telephone = m.telephone,
@@ -336,13 +344,16 @@ namespace test
                 };
             }).ToList();
 
-            memberlist.AsParallel().ForAll(async member =>
+            var allTasks = memberlist.AsParallel().Select(async member =>
             {
                 member.avatar = await ImageLoader.LoadImage(member.avatarUrl);
-                OnImageLoaded(this, new EventArgs());
+                return member.avatar;
             });
 
             this.member_list_grdaview.DataSource = memberlist;
+
+            await Task.WhenAll(allTasks);
+            OnImageLoaded(this, new CustomGridViewImageEventArgs() { DataGridView = this.member_list_grdaview });
         }
 
         /// <summary>
@@ -382,19 +393,22 @@ namespace test
         /// 当CheckIn完成之后更新打卡管理全部打卡列表
         /// </summary>
         /// <param name="data"></param>
-        private void UpdateCheckInDataGrid(object data)
+        private async void UpdateCheckInDataGrid(object data)
         {
             List<MemberCheckIn> list = data as List<MemberCheckIn>;
 
-            this.wait_checkin_datagrid.DataSource = ConstructMember(list, CheckInStatus.Waiting);
+            this.wait_checkin_datagrid.DataSource = await ConstructMember(list, CheckInStatus.Waiting);
 
-            this.success_checkin_datagrid.DataSource = ConstructMember(list, CheckInStatus.Success);
+            this.success_checkin_datagrid.DataSource = await ConstructMember(list, CheckInStatus.Success);
 
-            this.error_checkin_datagrid.DataSource = ConstructMember(list, CheckInStatus.Error);
+            this.error_checkin_datagrid.DataSource = await ConstructMember(list, CheckInStatus.Error);
+
+            OnImageLoaded(this, new CustomGridViewImageEventArgs());
         }
 
-        private List<Member> ConstructMember(List<MemberCheckIn> list, CheckInStatus status)
+        private async Task<List<Member>> ConstructMember(List<MemberCheckIn> list, CheckInStatus status)
         {
+            var defaultImage = await ImageLoader.LoadImage("");
             var waiting = list.Where((a) => { return a.status == status; }).ToList().Select((m) =>
             {
                 return new Member
@@ -408,15 +422,20 @@ namespace test
                     status = MappingStatus(m.status),
                     checkintime = m.checkInTime?.ToString(),
                     message = m.message,
-                    IsChecked = m.needChecked != NeeChecked.NoNeed
+                    IsChecked = m.needChecked != NeeChecked.NoNeed,
+                    avatar = defaultImage,
                 };
             }).ToList();
 
-            waiting.AsParallel().ForAll(async member =>
+            var parallel = waiting.AsParallel().Select(async member =>
             {
                 member.avatar = await ImageLoader.LoadImage(member.avatarUrl);
-                OnImageLoaded(this, new EventArgs());
+                //OnImageLoaded(this, new EventArgs());
+                return member.avatar;
             });
+
+            await Task.WhenAll(parallel);
+
             return waiting;
         }
 
@@ -813,19 +832,22 @@ namespace test
 
         private void MonitorFaceDialog(List<string> uris)
         {
+            var path = "";
             if (uris == null || uris.Count == 0)
             {
                 this.m_SyncContext.Post(context =>
                 {
-                    this.toolStripStatusLabel1.Text = "人脸列表为空, 打卡终止";
+                    this.toolStripStatusLabel1.Text = "人脸列表为空, 请关闭打开文件对话框或自行选择文件";
                 }, this);
-                return;
+                path = $"{Settings1.Default.RootFolder}";
+            }
+            else
+            {
+                string uri = uris[random.Next(0, uris.Count - 1)];
+                uri = Regex.Replace(uri, "/", "\\");
+                path = $"{Settings1.Default.RootFolder}{uri}";
             }
 
-            string uri = uris[random.Next(0, uris.Count - 1)];
-            uri = Regex.Replace(uri, "/", "\\");
-
-            var path = $"{Settings1.Default.RootFolder}{uri}";
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;

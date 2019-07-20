@@ -250,7 +250,7 @@ namespace test
             return Task.FromResult(0);
         }
 
-        private void sendRequst(Dictionary<string, string> template, Uri requestUrl)
+        private async void sendRequst(Dictionary<string, string> template, Uri requestUrl)
         {
             string ur = $"{string.Format("0")}\"\",\"\"";
             string openId, userId, timestamp, nonce, trade_source, signature, qrcodeid, longitude, latitude;
@@ -270,14 +270,7 @@ namespace test
             //"openid":"","userid":"510129760","timestamp":"1555230703033","nonce":"b422fca3-6745-45fb-942e-3277e4c2872f","trade_source":"HXQYH","signature":"C5B39A04405C819AB045BD54A3376D59","qrcodeid":"00000000000000105723","attentype":"morning","longitude":104.07,"latitude":30.67,"cacheflag":"0"
             string url = $"http://kqapi.hxlife.com/tms/api/QRcodeSign?callbackparam=success_jsonpCallback&params={customParams}&_={DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = "GET";
-            request.ContentType = "text/html;charset=UTF-8";
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            Stream myResponseStream = response.GetResponseStream();
-            StreamReader myStreamReader = new StreamReader(myResponseStream, Encoding.GetEncoding("utf-8"));
-            string retString = myStreamReader.ReadToEnd();
+            string retString = await HttpUtil.Request(url);
 
             Regex regex = new Regex("success_jsonpCallback\\((.*)\\)");
 
@@ -292,10 +285,6 @@ namespace test
             {
                 MemberCheckInSingletonService.updateMemberCheckInInformation(openId, CheckInStatus.Error, null, retString, requestUrl.ToString());
             }
-            myStreamReader.Close();
-            myResponseStream.Close();
-
-
         }
     }
 }

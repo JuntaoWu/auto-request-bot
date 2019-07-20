@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace test.DAL
@@ -20,7 +21,7 @@ namespace test.DAL
         {
             string url = $"{Constant.Host}/api/location";
 
-            var result = await Request(url);
+            var result = await HttpUtil.Request(url);
 
             var obj = JsonConvert.DeserializeObject<ResponseResult<List<CheckInAddress>>>(result);
 
@@ -35,43 +36,10 @@ namespace test.DAL
             }
         }
 
-        private static async Task<string> Request(string url, string method = "GET", object data = null)
-        {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage result;
-            switch (method)
-            {
-                case "GET":
-                    result = await client.GetAsync(url);
-                    break;
-                case "POST":
-                    result = await client.PostAsJsonAsync(url, data);
-                    break;
-                case "PUT":
-                    result = await client.PutAsJsonAsync(url, data);
-                    break;
-                case "DELETE":
-                    result = await client.DeleteAsync(url);
-                    break;
-                default:
-                    result = null;
-                    break;
-            }
-
-            if (result == null)
-            {
-                return null;
-            }
-
-            result.EnsureSuccessStatusCode();
-
-            return await result.Content.ReadAsStringAsync();
-        }
-
         public async Task<ResponseResult<MemberCheckIn>> AddUser(string locationId, string nickName, string wechatId, string contactName, string telephone, string imagedata, string openId)
         {
             var url = $"{Constant.Host}/api/member";
-            var response = await Request(url, "POST", new
+            var response = await HttpUtil.Request(url, "POST", new
             {
                 openId = openId,
                 nickName = nickName,
@@ -88,7 +56,7 @@ namespace test.DAL
         public async Task<bool> UpdateUser(string ID, string locationId, string nickName, string wechatId, string contactName, string telephone, string imagedata, string openId)
         {
             var url = $"{Constant.Host}/api/member/{ID}";
-            var response = await Request(url, "PUT", new
+            var response = await HttpUtil.Request(url, "PUT", new
             {
                 openId = openId,
                 nickName = nickName,
@@ -106,7 +74,7 @@ namespace test.DAL
         public async Task<bool> DeleteUser(string ID)
         {
             var url = $"{Constant.Host}/api/member/{ID}";
-            var response = await Request(url, "DELETE");
+            var response = await HttpUtil.Request(url, "DELETE");
 
             var obj = JsonConvert.DeserializeObject<ResponseResult>(response);
             return obj.code == 0;
@@ -115,7 +83,7 @@ namespace test.DAL
         public async Task<List<MemberCheckIn>> getAllMemberList()
         {
             var url = $"{Constant.Host}/api/member/";
-            var response = await Request(url);
+            var response = await HttpUtil.Request(url);
 
             var obj = JsonConvert.DeserializeObject<ResponseResult<List<MemberCheckIn>>>(response);
             if (obj.code == 0)
@@ -131,7 +99,7 @@ namespace test.DAL
         public async Task<MemberCheckIn> getOneMemberById(string id)
         {
             var url = $"{Constant.Host}/api/member/{id}";
-            var response = await Request(url);
+            var response = await HttpUtil.Request(url);
 
             var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
             if (obj.code == 0)

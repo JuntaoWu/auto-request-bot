@@ -55,7 +55,7 @@ namespace test
                 string path = $"{Settings1.Default.RootFolder}{faceUri}";
                 if (!File.Exists(path))
                 {
-                    Directory.CreateDirectory(Directory.GetDirectoryRoot(path));
+                    Directory.CreateDirectory(new DirectoryInfo(path).Parent.FullName);
                     Stream x = await DownloadAsync(faceUri);
                     FileStream fileStream = new FileStream(path, FileMode.Create);
                     await x.CopyToAsync(fileStream);

@@ -7,15 +7,18 @@ import {
   MatInputModule,
   MatDividerModule,
   MatSelectModule,
-  MatDialogModule
+  MatDialogModule,
+  MatSnackBarModule
 } from '@angular/material';
 
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MemberDetailComponent } from './member-detail/member-detail.component';
 import { DescribeStatusPipe } from './describe-status.pipe';
 import { DescribeLocationPipe } from './describe-location.pipe';
+import { AuthHttpInterceptor } from './http-interceptor.service';
+import { AuthStoreService } from './auth-store.service';
 
 @NgModule({
   declarations: [
@@ -41,8 +44,12 @@ import { DescribeLocationPipe } from './describe-location.pipe';
     MatFormFieldModule,
     BrowserAnimationsModule,
     MatDialogModule,
+    MatSnackBarModule,
   ],
-  providers: [],
+  providers: [
+    AuthStoreService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent],
   entryComponents: [
     MemberDetailComponent,

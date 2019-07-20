@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 export interface DialogData {
   url: string;
@@ -12,8 +13,10 @@ export interface DialogData {
 })
 export class MemberDetailComponent implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) {
+  public iframeSrc: SafeResourceUrl;
 
+  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData, private sanitizer: DomSanitizer) {
+    this.iframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(data.url);
   }
 
   ngOnInit() {

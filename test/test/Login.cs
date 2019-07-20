@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -37,12 +38,12 @@ namespace test
             {
                 System.Environment.Exit(0);
             }
-            
+
         }
 
         private void Password_txtbox_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
             {
                 this.ProcessLogin();
             }
@@ -53,18 +54,30 @@ namespace test
             string username = this.user_name_txtbox.Text;
             string password = this.password_txtbox.Text;
             LoginDAL login = new LoginDAL();
-            ResponseResult result = await login.Login(this.user_name_txtbox.Text, this.password_txtbox.Text);
-            if (result.code == 0)
+            try
             {
-                this.DialogResult = DialogResult.OK;
-                this.exit = false;
-                this.Dispose();
+                ResponseResult<TokenResponse> result = await login.Login(this.user_name_txtbox.Text, this.password_txtbox.Text);
+                if (result.code == 0)
+                {
+                    AuthStore.Token = result.data.token;
+                    this.DialogResult = DialogResult.OK;
+                    this.exit = false;
+                    this.Dispose();
+                }
+                else
+                {
+                    MessageBox.Show(result.message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //this.display_message.Text = "登录失败";
+                    //this.display_message.ForeColor = Color.Red;
+                }
             }
-            else
+            catch(HttpRequestException ex)
             {
-                MessageBox.Show(result.message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //this.display_message.Text = "登录失败";
-                //this.display_message.ForeColor = Color.Red;
+                MessageBox.Show(ex.Message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (AggregateException ex)
+            {
+                MessageBox.Show(ex.Message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
