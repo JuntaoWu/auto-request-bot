@@ -15,7 +15,7 @@ export class MemberDetailComponent implements OnInit {
 
   public iframeSrc: SafeResourceUrl;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData, private sanitizer: DomSanitizer) {
+  constructor(@Inject(MAT_DIALOG_DATA) private data: DialogData, private sanitizer: DomSanitizer) {
     this.iframeSrc = this.sanitizer.bypassSecurityTrustResourceUrl(data.url);
   }
 

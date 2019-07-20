@@ -101,8 +101,8 @@ export class AppComponent implements OnInit {
             username: this.username,
             password: this.password
         }).subscribe((res: any) => {
-            if (res.data.code === 0) {
-                this.authStore.login(res.data.data.token);
+            if (res.code === 0) {
+                this.authStore.login(res.data.token);
                 this.loggedIn = true;
                 return this.refresh();
             }
