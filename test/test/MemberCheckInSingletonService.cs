@@ -167,7 +167,10 @@ namespace test
             var url = $"{Constant.Host}/api/member/checkin/{Id}";
             var response = await HttpUtil.Request(url);
             var obj = JsonConvert.DeserializeObject<ResponseResult<MemberCheckIn>>(response);
-            Instance.membercheckinlist.Add(obj.data);
+            if (!Instance.membercheckinlist.Any(i => i._id == obj.data._id))
+            {
+                Instance.membercheckinlist.Add(obj.data);
+            }
             Instance.OnReceiveCheckInResponse(Instance, new CustomCheckInEventArge { currentdata = Instance.membercheckinlist });
         }
     }

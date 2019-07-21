@@ -737,30 +737,40 @@ export let getCheckIn = async (req, res, next) => {
 }
 
 export let updateNeedCheckIn = async (req, res, next) => {
-    CheckInModel.updateMany(
-        {
-            _id: {
-                $in: req.body.needCheckInIds
-            }
-        },
-        {
-            $set: {
-                needChecked: NeedChecked.Need
-            }
-        },
-        (error, docs) => {
-            if (error) {
-                return res.json({
-                    code: 500,
-                    message: "updateNeedCheckIn error",
-                });
-            }
+    const needCheckInIds: string[] = req.body.needCheckInIds;
+    let type = moment() > moment({ hour: 10, minute: 30 }) ? CheckInType.CheckOut : CheckInType.CheckIn;
 
+    const cursor = await CheckInModel.find({
+        createdAt: {
+            $gte: moment({ hour: 0 })
+        },
+        type: type,
+    });
+
+    CheckInModel.bulkWrite(cursor.map((doc) => {
+        return {
+            "updateOne": {
+                "filter": { "_id": doc._id },
+                "update": { "$set": { "needChecked": needCheckInIds.indexOf(doc._id.toString()) !== -1 } }
+            }
+        };
+    }), (error, docs) => {
+        if (error) {
             return res.json({
-                code: 0,
-                message: 'OK'
+                code: 500,
+                message: "updateNeedCheckIn error",
             });
+        }
+
+        socket.broadcast(SocketOp.MEMBER_NEED_CHECK_IN_UPDATED, {
+            message: `member need check-in total ${docs.modifiedCount} records updated.`
         });
+
+        return res.json({
+            code: 0,
+            message: 'OK'
+        });
+    });
 }
 
 export let resetCheckIn = async (req, res, next) => {

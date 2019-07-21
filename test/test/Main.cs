@@ -23,11 +23,14 @@ namespace test
         private int lowerTimeSpan = 3000;
         private int higherTimeSpan = 5000;
 
+        public bool IsWatcher { get; set; }
+
         public bool Initialized { get; set; }
 
         public event EventHandler<CustomGridViewImageEventArgs> OnImageLoaded = (object sender, CustomGridViewImageEventArgs e) => { };
 
         public CheckInMode Mode { get; set; }
+
 
         public Main()
         {
@@ -109,7 +112,6 @@ namespace test
             await FaceSyncService.Instance.Run();
             this.Initialized = true;
         }
-
 
         //监听打开信息更新事件
         private void Instance_OnReceiveCheckInResponse(object sender, EventArgs e)
@@ -711,6 +713,12 @@ namespace test
                             this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
                             this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]重复绑定";
                         }
+                        else if (this.IsWatcher)
+                        {
+                            this.toolStripProgressBar1.ProgressBar.PerformStep();
+                            this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
+                            this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]跳过";
+                        }
                         else
                         {
                             this.toolStripProgressBar1.Value = 100;
@@ -751,12 +759,17 @@ namespace test
                                     this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
                                     this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]开始打脸";
                                 }, this);
+
                                 if (MemberCheckInSingletonService.Instance.checkedInIds.Contains(e.Data.data.id))
                                 {
                                     MemberCheckInSingletonService.Instance.checkedInIds.Remove(e.Data.data.id);
                                 }
                                 MemberCheckIn memberCheckIn = MemberCheckInSingletonService.Instance.membercheckinlist.SingleOrDefault(m => m._id == e.Data.data.id);
-                                MonitorFaceDialog(memberCheckIn.faceList);
+
+                                if (!this.IsWatcher)
+                                {
+                                    MonitorFaceDialog(memberCheckIn.faceList);
+                                }
                             }
                             else
                             {
@@ -769,8 +782,44 @@ namespace test
                             }
                         });
                         break;
+                    case SocketOp.MEMBER_NEED_CHECK_IN_UPDATED:
+                        if (!this.IsWatcher)
+                        {
+                            // only Watcher need to refresh member list again.
+                            RefreshMemberListPassively();
+                            return;
+                        }
+                        break;
                 }
             }, this);
+        }
+
+        private void RefreshMemberListPassively()
+        {
+            var currentCheckInType = this.getCheckInType();
+            var checkInAddress = this.GetCheckInLocation();
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await MemberCheckInSingletonService.getAllMemberCheckInOnToday(currentCheckInType, checkInAddress);
+                    this.m_SyncContext.Post(context =>
+                    {
+                        List<MemberCheckIn> data = context as List<MemberCheckIn>;
+                        var total = data.Count(item => item.status == CheckInStatus.Waiting);
+                        this.toolStripProgressBar1.Step = 100 / total;
+                        this.toolStripProgressBar1.Value = 0;
+                        this.toolStripStatusLabel1.Text = $"[{total}条记录]准备中...";
+                    }, MemberCheckInSingletonService.Instance.membercheckinlist);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    throw ex;
+                }
+
+            });
         }
 
         private bool IsCheckInAgain(string id)
@@ -948,6 +997,11 @@ namespace test
             }
 
             await MemberCheckInSingletonService.getAllMemberCheckInOnToday(this.getCheckInType(), this.GetCheckInLocation());
+        }
+
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            this.IsWatcher = this.checkBox1.Checked;
         }
     }
 

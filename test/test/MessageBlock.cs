@@ -16,6 +16,7 @@ namespace test
         CHECK_IN_STARTED,
         CHECK_IN_UPDATED,
         CHECK_IN_SKIP,
+        MEMBER_NEED_CHECK_IN_UPDATED,
     }
 
     public class MessageBlock

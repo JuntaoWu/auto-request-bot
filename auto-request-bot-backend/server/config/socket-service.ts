@@ -10,6 +10,7 @@ export enum SocketOp {
     CHECK_IN_STARTED = "CHECK_IN_STARTED",
     CHECK_IN_UPDATED = "CHECK_IN_UPDATED",
     CHECK_IN_SKIP = "CHECK_IN_SKIP",
+    MEMBER_NEED_CHECK_IN_UPDATED = "MEMBER_NEED_CHECK_IN_UPDATED",
 };
 
 let webSocketServer: WebSocket.Server;
