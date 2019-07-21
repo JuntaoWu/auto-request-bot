@@ -136,7 +136,10 @@ Func openUrl($url)
 	  MouseClick("left")
 	  Sleep(200)
 
-	  WinWaitActive($titleWeChatBrowser)
+     If Not WinActivate($titleWeChatBrowser) Then _
+       WinActivate($titleWeChatBrowser)
+     Local $hWndWeChatBrowser = WinWaitActive($titleWeChatBrowser)
+     WinSetOnTop($hWndWeChatBrowser, '', 1)
 	  ;~ Sleep(5000)
 	  ;~ WinClose($titleWeChatBrowser)
    Else

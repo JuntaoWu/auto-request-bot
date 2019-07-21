@@ -97,8 +97,10 @@
     </Compile>
     <Compile Include="AuthStore.cs" />
     <Compile Include="AvatarManager.cs" />
+    <Compile Include="CheckInMode.cs" />
     <Compile Include="CheckInServerResponse.cs" />
     <Compile Include="Constant.cs" />
+    <Compile Include="CustomGridViewImageEventArgs.cs" />
     <Compile Include="DAL\AddUserDAL.cs" />
     <Compile Include="DAL\Member.cs" />
     <Compile Include="DAL\MemberCheckIn.cs" />
@@ -113,7 +115,9 @@
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
     <Compile Include="DAL\LoginDAL.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>

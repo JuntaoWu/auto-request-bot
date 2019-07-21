@@ -1,40 +1,17 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using test.DAL;
-using Titanium.Web.Proxy;
-using Titanium.Web.Proxy.EventArguments;
-using Titanium.Web.Proxy.Http;
-using Titanium.Web.Proxy.Models;
 
 namespace test
 {
-    public enum CheckInMode
-    {
-        Batch,
-        Single,
-        Register,
-    }
-
-    public class CustomGridViewImageEventArgs : EventArgs
-    {
-        public DataGridView DataGridView { get; set; }
-    }
-
-
     public partial class Main : Form
     {
 
@@ -42,11 +19,15 @@ namespace test
         public string base64Str;
         SynchronizationContext m_SyncContext = null;
         private Random random = new Random();
+
+        private int lowerTimeSpan = 3000;
+        private int higherTimeSpan = 5000;
+
         public bool Initialized { get; set; }
 
         public event EventHandler<CustomGridViewImageEventArgs> OnImageLoaded = (object sender, CustomGridViewImageEventArgs e) => { };
 
-        public CheckInMode CheckInMode { get; set; }
+        public CheckInMode Mode { get; set; }
 
         public Main()
         {
@@ -248,7 +229,7 @@ namespace test
         }
 
         //提交用户信息
-        private async void confirm_btn_Click(object sender, EventArgs e)
+        private void confirm_btn_Click(object sender, EventArgs e)
         {
             /*string selecteaddress = this.checkin_address_combox.SelectedValue.ToString();
             // Location userlocation = getAddressLocation(selecteaddress);
@@ -382,7 +363,7 @@ namespace test
 
                     if (MessageBox.Show("确定删除用戶: " + currentmember.weixin_uername + " ?", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
-                        this.user.DeleteUser(currentmember.ID);
+                        await this.user.DeleteUser(currentmember.ID);
                         await this.BindDataMemberList();
                     }
                 }
@@ -445,22 +426,16 @@ namespace test
             {
                 case CheckInStatus.Waiting:
                     return "等待打卡";
-                    break;
                 case CheckInStatus.Success:
                     return "已完成";
-                    break;
                 case CheckInStatus.Error:
                     return "未完成";
-                    break;
                 case CheckInStatus.UnActive:
                     return "未激活";
-                    break;
                 case CheckInStatus.Actived:
                     return "已激活";
-                    break;
                 default:
                     return string.Empty;
-                    break;
             }
         }
 
@@ -510,13 +485,10 @@ namespace test
             {
                 case "上班打卡":
                     return CheckInType.CheckIn;
-                    break;
                 case "下班打卡":
                     return CheckInType.CheckOut;
-                    break;
                 default:
                     return CheckInType.CheckIn;
-                    break;
             }
         }
 
@@ -556,6 +528,24 @@ namespace test
         /// <param name="e"></param>
         private void Button1_Click(object sender, EventArgs e)
         {
+            int lowerTimeSpanSeconds;
+            int higherTimeSpanSeconds;
+            try
+            {
+                lowerTimeSpanSeconds = Convert.ToInt32(this.textBox1.Text);
+                higherTimeSpanSeconds = Convert.ToInt32(this.textBox2.Text);
+                if (lowerTimeSpan != 0 && higherTimeSpan != 0)
+                {
+                    this.lowerTimeSpan = lowerTimeSpanSeconds * 1000;
+                    this.higherTimeSpan = higherTimeSpanSeconds * 1000;
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Format error");
+            }
+
+            this.lowerTimeSpan = Convert.ToInt32(this.textBox1.Text);
             var todaySeparator = DateTime.Today;
             todaySeparator = todaySeparator.AddHours(10);
             todaySeparator = todaySeparator.AddMinutes(30);
@@ -570,7 +560,7 @@ namespace test
 
             var checkInUrl = GetCheckInLocation()?.url;
 
-            CheckInMode = CheckInMode.Batch;
+            Mode = CheckInMode.Batch;
             List<string> checkitems = new List<string>();
             MemberCheckInSingletonService.Instance.checkedInIds = new HashSet<string>();
             MemberCheckInSingletonService.Instance.needFaceIds = new HashSet<string>();
@@ -705,16 +695,17 @@ namespace test
                         this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]开始打卡";
                         break;
                     case SocketOp.CHECK_IN_SKIP:
-                        if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
+                        if (Mode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
                         {
                             this.toolStripProgressBar1.ProgressBar.PerformStep();
                             this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
                             this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]跳过";
                             SwitchCheckInMember();
-                            Thread.Sleep(2000);
+                            var sleepMS = random.Next(lowerTimeSpan, higherTimeSpan);
+                            Thread.Sleep(sleepMS);
                             CheckInSingleMember(checkInUrl);
                         }
-                        else if (CheckInMode == CheckInMode.Register)
+                        else if (Mode == CheckInMode.Register)
                         {
                             this.toolStripProgressBar1.Value = 100;
                             this.toolStripStatusLabelPercent.Text = $"{this.toolStripProgressBar1.Value}%";
@@ -731,7 +722,7 @@ namespace test
                         Task.Run(async () =>
                         {
                             await MemberCheckInSingletonService.updateMemberCheckInInformation(e.Data.data);
-                            if (CheckInMode == CheckInMode.Register)
+                            if (Mode == CheckInMode.Register)
                             {
                                 this.m_SyncContext.Post(context =>
                                 {
@@ -740,7 +731,7 @@ namespace test
                                     this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]完成注册";
                                 }, this);
                             }
-                            else if (CheckInMode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
+                            else if (Mode == CheckInMode.Batch && IsSomeoneWaiting(e.Data.data.id))
                             {
                                 this.m_SyncContext.Post(context =>
                                 {
@@ -749,7 +740,8 @@ namespace test
                                     this.toolStripStatusLabel1.Text = $"[{e.Data.data.name}]完成打卡";
                                 }, this);
                                 SwitchCheckInMember();
-                                Thread.Sleep(2000);
+                                var sleepMS = random.Next(lowerTimeSpan, higherTimeSpan);
+                                Thread.Sleep(sleepMS);
                                 CheckInSingleMember(checkInUrl);
                             }
                             else if (NeedFace(e.Data.data.id))
@@ -860,7 +852,7 @@ namespace test
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            CheckInMode = CheckInMode.Single;
+            Mode = CheckInMode.Single;
             var checkInUrl = this.GetCheckInLocation()?.url;
             CheckInSingleMember(checkInUrl);
         }
@@ -936,7 +928,7 @@ namespace test
         /// <param name="e"></param>
         private void Button4_Click(object sender, EventArgs e)
         {
-            CheckInMode = CheckInMode.Register;
+            Mode = CheckInMode.Register;
 
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();

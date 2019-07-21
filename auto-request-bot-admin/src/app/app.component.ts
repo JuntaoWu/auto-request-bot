@@ -535,7 +535,8 @@ export class AppComponent implements OnInit {
 
         console.log('End updateCheckInResult', updateCheckInResult);
 
-        if (status === CheckInStatus.Success) {
+        if ((status === CheckInStatus.Success) ||
+            (!this.preference.manualMode && response.result !== 'needface')) {
             return this.closeWindow();
         }
 
